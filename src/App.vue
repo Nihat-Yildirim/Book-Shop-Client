@@ -1,13 +1,13 @@
 <template>
-  <HeaderComponent/>
+    <HomePage/>
 </template>
 
 <script>
-import HeaderComponent from '@/pages/user/components/HeaderComponent'
+import HomePage from '@/pages/user/home_page/HomePage'
 
 export default{
   components:{
-    HeaderComponent
+    HomePage
   }
 }
 </script>

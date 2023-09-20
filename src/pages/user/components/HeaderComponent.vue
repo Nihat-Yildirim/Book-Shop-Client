@@ -43,10 +43,17 @@
             </li>
         </ul>
     </div>
+    <CategoriesComponent/>
 </template>
 
 <script>
+import CategoriesComponent from '@/pages/user/components/CategoriesComponent'
+
 export default{
+    components:{
+        CategoriesComponent
+    },
+
     data(){
         return{
             cartIconHover : false,
@@ -81,7 +88,7 @@ export default{
         align-items: center;
         justify-content: space-evenly;
         background-color: #FBFCFC;
-        border-bottom: 1px solid grey;
+        border-bottom: 1px solid #EAEDED;
     }
 
     #header-container .app-name{
