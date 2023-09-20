@@ -7,3 +7,7 @@
     font-family: 'Roboto Slab', serif;
     list-style: none;
 }
+
+img{
+    user-select: none;
+}

@@ -1,22 +1,189 @@
 <template>
     <div class="circle-slider-container">
-        
+        <div class="circle-slider-title">
+            <h5>Circle Title </h5>
+            <span>Tümünü Göster</span>
+        </div>
+        <div class="circle-slider-content" @mousemove="navButtonVisibily = true" @mouseleave="navButtonVisibily = false">
+            <i @click="prevSlide" :class="{'circle-nav-button-visible' : navButtonVisibily}" class="bi bi-chevron-left cicle-nav-button circle-nav-pre-button"></i>
+            <Swiper
+            :modules="modules"
+            :slides-per-view="4"
+            :space-between="-100"
+            :centeredSlidesBounds= "true"
+            :autoplay="{
+                delay:2000,
+                disableOnInteraction:false,
+                pauseOnMouseEnter : true
+            }" class="circle-card-wrapper" :class="('circle-card-wrapper-' + name)">
+                <SwiperSlide v-for="i in 20" :key="i">
+                    <div class="circle-card">
+                       <img src="@/assets/no-image-available.jpg" alt="">
+                    </div>
+                </SwiperSlide>
+            </Swiper>
+            <i @click="nextSlide" :class="{'circle-nav-button-visible' : navButtonVisibily}" class="bi bi-chevron-right cicle-nav-button circle-nav-next-button"></i>
+        </div>
     </div>
 </template>
 
 <script>
+import { Swiper , SwiperSlide  } from 'swiper/vue';
+import {Autoplay} from 'swiper/modules';
+import 'swiper/css';
 export default{
+    data(){
+        return{
+            navButtonVisibily : false,
+            circleSliderWrapper : null,
+        }
+    },
 
+    components:{
+        Swiper,
+        SwiperSlide
+    },
+
+    methods:{
+        nextSlide(){
+            this.circleSliderWrapper.slideNext();
+        },
+        prevSlide(){
+            this.circleSliderWrapper.slidePrev();
+        }
+    },
+
+    props:["name"],
+
+    setup(){
+        return{
+            modules:[Autoplay]
+        }
+    },
+
+    mounted(){
+        this.circleSliderWrapper = document.querySelector(".circle-card-wrapper-"+this.name).swiper;
+        console.log(this.circleSliderWrapper);
+    }
 }
 </script>
 
 <style>
     .circle-slider-container{
-        width: 100%;
+        padding: 15px;
+        width: 660px;
         height: 188.5px;
         border-radius: 5px;
         background-color: #EAEDED;
         border: 2px solid #D5DBDB;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .circle-slider-title{
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        height: 25px;
+    }
+
+    .circle-slider-title h5{
+        font-size: 20px;
+        color: orange;
+    }
+
+    .circle-slider-title span{
+        margin-top: 5px;
+        color: orange;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500px;
+    }
+
+    .circle-slider-title span:hover{
+        border-bottom: 2px solid orange;
+    }
+
+    .circle-slider-content{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .circle-card-wrapper{
+        display: flex;
+        justify-content: center;
+        width: 100% ;
+        height: 100%;
+        padding-top: 15px;
+        padding-bottom: 10px;
+    }
+
+    .cicle-nav-button{
+        opacity: 0;
+        visibility: hidden;
+        position: absolute;
+        color: #fff;
+        cursor: pointer;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: orange;
+        text-align: center;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        transition: opacity 750ms;
+        z-index: 200;
+    }
+
+    .circle-nav-pre-button{
+        left: -15px;
+    }
+
+    .circle-nav-next-button{
+        right: -15px;
+    }
+
+    .circle-nav-button-visible{
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 750ms;
+    }
+
+    .circle-card{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        background-color: #f8f9f9;
+        padding: 2px;
+        transition: all 500ms;
+    }
+
+    .circle-card:hover{
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        transition: 500ms all;
+    }
+
+    .circle-card img{
+        object-fit: cover;
+    }
+
+    .circle-card img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
     }
 </style>

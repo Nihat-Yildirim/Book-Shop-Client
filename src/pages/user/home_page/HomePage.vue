@@ -9,8 +9,8 @@
                             <NewAddedComponent/>
                         </div>
                         <div id="first-content-right">
-                            <CircleSlideSlider/>
-                            <CircleSlideSlider/>
+                            <CircleSlideSlider name="authors"/>
+                            <CircleSlideSlider name="publishers"/>
                         </div>
                     </div>
                     <div id="first-content-bottom">

@@ -15,9 +15,9 @@
             disableOnInteraction:false,
             pauseOnMouseEnter : true
         }" class="book-card-wrapper">
-        <SwiperSlide v-for="book in books" :key="book.id">
-            <BookCardComponent :key="book.id" :bookData="book"/>
-        </SwiperSlide>
+            <SwiperSlide v-for="book in books" :key="book.id">
+                <BookCardComponent :key="book.id" :bookData="book"/>
+            </SwiperSlide>
         </Swiper>
     </div>
 </template>
