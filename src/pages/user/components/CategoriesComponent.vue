@@ -43,7 +43,7 @@ export default{
     }
 
     .category{
-        margin-left: 23px;
+        margin-left: 15px;
         cursor: pointer;
         user-select: none;
     }

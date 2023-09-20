@@ -220,6 +220,7 @@ export default{
         width: 200px;
         background-color: #fefefe;
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        z-index: 200;
     }
 
     #triangle{

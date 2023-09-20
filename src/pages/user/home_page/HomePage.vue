@@ -57,8 +57,10 @@ export default {
 
 <style>
     #home-page-container{
-        width: 100%;
         height: 100%;
+        width: 100%;
+        min-width: 1510px;
+        max-width: 1510px;
     }
 
     #home-page-content{
@@ -71,6 +73,7 @@ export default {
         width: 22%;
         height: 1660px;
         padding-left: 20px;
+        position: relative;
     }
 
     #home-page-left{
