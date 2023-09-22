@@ -2,12 +2,12 @@
     <div class="book-card">
         <div class="book-card-content">
             <div class="book-card-content-above">
-                <img class="book-card-content-img" :src="getBookPictureUrl" alt="">
+                <img class="book-card-content-img" :src="getBookPictureUrl(bookData.pictureUrls)" :alt="(bookData.bookName + ' Picture')">
             </div>
             <div class="book-card-content-down">
                 <div class="book-card-text-content-container">
-                    <h4 class="book-card-book-name">{{ bookData.name }}</h4>
-                    <span class="book-card-book-price">{{ bookData.price }}</span>
+                    <h4 class="book-card-book-name">{{ bookData.bookName }}</h4>
+                    <span class="book-card-book-price">{{ bookData.price }} TL</span>
                 </div>
                 <div class="book-card-button-container">
                     <button class="book-card-button">Sepete Ekle</button>
@@ -22,11 +22,12 @@
 export default{
     props: ["bookData"],
 
-    computed:{
-        getBookPictureUrl(){
-            if(this.bookData.url == null)
+    methods:{
+        getBookPictureUrl(pictureUrls){
+            console.log(pictureUrls)
+            if(pictureUrls[0]==null)
                 return require("@/assets/no-image-available.jpg");
-            return this.bookData.url;
+            return pictureUrls[0];
         }
     }
 }
@@ -38,8 +39,8 @@ export default{
         background-color: #F8F9F9;
         border : 2px solid #F8F9F9;
         border-radius: 7px;
-        width: 235px;
-        height: 330px;
+        width: 245px;
+        height: 350px;
         transition: all 500ms;
     }
 
@@ -56,9 +57,13 @@ export default{
         justify-content: center;
         align-items: center;
         flex-direction: column;
+        user-select: none;
     }
 
     .book-card-content-above{
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 90%;
         height: 65%;
     }
@@ -75,7 +80,7 @@ export default{
     .book-card-content-img{
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: scale-down;
     }
 
     .book-card-text-content-container{
@@ -115,11 +120,12 @@ export default{
     }
 
     .book-card-book-name{
+        user-select: none;
         text-align: center;
         font-weight: 500;
-        font-size: 20px;
+        font-size: 16px;
         transition: all 500ms;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
     }
 
     .book-card:hover .book-card-book-name,

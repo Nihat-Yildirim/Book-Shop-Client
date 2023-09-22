@@ -15,8 +15,8 @@
             disableOnInteraction:false,
             pauseOnMouseEnter : true
         }" class="book-card-wrapper">
-            <SwiperSlide v-for="book in books" :key="book.id">
-                <BookCardComponent :key="book.id" :bookData="book"/>
+            <SwiperSlide v-for="data in datas" :key="data.id">
+                <BookCardComponent :key="data.id" :bookData="data"/>
             </SwiperSlide>
         </Swiper>
     </div>
@@ -32,68 +32,6 @@ import 'swiper/css/pagination';
 export default{
     data(){
         return{
-            books:[
-                {
-                    id:1,
-                    name :"Kitap 1",
-                    authorName : "Yazar 1",
-                    price : "123 TL"
-                },
-                {
-                    id:2,
-                    name :"Kitap 2",
-                    authorName : "Yazar 2",
-                    price : "123 TL"
-                },
-                {
-                    id:3,
-                    name :"Kitap 3",
-                    authorName : "Yazar 3",
-                    price : "123 TL"
-                },
-                {
-                    id:4,
-                    name :"Kitap 4",
-                    authorName : "Yazar 4",
-                    price : "123 TL"
-                },
-                {
-                    id:6,
-                    name :"Kitap 6",
-                    authorName : "Yazar 6",
-                    price : "123 TL"
-                },
-                {
-                    id:7,
-                    name :"Kitap 7",
-                    authorName : "Yazar 7",
-                    price : "123 TL"
-                },
-                {
-                    id:8,
-                    name :"Kitap 8",
-                    authorName : "Yazar 8",
-                    price : "123 TL"
-                },
-                {
-                    id:9,
-                    name :"Kitap 9",
-                    authorName : "Yazar 9",
-                    price : "123 TL"
-                },
-                {
-                    id:10,
-                    name :"Kitap 10",
-                    authorName : "Yazar 10",
-                    price : "123 TL"
-                },
-                {
-                    id:11,
-                    name :"Kitap 11",
-                    authorName : "Yazar 11",
-                    price : "123 TL"
-                },
-            ]
         }
     },
     components: { 
@@ -106,7 +44,7 @@ export default{
             modules:[Autoplay,Pagination]
         } 
     },
-    props:["sliderTitle"],
+    props:["sliderTitle","datas"],
 }
 </script>
 
@@ -120,7 +58,7 @@ export default{
         flex-direction: column;
         padding: 0 25px 0 25px;
         width: 100% ;
-        height: 430px;
+        height: 450px;
         background-color: #EAEDED;
         padding-bottom: 5px;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;

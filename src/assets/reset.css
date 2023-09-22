@@ -11,6 +11,7 @@
 body{
     display: flex;
     justify-content: center;
+    min-width: 1519px;
 }
 
 img{

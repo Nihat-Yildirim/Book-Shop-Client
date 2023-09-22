@@ -1,7 +1,7 @@
 <template>
     <div class="circle-slider-container">
         <div class="circle-slider-title">
-            <h5>Circle Title </h5>
+            <h5>{{ uiName }}</h5>
             <span>Tümünü Göster</span>
         </div>
         <div class="circle-slider-content" @mousemove="navButtonVisibily = true" @mouseleave="navButtonVisibily = false">
@@ -16,9 +16,9 @@
                 disableOnInteraction:false,
                 pauseOnMouseEnter : true
             }" class="circle-card-wrapper" :class="('circle-card-wrapper-' + name)">
-                <SwiperSlide v-for="i in 20" :key="i">
+                <SwiperSlide v-for="data in datas" :key="data.id">
                     <div class="circle-card">
-                       <img src="@/assets/no-image-available.jpg" alt="">
+                       <img :src="getDataPictureUrl(data.pictureUrl)" :alt="data.name">
                     </div>
                 </SwiperSlide>
             </Swiper>
@@ -32,6 +32,8 @@ import { Swiper , SwiperSlide  } from 'swiper/vue';
 import {Autoplay} from 'swiper/modules';
 import 'swiper/css';
 export default{
+    props:["name","uiName","urlPath","datas"],
+
     data(){
         return{
             navButtonVisibily : false,
@@ -50,10 +52,13 @@ export default{
         },
         prevSlide(){
             this.circleSliderWrapper.slidePrev();
+        },
+        getDataPictureUrl(pictureUrl){
+            if(pictureUrl == null)
+                return require("@/assets/no-image-available.jpg");
+            return pictureUrl;
         }
     },
-
-    props:["name"],
 
     setup(){
         return{
@@ -63,7 +68,6 @@ export default{
 
     mounted(){
         this.circleSliderWrapper = document.querySelector(".circle-card-wrapper-"+this.name).swiper;
-        console.log(this.circleSliderWrapper);
     }
 }
 </script>

@@ -89,6 +89,7 @@ export default{
         justify-content: space-evenly;
         background-color: #FBFCFC;
         border-bottom: 1px solid #EAEDED;
+        width: 100%;
     }
 
     #header-container .app-name{

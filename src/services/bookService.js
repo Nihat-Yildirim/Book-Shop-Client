@@ -95,8 +95,8 @@ const BookService = {
         return result.data;
     },
 
-    async GetBooksByCategoryId(categoryId,pagination){
-        const result = await appAxios.get(`Books/GetBooksByCategoryId?Id=${categoryId}&Page=${pagination.Page}&Size=${pagination.Size}`);
+    async GetBooksByCategoryId(params){
+        const result = await appAxios.get(`/Books/GetBooksByCategoryId?Id=${params.categoryId}&Page=${params.page}&Size=${params.size}`);
         return result.data;
     }
 }

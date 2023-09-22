@@ -1,7 +1,7 @@
 <template>
     <div id="categories-container">
-        <div v-for="parentCategory in parentCategories" :key="parentCategory.key" class="category">
-            {{ parentCategory.name }}
+        <div v-for="parentCategory in getParentCategory" :key="parentCategory.id" class="category">
+            {{ parentCategory.categoryName }}
         </div>
         <div id="more-category" class="category">
             daha fazlası...
@@ -10,24 +10,18 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default{
     data(){
-        return{
-            parentCategories:[
-                {name : "Edebiyat", id:1},
-                {name : "Çocuk Kitapları", id:2},
-                {name : "Tarih", id:3},
-                {name : "Siyaset", id:4},
-                {name : "Kişisel Gelişim", id:5},
-                {name : "Eğitim", id:6},
-                {name : "Sınav", id:7},
-                {name : "Ders Kitapları", id:8},
-                {name : "Felsefe Düşünce", id:9},
-                {name : "Ekonomi", id:11},
-                {name : "Roman", id:12},
-            ]
-        }
-    }
+        return{}
+    },
+
+    computed:{
+        ...mapGetters({
+            getParentCategory : "CategoryModule/_getParentCategories"
+        })
+    },
 }
 </script>
 

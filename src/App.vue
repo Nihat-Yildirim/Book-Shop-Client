@@ -1,13 +1,25 @@
 <template>
-    <HomePage/>
+    <BookDetailPage/>
 </template>
 
 <script>
-import HomePage from '@/pages/user/home_page/HomePage'
+import BookDetailPage from './pages/user/book_detail_page/BookDetailPage.vue';
+import {mapActions} from 'vuex';
 
 export default{
   components:{
-    HomePage
+    BookDetailPage
+  },
+
+  methods:{
+    ...mapActions({
+      getAllCategory : "CategoryModule/getAll",
+    })
+  },
+
+  created(){
+    this.getAllCategory();
   }
+
 }
 </script>
