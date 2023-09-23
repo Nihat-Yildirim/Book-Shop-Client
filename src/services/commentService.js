@@ -44,6 +44,11 @@ const CommentService = {
     async getCommentsByUserId(pagination,userId){
         var result = await appAxios.get(`Comments/GetCommentsByUserId?Page=${pagination.page}&Size=${pagination.size}&UserId=${userId}`);
         return result.data;
+    },
+
+    async getCommentCountByBookId(bookId){
+        var result = await appAxios.get(`Comments/GetCommentCountByBookId?BookId=${bookId}`);
+        return result.data;
     }
 }
 

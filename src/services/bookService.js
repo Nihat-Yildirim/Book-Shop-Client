@@ -56,7 +56,11 @@ const BookService = {
     },
 
     async getById(bookId){
-        const result = await appAxios.get(`Books/GetById?Id=${bookId}`);
+        const result = await appAxios.get(`Books/GetById`,{
+            params:{
+                Id : bookId
+            }
+        });
         return result.data;
     },
 

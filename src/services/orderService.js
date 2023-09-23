@@ -19,6 +19,11 @@ const OrderService = {
     async getOrdersByUserId(userId){
         const result = await appAxios.get(`Orders/GetOrdersByUserId?UserId=${userId}`);
         return result.data;
+    },
+
+    async getOrderCountByBookId(bookId){
+        const result = await appAxios.get(`Orders/GetOrderCountByBookId?BookId=${bookId}`);
+        return result.data;
     }
 }
 

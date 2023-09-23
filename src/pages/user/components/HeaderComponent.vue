@@ -1,6 +1,6 @@
 <template>
     <div id="header-container">
-        <h1 class="app-name">Book Shop</h1>
+        <h1 @click="$router.push('/')" class="app-name">Book Shop</h1>
         <div id="search-container">
             <input type="text" class="search-input" placeholder="Ara ..">
             <i id="search-icon" class="bi bi-search"></i>

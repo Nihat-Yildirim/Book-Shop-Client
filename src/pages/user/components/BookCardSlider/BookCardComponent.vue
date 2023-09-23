@@ -1,5 +1,5 @@
 <template>
-    <div class="book-card">
+    <div @click="navigateBookDetail(bookData)" class="book-card">
         <div class="book-card-content">
             <div class="book-card-content-above">
                 <img class="book-card-content-img" :src="getBookPictureUrl(bookData.pictureUrls)" :alt="(bookData.bookName + ' Picture')">
@@ -24,10 +24,18 @@ export default{
 
     methods:{
         getBookPictureUrl(pictureUrls){
-            console.log(pictureUrls)
             if(pictureUrls[0]==null)
                 return require("@/assets/no-image-available.jpg");
             return pictureUrls[0];
+        },
+        navigateBookDetail(bookData){
+            this.$router.push({
+                name : "BookDetail",
+                params : {
+                    bookName : bookData.bookName.toLowerCase().replace(/\s+/g, "-")
+                }
+            });
+            this.$store.state.BookModule.selectedBookId = bookData.id;
         }
     }
 }

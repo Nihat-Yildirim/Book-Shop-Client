@@ -29,6 +29,11 @@ const BasketService = {
     async getBasketByUserId(userId){
         var result = await appAxios.get(`Baskets/GetBasketByUserId?UserId=${userId}`);
         return result.data;
+    },
+    
+    async getSelectedBookBasketCount(bookId){
+        var result = await appAxios.get(`Baskets/GetSelectedBookBasketCount?BookId=${bookId}`);
+        return result.data;
     }
 }
 

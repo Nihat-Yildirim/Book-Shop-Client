@@ -147,7 +147,6 @@ export default {
         this.getAllPublisher();
         this.getAllAuthor();
         this.getWorldClassics({categoryId : 10,page : 0,size : 20});
-        console.log(this.$store);
     }
 }
 </script>
