@@ -2,7 +2,14 @@ import appAxios from "@/utils/appAxios";
 
 const AuthenticationService = {
     async userRegister(registeredUser){
-        var result = await appAxios.post("Authentications/UserRegister",registeredUser);
+        var result = await appAxios.post("Authentications/UserRegister",null,{
+            params:{
+                FirstName : registeredUser.firstName,
+                LastName : registeredUser.lastName,
+                Email : registeredUser.email,
+                Password : registeredUser.password    
+            }
+        });
         return result.data;
     },
 
@@ -18,6 +25,11 @@ const AuthenticationService = {
 
     async verifyMailComfirmCode(verifiedCode){
         var result = await appAxios.put(`Authentications/VerifyMailComfirmCode?Email=${verifiedCode.mail}&Code=${verifiedCode.code}`);
+        return result.data;
+    },
+
+    async newMailComfirmCode(mail){
+        var result = await appAxios.put(`Authentications/NewMailComfirmCode?Mail=${mail}`)
         return result.data;
     },
 

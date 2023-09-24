@@ -10,6 +10,21 @@ const routes = [
         name : "BookDetail",
         path : "/kitap/:bookName",
         component : () => import("@/pages/user/book_detail_page/BookDetailPage"),
+    },
+    {
+        name : "LoginPage",
+        path: "/giriş",
+        component : () => import("@/pages/user/login_page/LoginPage")
+    },
+    {
+        name : "RegisterPage",
+        path : "/kaydol",
+        component : () => import("@/pages/user/register_page/RegisterPage")
+    },
+    {
+        name : "MailComfirmPage",
+        path : "/kaydol/mail-dogrulama",
+        component : () => import("@/pages/user/mail_comfirm_page/MailComfirmPage")
     }
 ];
 

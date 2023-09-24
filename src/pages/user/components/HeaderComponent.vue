@@ -14,7 +14,7 @@
                 <span :class="{iconhover : cartIconHover}">Sepetim</span>
             </div>
             <div class="bracket"></div>
-            <div ref="authContainerRef" id="auths-container" @mouseenter="authsDisplayAndHover(true)" @mouseleave="authsDisplayAndHover(false)">
+            <div @click="navigateTo('LoginPage')" ref="authContainerRef" id="auths-container" @mouseenter="authsDisplayAndHover(true)" @mouseleave="authsDisplayAndHover(false)">
                 <i :class="{iconhover : authIconHover}" class="bi bi-person"></i>
                 <span :class="{iconhover : authIconHover}">Giriş Yap</span>
             </div>
@@ -24,7 +24,7 @@
         <div :style="{left : locationLeft + 40 + 'px' }" id="triangle"></div>
         <ul>
             <li>
-                <div class="auths-button" id="login">
+                <div @click="navigateTo('LoginPage')" class="auths-button" id="login">
                     <i class="bi bi-person-fill"></i>
                     <span>Giriş</span>
                 </div>
@@ -36,7 +36,7 @@
                 </div>
             </li>
             <li>
-                <div class="auths-button" id="login">
+                <div @click="navigateTo('RegisterPage')" class="auths-button" id="login">
                     <i class="bi bi-person-fill-add"></i>
                     <span>Kaydol</span>
                 </div>
@@ -70,6 +70,11 @@ export default{
             this.locationLeft =  this.$refs.authContainerRef.getBoundingClientRect().left;
             this.authIconHover = hover;
             this.authsDisplay = hover;
+        },
+        navigateTo(pageName){
+            this.$router.push({
+                name : pageName,
+            });
         }
     },
 

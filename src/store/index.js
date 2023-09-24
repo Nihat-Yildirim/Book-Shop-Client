@@ -7,11 +7,12 @@ import createPersistedState from "vuex-persistedstate";
 import CommentModule from "./modules/commentModule";
 import BasketModule from "./modules/basketModule";
 import OrderModule from "./modules/orderModule";
+import AuthModule from "./modules/authModule";
 
 const store = createStore({
     plugins : [createPersistedState({
         key : "BookShopKey",
-        paths : ["BookModule","AuthorModule"],
+        paths : ["BookModule","AuthorModule","AuthModule"],
     })],
 
     modules:{
@@ -21,7 +22,8 @@ const store = createStore({
         BookModule,
         CommentModule,
         BasketModule,
-        OrderModule
+        OrderModule,
+        AuthModule
     }
 });
 
