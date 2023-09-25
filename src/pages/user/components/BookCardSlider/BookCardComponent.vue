@@ -30,7 +30,7 @@ export default{
         },
         navigateBookDetail(bookData){
             this.$router.push({
-                name : "BookDetail",
+                name : "BookDetailPage",
                 params : {
                     bookName : bookData.bookName.toLowerCase().replace(/\s+/g, "-")
                 }

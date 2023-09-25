@@ -157,7 +157,8 @@ export default{
             selectedBookCommentCount : "CommentModule/_getSelectedBookCommentCount",
             selectedBookBasketCount : "BasketModule/_getSelectedBookBasketCount",
             selectedBookOrderCountByBookId : "OrderModule/_getSelectedBookOrderCount",
-            selectedAuthor : "AuthorModule/_getSelectedAuthor"
+            selectedAuthor : "AuthorModule/_getSelectedAuthor",
+            selectedBookId : "BookModule/_getSelectedBookId",
         }),
     },
 
@@ -176,7 +177,7 @@ export default{
             this.bookDetailCardWrapper.slidePrev();
         },
         getBookPictureUrls(pictureUrls){
-            if(pictureUrls[0]==null)
+            if(pictureUrls==null)
                 return require("@/assets/no-image-available.jpg");
             return pictureUrls;
         },
@@ -185,6 +186,12 @@ export default{
                 return require("@/assets/no-image-available.jpg");
             return pictureUrl;
         },
+        getDatas(){
+            this.getBookById(this.selectedBookId);
+            this.getCommentCountByBookId(this.selectedBookId);
+            this.getSelectedBookBasketCount(this.selectedBookId);
+            this.getOrderCountByBookId(this.selectedBookId);
+        }
     },
 
     watch:{
@@ -192,13 +199,13 @@ export default{
             this.bookDetailCardWrapper = document.querySelector("#book-detail-card-wrapper").swiper;
             this.getAuthorById(this.selectedBook.authors[0].id);
         },
+        selectedBookId(){
+            this.getDatas();    
+        }
     },
 
     created(){
-        this.getBookById(this.$store.state.BookModule.selectedBookId);
-        this.getCommentCountByBookId(this.$store.state.BookModule.selectedBookId);
-        this.getSelectedBookBasketCount(this.$store.state.BookModule.selectedBookId);
-        this.getOrderCountByBookId(this.$store.state.BookModule.selectedBookId);
+        this.getDatas();
     },
 
     unmounted(){

@@ -69,8 +69,8 @@ const BookService = {
         return result.data;
     },
 
-    async getBooksByNamePattern(pagination , pattern){
-        const result = await appAxios.get(`Books/GetBooksByNamePattern?Page=${pagination.Page}&Size=${pagination.Size}&Pattern=${pattern}`);
+    async getBooksByNamePattern(params){
+        const result = await appAxios.get(`Books/GetBooksByNamePattern?Page=${params.page}&Size=${params.size}&Pattern=${params.pattern}`);
         return result.data;
     },
 

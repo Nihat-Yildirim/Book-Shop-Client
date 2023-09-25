@@ -7,7 +7,7 @@ const routes = [
         component : () => import("@/pages/user/home_page/HomePage")
     },
     {
-        name : "BookDetail",
+        name : "BookDetailPage",
         path : "/kitap/:bookName",
         component : () => import("@/pages/user/book_detail_page/BookDetailPage"),
     },
@@ -25,6 +25,11 @@ const routes = [
         name : "MailComfirmPage",
         path : "/kaydol/mail-dogrulama",
         component : () => import("@/pages/user/mail_comfirm_page/MailComfirmPage")
+    },
+    {
+        name : "SearchPage",
+        path : "/arama/:searchParameter",
+        component : () => import("@/pages/user/search_page/SearchPage")
     }
 ];
 
