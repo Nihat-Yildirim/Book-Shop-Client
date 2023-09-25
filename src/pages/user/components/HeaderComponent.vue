@@ -5,7 +5,7 @@
             <input type="text" class="search-input" placeholder="Ara ..">
             <i id="search-icon" class="bi bi-search"></i>
         </div>
-        <div id="auths-login-container">
+        <div id="auths-login-user-profile-container">
             <div id="cart-container" @mouseenter="cartIconHover = !cartIconHover" @mouseleave="cartIconHover = false">
                 <div :class="{iconhover : cartIconHover}" id="cart-icon">
                     <div><span v-if="basketItems>0" id="cart-count">1</span></div>
@@ -14,9 +14,13 @@
                 <span :class="{iconhover : cartIconHover}">Sepetim</span>
             </div>
             <div class="bracket"></div>
-            <div @click="navigateTo('LoginPage')" ref="authContainerRef" id="auths-container" @mouseenter="authsDisplayAndHover(true)" @mouseleave="authsDisplayAndHover(false)">
+            <div v-if="getUserProfileGetter == null" @click="navigateTo('LoginPage')" ref="authContainerRef" id="auths-container" @mouseenter="authsDisplayAndHover(true)" @mouseleave="authsDisplayAndHover(false)">
                 <i :class="{iconhover : authIconHover}" class="bi bi-person"></i>
                 <span :class="{iconhover : authIconHover}">Giriş Yap</span>
+            </div>
+            <div v-else id="user-profile-container">
+                <img id="user-profile-avatar" :src="getBookPictureUrl(getUserProfileGetter.pictureUrl)" alt="">
+                <span>{{ getUserProfileGetter.firstName }}</span>
             </div>
         </div>
     </div>
@@ -47,7 +51,8 @@
 </template>
 
 <script>
-import CategoriesComponent from '@/pages/user/components/CategoriesComponent'
+import CategoriesComponent from '@/pages/user/components/CategoriesComponent';
+import { mapGetters,mapActions } from 'vuex';
 
 export default{
     components:{
@@ -64,8 +69,18 @@ export default{
             basketItems : 0,
         }
     },
+
+    computed:{
+        ...mapGetters({
+            getUserId : "AuthModule/_getUserId",
+            getUserProfileGetter : "AuthModule/_getUserProfile",
+        })
+    },
     
     methods:{
+        ...mapActions({
+            getUserProfile : "AuthModule/getUserProfile",
+        }),
         authsDisplayAndHover(hover){
             this.locationLeft =  this.$refs.authContainerRef.getBoundingClientRect().left;
             this.authIconHover = hover;
@@ -75,11 +90,27 @@ export default{
             this.$router.push({
                 name : pageName,
             });
+        },
+        getBookPictureUrl(pictureUrl){
+            if(pictureUrl==null)
+                return require("@/assets/no-user-image.jpg");
+            return pictureUrl;
+        },
+    },
+
+    watch:{
+        getUserId(newValue,oldValue){
+            if(newValue != 0)
+                this.getUserProfile(this.getUserId);
+
+            if(newValue != oldValue && newValue != 0)
+                this.getUserProfile(this.getUserId);
         }
     },
 
-    created(){
-        console.log()
+    mounted(){
+        if(this.getUserId != 0)
+            this.getUserProfile(this.getUserId);
     }
 }
 </script>
@@ -135,16 +166,45 @@ export default{
         border-radius: 0 5px 5px 0 ;
     }
 
-    #auths-login-container{
-        height: 100%;
-        width: 16%;
+    #user-profile-container{
         display: flex;
-        justify-content: space-between;
+        height: 100%;
+        width: 20%;
+        justify-content:space-between ;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    #user-profile-container span{
+        user-select: none;
+        color: orange;
+        margin-left: 3px;
+        font-size: 20px;
+    }
+
+    #user-profile-avatar{
+        width: 45px;
+        height: 45px;
+        background-color: green;
+        object-fit: cover;
+        margin-right: 5px;
+        border-radius: 50%;
+        border: 1px solid #F39C12;
+    }
+
+    #auths-login-user-profile-container{
+        height: 100%;
+        width: 20%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         align-items:  center;
     }
 
-    #auths-login-container .bracket{
-        width: 2px;
+    #auths-login-user-profile-container .bracket{
+        margin-left: 15px;
+        margin-right: 15px;
+        width: 1.5px;
         height: 60px;
         border-radius: 2px;
         background-color: orange;
@@ -180,8 +240,7 @@ export default{
         font-size: 35px;
     }
 
-    #cart-container span,
-    #auths-container span{
+    #cart-container span{
         user-select: none;
         margin-left: 3px;
         font-size: 15px;
@@ -199,6 +258,12 @@ export default{
         align-items: center;
         justify-content: center;
         height: 100%;
+    }
+
+    #auths-container span{
+        display: inline-block;
+
+        width: 80px;
     }
 
     #auths-container i{

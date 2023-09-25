@@ -13,7 +13,7 @@ const routes = [
     },
     {
         name : "LoginPage",
-        path: "/giriş",
+        path: "/giris",
         component : () => import("@/pages/user/login_page/LoginPage")
     },
     {

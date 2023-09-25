@@ -39,7 +39,7 @@ export default {
         ...mapGetters({
             getRegisteredUserMail : "AuthModule/_getRegisteredUserMail",
             getUserId : "AuthModule/_getUserId",
-        })
+        }),
     },
 
     methods:{
@@ -86,10 +86,13 @@ export default {
             this.mailComfirmCodeValidator();
             
             if(this.getUserId == 0)
-            this.verifyMailComfirmCode({
-                mail : this.getRegisteredUserMail,
-                code : this.mailComfirmCode
-            });
+                this.verifyMailComfirmCode({
+                    mail : this.getRegisteredUserMail,
+                    code : this.mailComfirmCode
+                });
+            
+            if(this.getUserId != 0)
+                navigateTo("HomePage");
         }
     },
 

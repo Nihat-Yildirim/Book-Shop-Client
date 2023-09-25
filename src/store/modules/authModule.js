@@ -5,7 +5,7 @@ import createPersistedState from "vuex-persistedstate";
 const AuthModule = {
     plugins : [createPersistedState({
         key :"AuthModuleKey",
-        paths : ["registeredUserEmail","refreshToken","accessToken","userId"],
+        paths : ["registeredUserEmail","refreshToken","accessToken","userId","userProfile"],
         overwrite : true
     })],
 
@@ -15,8 +15,10 @@ const AuthModule = {
         registeredUserEmail : "",
         userRegisterSuccesResult : false,
         userRegisterMessageResult : null,
+        loginSuccessResult:false,
         refreshToken : null,
         accessToken : null,
+        userProfile : null,
         userId: 0,
     },
 
@@ -24,7 +26,9 @@ const AuthModule = {
         _getUserRegisterSuccesResult : (state) => state.userRegisterSuccesResult,
         _getUserRegisterMessageResult : (state) => state.userRegisterMessageResult,
         _getRegisteredUserMail : (state) => state.registeredUserEmail,
-        _getUserId : (state) => state.userId
+        _getLoginSuccessResult : (state) => state.loginSuccessResult,
+        _getUserProfile : (state) => state.userProfile,
+        _getUserId : (state) => state.userId,
     },
 
     mutations:{
@@ -33,6 +37,8 @@ const AuthModule = {
         setRegisteredUserEmail : (state,mail) => state.registeredUserEmail = mail,
         setRefreshToken : (state,refreshToken) => state.refreshToken = refreshToken,
         setAccessToken : (state,accessToken) => state.accessToken = accessToken,
+        setUserProfile : (state,userProfile) => state.userProfile = userProfile,
+        setLoginSuccessResult : (state,successResult) => state.loginSuccessResult = successResult,
         setUserId : (state,userId) => state.userId = userId,
     },
 
@@ -56,6 +62,21 @@ const AuthModule = {
                 context.commit('setUserId',response.data.userId);
                 context.commit('setAccessToken',response.data.token.accessToken);
                 context.commit('setRefreshToken',response.data.token.refreshToken);
+            })
+            .catch(error => console.log(error));
+        },
+        async getUserProfile(context,userId){
+            await UserService.getUserProfile(userId)
+            .then(response => context.commit('setUserProfile',response.data))
+            .catch(error => console.log(error));
+        },
+        async login(context,loginParams){
+            await AuthenticationService.login(loginParams)
+            .then(response => {
+                context.commit('setUserId',response.data.userId);
+                context.commit('setRefreshToken',response.data.token.refreshToken);
+                context.commit('setAccessToken',response.data.token.accessToken);
+                context.commit('setLoginSuccessResult',response.success);
             })
             .catch(error => console.log(error));
         }

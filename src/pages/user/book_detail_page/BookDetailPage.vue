@@ -1,6 +1,6 @@
 <template>
     <HeaderComponent/>
-    <div id="book-detail-page-container">
+    <div v-if="selectedBook" id="book-detail-page-container">
         <div id="book-detail-top">
             <div id="book-detail-img" @mousemove="bookDetailImgNavButton = true" @mouseleave="bookDetailImgNavButton = false">
                 <i @click="bookDetailNavButtonPrev" @mousemove="bookDetailImgNavButton = true" :class="{'book-detail-picture-button-visible' : bookDetailImgNavButton}" class="bi bi-chevron-left book-detail-picture-nav-button" id="book-detail-picture-pre"></i>
@@ -98,7 +98,7 @@
                 </div>
             </div>
         </div>
-        <div id="book-detail-bottom">
+        <div v-if="selectedAuthor" id="book-detail-bottom">
             <div id="book-detail-comments">
 
             </div>

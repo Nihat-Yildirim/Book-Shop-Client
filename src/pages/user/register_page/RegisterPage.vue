@@ -92,7 +92,6 @@ export default{
             }
 
             if(!this.userMail.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)){
-                console.log("Çaıştır")
                 this.invalidUserMail = true;
                 return;
             }
@@ -138,7 +137,6 @@ export default{
                 });
 
             if(this.getUserRegisterSuccessResult){
-                console.log("test yazıldı")
                 this.$store.commit('AuthModule/setRegisteredUserEmail',this.userMail);
                 this.navigateTo("MailComfirmPage");
             }
@@ -270,7 +268,6 @@ export default{
         align-items: center;
         width: 100%;
         height: 35px;
- 
     }
 
     #have-any-account span:first-child{

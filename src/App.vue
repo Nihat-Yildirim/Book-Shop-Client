@@ -11,10 +11,8 @@ export default{
       getAllCategory : "CategoryModule/getAll",
     })
   },
-
   created(){
     this.getAllCategory();
   }
-
 }
 </script>
