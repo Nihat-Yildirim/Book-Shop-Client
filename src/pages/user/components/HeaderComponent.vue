@@ -6,9 +6,9 @@
             <i :class="{'search-icon-selected' : searchContainerClicked}" id="search-icon" class="bi bi-search"></i>
         </div>
         <div id="auths-login-user-profile-container">
-            <div id="cart-container" @mouseenter="cartIconHover = !cartIconHover" @mouseleave="cartIconHover = false">
+            <div ref="cartContainerRef" id="cart-container" @mouseenter="cartViewDisplayAndHover(true)" @mouseleave="cartViewDisplayAndHover(false)">
                 <div :class="{iconhover : cartIconHover}" id="cart-icon">
-                    <div><span v-if="basketItems>0" id="cart-count">1</span></div>
+                    <div><span v-if="basketItemsQuantity>0" id="cart-count">{{ basketItemsQuantity }}</span></div>
                     <i class="bi bi-cart3 icon"></i>
                 </div>
                 <span :class="{iconhover : cartIconHover}">Sepetim</span>
@@ -24,8 +24,8 @@
             </div>
         </div>
     </div>
-    <div @mousemove="authsDisplayAndHover(true)" @mouseleave="authsDisplayAndHover(false)" :style="{left : cardLocationLeft - 40 + 'px' }" v-if="authsDisplay" id="auths">
-        <div :style="{left : cardLocationLeft + 40 + 'px' }" id="triangle"></div>
+    <div @mousemove="authsDisplayAndHover(true)" @mouseleave="authsDisplayAndHover(false)" :style="{left : authLocationLeft - 40 + 'px' }" v-if="authsDisplay" id="auths">
+        <div :style="{left : authLocationLeft + 40 + 'px' }" class="triangle"></div>
         <ul>
             <li>
                 <div @click="navigateTo('LoginPage')" class="auths-button" id="login">
@@ -97,6 +97,45 @@
             </div>
         </div>
     </div>
+    <div @mousemove="cartViewDisplayAndHover(true)" @mouseleave="cartViewDisplayAndHover(false)" v-if="cardViewDisplay == true && getBasketItems && getBasketItems.length> 0" id="basket-view-popup" :style="{left : cartLocationLeft- 400 + 'px'}">
+        <div :style="{left : cartLocationLeft + 45 + 'px'}" class="triangle"></div>
+        <div id="basket-view-popup-content">
+            <div id="basket-view-popup-title">Sepetim</div>
+            <div id="basket-view-popup-basket-items">
+                <ul>
+                    <li v-for="basketItem in getBasketItems" :key="basketItem.basketItemId">
+                        <div class="basket-view-popup-basket-item">
+                            <img :src="getBookPictureUrl(basketItem.bookPictureUrl)" alt="">
+                            <div class="basket-item-explantation">
+                                <div class="basket-item-titles">
+                                    <span class="basket-item-name">{{ basketItem.bookName }}</span>
+                                    <span class="basket-item-publisher-name">{{ getSelectedPublisher(basketItem.publisherId) }}</span>
+                                </div>
+                                <div class="basket-item-quantity-and-price">
+                                    <div class="basket-item-quantity">
+                                        <span @click="decreaseBasketItemQuantity(basketItem)" class="basket-item-decrease">-</span>
+                                        <span class="basket-item-quantity">{{ basketItem.quantity }}</span>
+                                        <span @click="increaseBasketItemQuantity(basketItem)" class="basket-item-increase">+</span>
+                                        <i @click="deleteBasketItem(basketItem)" class="bi bi-trash basket-item-delete"></i>
+                                    </div>
+                                    <div class="basket-item-price">
+                                        {{ basketItem.price * basketItem.quantity }} TL 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>                    
+                </ul>
+            </div>
+            <div id="basket-view-popup-result">
+                <div id="basket-view-popup-result-total-price">
+                    <span>Toplam Tutar</span>
+                    <span>{{ totalPrice() }} TL</span>
+                </div>
+                <button id="navigate-basket">Sepete Git</button>
+            </div>
+        </div>
+    </div>
     <CategoriesComponent/>
 </template>
 
@@ -116,16 +155,18 @@ export default{
             categorySearchContainerClick : false,
             publisherSearchContainerClick : false,
             cartIconHover : false,
+            cardViewDisplay : false,
             authIconHover : false,
             authsDisplay : false,
-            cardLocationLeft : 0,
+            authLocationLeft : 0,
+            cartLocationLeft : 0,
             searchContainerLocationLeft : 0,
             searchContainerClicked : false,
             searchedCategories : [],
             searchedPublishers : [],
             searchedAuthors : [],
-            basketItems : 0,
-            searchedPattern : ""
+            basketItemsQuantity : 0,
+            searchedPattern : "",
         }
     },
 
@@ -137,18 +178,31 @@ export default{
             getAllAuthor :"AuthorModule/_getAll",
             getAllCategory : "CategoryModule/_getAll",
             getAllPublisher : "PublisherModule/_getAll",
+            getBasketItems : "BasketModule/_getSelectedBasketItems",
+            getBasketId: "BasketModule/_getSelectedBasketId",
+            getSelectedBook : "BookModule/_getSelectedBook"
         })
     },
     
     methods:{
         ...mapActions({
             getUserProfile : "AuthModule/getUserProfile",
-            getBookByNamePattern : "BookModule/getBooksByPattern"
+            getBookByNamePattern : "BookModule/getBooksByPattern",
+            getSelectedUserBasket : "BasketModule/getSelectedUserBasket",
+            addBasket : "BasketModule/addBasket",
+            deleteBasketItemAction : "BasketModule/deleteBasketItem",
+            updateBasketItem : "BasketModule/updateBasketItem",
+            getBookById : "BasketModule/getBookById",
         }),
         authsDisplayAndHover(hover){
-            this.cardLocationLeft =  this.$refs.authContainerRef.getBoundingClientRect().left;
+            this.authLocationLeft=  this.$refs.authContainerRef.getBoundingClientRect().left;
             this.authIconHover = hover;
             this.authsDisplay = hover;
+        },
+        cartViewDisplayAndHover(hover){
+            this.cartLocationLeft = this.$refs.cartContainerRef.getBoundingClientRect().left;
+            this.cartIconHover = hover;
+            this.cardViewDisplay = hover;
         },
         searchContainerClickedMethod(){
             this.searchContainerClicked = true
@@ -160,8 +214,8 @@ export default{
             });
         },
         getBookPictureUrl(pictureUrl){
-            if(pictureUrl==null)
-                return require("@/assets/no-user-image.jpg");
+            if(pictureUrl=="")
+                return require("@/assets/no-image-available.jpg");
             return pictureUrl;
         },
         ignoreSearchPopUpElement(){
@@ -221,6 +275,13 @@ export default{
                 this.searchPublisher(regex);
                 this.searchBook(pattern);
             }
+
+            if(pattern == ""){
+                this.searchedCategories = [];
+                this.searchedPublishers = [];
+                this.searchedAuthors = [];
+                this.searchBook(pattern);
+            }
         },
         searchResultClick(book){
             this.$store.state.BookModule.selectedBookId = book.id;
@@ -230,6 +291,44 @@ export default{
                     bookName : book.name.toLowerCase().replace(/\s+/g, "-")
                 }
             });
+        },
+        deleteBasketItem(basketItem){
+            this.deleteBasketItemAction({
+                userId : this.getUserId,
+                basketId : this.getBasketId,
+                basketItemId : basketItem.basketItemId
+            });
+            this.getSelectedUserBasket(this.getUserId);
+        },
+        totalPrice(){
+            let price = 0;
+            this.getBasketItems.forEach(basketItem => {
+                price += basketItem.quantity * basketItem.price
+            });
+            return price;
+        },
+        getSelectedPublisher(publisherId){
+            var selectedPublisher = this.getAllPublisher.find(publisher => publisher.id == publisherId);
+            return selectedPublisher.name;
+        },
+        decreaseBasketItemQuantity(basketItem){
+            if(basketItem.quantity -1 != 0)
+                this.updateBasketItem({
+                    userId : this.getUserId,
+                    basketId : this.getBasketId,
+                    basketItemId : basketItem.basketItemId,
+                    quantity : basketItem.quantity -1
+                });
+        },
+        increaseBasketItemQuantity(basketItem){
+            this.getBookById(basketItem.bookId);
+            if(basketItem.quantity + 1 != this.getSelectedBook.stock)
+                this.updateBasketItem({
+                    userId : this.getUserId,
+                    basketId : this.getBasketId,
+                    basketItemId : basketItem.basketItemId,
+                    quantity : basketItem.quantity +1
+                });
         }
     },
 
@@ -242,7 +341,25 @@ export default{
         },
         searchedPattern(newValue,oldValue){
             this.search(newValue);
-        }
+        },
+        getUserProfileGetter(){
+            if(this.getUserProfileGetter != null && this.getUserId != 0)
+                if(this.getUserProfileGetter.basketId == 0)
+                    this.addBasket(this.getUserId);
+                else
+                    this.getSelectedUserBasket(this.getUserId);
+        },
+        getBasketItems(){
+            this.basketItemsQuantity = 0;
+            this.getBasketItems.forEach(basketItem => {
+                this.basketItemsQuantity += basketItem.quantity;
+            });
+        },
+        getBookPictureUrl(pictureUrl){
+            if(pictureUrls==null)
+                return require("@/assets/no-image-available.jpg");
+            return pictureUrls;
+        },
     },
 
     updated(){
@@ -430,6 +547,7 @@ export default{
         background-color: orange;
     }
 
+    /* basket start*/
     #cart-container{
         cursor: pointer;
         display: flex;
@@ -471,6 +589,166 @@ export default{
         color: orange;
         transform-origin: 500ms color;
     }
+    
+    #basket-view-popup{
+        padding: 10px;
+        border: 0.1rem solid #F8F9F9;
+        top: 75px;
+        width: 500px;
+        min-height: 150px;
+        z-index: 200;
+        border-radius: 5px;
+        position: fixed;
+        background-color: #fefefe;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    }
+
+    #basket-view-popup-title{
+        font-size: 18px;
+        color: orange;
+        border-bottom: 1.5px solid #EAEDED;
+        height: 30px;
+    }
+
+    #basket-view-popup-basket-items{
+        overflow-y:auto;
+        min-height: 80px;
+        max-height: 250px;
+    }
+
+    #basket-view-popup-basket-items .basket-view-popup-basket-item:last-child{
+        border-bottom: none;
+    }
+
+    .basket-view-popup-basket-item{
+        cursor: pointer;
+        background-color: #fefefe;
+        width: 100%;
+        height: 85px;
+        border-bottom: 2px solid #EAEDED;
+    }
+
+    .basket-view-popup-basket-item:hover{
+        background-color: #F8F9F9;
+        border-radius: 3px;
+    }
+
+    .basket-view-popup-basket-item{
+        padding: 5px 10px 5px 10px;
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        align-items: center;
+    }
+
+    .basket-view-popup-basket-item img{
+        width: 55px;
+        height: 75px;
+        object-fit: cover;
+        border: 1.5px solid #EAECEE;
+        margin-right: 10px;
+    }
+
+    .basket-item-explantation{
+        height: 70%;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }   
+
+    .basket-item-titles{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .basket-item-name{
+        color: orange;
+        font-size: 19px;
+        margin-bottom: 0.5px;
+    }
+
+    .basket-item-publisher-name{
+        font-size: 15px;
+        color: #F5B041;
+    }
+
+    .basket-item-quantity-and-price{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .basket-item-quantity{
+        display: flex;
+    }
+
+    .basket-item-decrease,
+    .basket-item-increase{
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        border-radius: 3px;
+        background-color: #E5E7E9;
+        font-size: 15px;
+    }
+
+    .basket-item-increase{
+        margin-right: 10px;
+    }
+
+    .basket-item-quantity{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        min-width: 25px;
+    }
+
+    .basket-item-delete:hover{
+        color: #E74C3C;
+    }
+
+    .basket-item-price{
+        color: orange;
+        text-align: right;
+        margin-top: 10px;
+        font-size: 20px;
+    }
+
+    #basket-view-popup-result{
+        height: 50px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1.5px solid #EAECEE;
+    }
+
+    #basket-view-popup-result-total-price span:first-child{
+        font-size: 18px;
+        color: #F5B041;
+        margin-right: 10px;
+    }
+
+    #basket-view-popup-result-total-price span:last-child{
+        font-size: 20px;
+        color: #F5B041;
+    }
+
+    #navigate-basket{
+        margin-top: 7px;
+        cursor: pointer;
+        width: 100px;
+        height: 30px;
+        border-radius: 5px;
+        border: 2px solid #EAEDED;
+        color:#17202A ;
+    }
+
+    /* basket end */
 
     #auths-container{
         cursor: pointer;
@@ -514,7 +792,7 @@ export default{
         z-index: 200;
     }
 
-    #triangle{
+    .triangle{
         position: fixed;
         top: 61px;
         width: 0;

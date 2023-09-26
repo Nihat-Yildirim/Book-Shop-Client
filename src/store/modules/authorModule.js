@@ -1,13 +1,6 @@
 import AuthorService from "@/services/authorService";
-import createPersistedState from "vuex-persistedstate";
 
 const AuthorModule = {
-
-    plugins : [createPersistedState({
-        key : "BookModuleKey",
-        paths : ["selectedAuthor"],
-    })],
-
     namespaced : true,
 
     state : {

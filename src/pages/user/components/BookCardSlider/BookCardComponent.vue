@@ -1,5 +1,5 @@
 <template>
-    <div @click="navigateBookDetail(bookData)" class="book-card">
+    <div @click="navigateBookDetail($event,bookData)" class="book-card">
         <div class="book-card-content">
             <div class="book-card-content-above">
                 <img class="book-card-content-img" :src="getBookPictureUrl(bookData.pictureUrls)" :alt="(bookData.bookName + ' Picture')">
@@ -10,7 +10,7 @@
                     <span class="book-card-book-price">{{ bookData.price }} TL</span>
                 </div>
                 <div class="book-card-button-container">
-                    <button class="book-card-button">Sepete Ekle</button>
+                    <button @click="addBasketItem(bookData)" class="book-card-button">Sepete Ekle</button>
                 </div>
             </div>
         </div>
@@ -18,17 +18,34 @@
 </template>
 
 <script>
+import { mapGetters,mapActions } from 'vuex';
 
 export default{
     props: ["bookData"],
 
+    computed:{
+        ...mapGetters({
+            getSelectedBasketItems: "BasketModule/_getSelectedBasketItems",
+            getBasketId :"BasketModule/_getSelectedBasketId",
+            getUserId : "AuthModule/_getUserId",
+            getAddedBasketItemSuccessResult : "BasketModule/_getAddedBasketItemSuccessResult",
+        }),
+    },
+
     methods:{
+        ...mapActions({
+            addBasketItemAction : "BasketModule/addBasketItem",
+            getSelectedUserBasket : "BasketModule/getSelectedUserBasket"
+        }),
         getBookPictureUrl(pictureUrls){
             if(pictureUrls[0]==null)
                 return require("@/assets/no-image-available.jpg");
             return pictureUrls[0];
         },
-        navigateBookDetail(bookData){
+        navigateBookDetail(event,bookData){
+            if(event.srcElement.className == "book-card-button")
+                return;
+
             this.$router.push({
                 name : "BookDetailPage",
                 params : {
@@ -36,6 +53,20 @@ export default{
                 }
             });
             this.$store.state.BookModule.selectedBookId = bookData.id;
+        },
+        addBasketItem(bookData){
+            let index = 0;
+            if(this.getSelectedBasketItems)
+                index = this.getSelectedBasketItems.findIndex((basketItem) => {return basketItem.bookId == bookData.id});
+            
+            if(index == -1 && this.getUserId != 0){
+                this.addBasketItemAction({
+                    userId : this.getUserId,
+                    basketId : this.getBasketId, 
+                    bookId : bookData.id,
+                    quantity : 1 
+                });
+            } 
         }
     }
 }

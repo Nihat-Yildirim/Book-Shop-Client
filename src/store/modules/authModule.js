@@ -1,14 +1,7 @@
 import AuthenticationService from "@/services/authenticationService";
 import UserService from "@/services/userService";
-import createPersistedState from "vuex-persistedstate";
 
 const AuthModule = {
-    plugins : [createPersistedState({
-        key :"AuthModuleKey",
-        paths : ["registeredUserEmail","refreshToken","accessToken","userId","userProfile"],
-        overwrite : true
-    })],
-
     namespaced : true,
 
     state:{

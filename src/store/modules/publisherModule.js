@@ -1,5 +1,4 @@
 import PublisherService from "@/services/publisherService";
-
 const PublisherModule = {
     namespaced : true,
 

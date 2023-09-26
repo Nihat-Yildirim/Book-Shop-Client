@@ -7,17 +7,37 @@ const BasketService = {
     },
 
     async addBasketItem(addedBasketItem){
-        var result = await appAxios.post("Baskets/AddBasketItem",addedBasketItem);
+        var result = await appAxios.post("Baskets/AddBasketItem",null,{
+            params:{
+                UserId : addedBasketItem.userId,
+                BasketId : addedBasketItem.basketId,
+                bookId :addedBasketItem.bookId,
+                quantity : addedBasketItem.quantity,
+            }
+        });
         return result.data;
     },
 
     async updateBasketItem(updatedBasketItem){
-        var result = await appAxios.put("Baskets/UpdateBasketItem",updatedBasketItem);
+        var result = await appAxios.put("Baskets/UpdateBasketItem",null,{
+            params:{
+                UserId: updatedBasketItem.userId,
+                BasketId : updatedBasketItem.basketId,
+                BasketItemId : updatedBasketItem.basketItemId,
+                Quantity : updatedBasketItem.quantity,
+            }
+        });
         return result.data;
     },
 
     async deleteBasketItem(deletedBasketItem){
-        var result = await appAxios.delete("Baskets/DeleteBasketItem",deletedBasketItem);
+        var result = await appAxios.delete("Baskets/DeleteBasketItem",{
+            params:{
+                UserId: deletedBasketItem.userId,
+                BasketId : deletedBasketItem.basketId,
+                BasketItemId : deletedBasketItem.basketItemId
+            }
+        });
         return result.data;
     },
 

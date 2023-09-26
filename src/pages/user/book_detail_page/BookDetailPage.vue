@@ -47,7 +47,7 @@
                                 <span>TL</span>
                             </div>
                             <div id="book-detail-buying-button-content">
-                                <button id="book-detail-buying-button">Sepete Ekle</button>
+                                <button @click="addBasket" id="book-detail-buying-button">Sepete Ekle</button>
                             </div>
                             <div id="book-detail-book-stock-comment-quantity">
                                 <div class="book-detail-quantity" id="book-detail-book-stock-quantity">
@@ -61,7 +61,7 @@
                             </div>
                             <div id="book-detail-buying-book-totals">
                                 <span>Bu üründen {{ selectedBookOrderCountByBookId.count == null ? '0' :selectedBookOrderCountByBookId.count }} adet satılmıştır</span>
-                                <span>Bu ürün {{ selectedBookBasketCount.count == null ? '0' :selectedBookBasketCount.count }} kişi sepete eklemiştir</span>
+                                <span>Bu ürün {{ selectedBookBasketCount}} kişi sepete eklemiştir</span>
                             </div>
                         </div>
                         <div id="book-detail-explanation">
@@ -157,8 +157,11 @@ export default{
             selectedBookCommentCount : "CommentModule/_getSelectedBookCommentCount",
             selectedBookBasketCount : "BasketModule/_getSelectedBookBasketCount",
             selectedBookOrderCountByBookId : "OrderModule/_getSelectedBookOrderCount",
+            getSelectedBasketItems: "BasketModule/_getSelectedBasketItems",
             selectedAuthor : "AuthorModule/_getSelectedAuthor",
             selectedBookId : "BookModule/_getSelectedBookId",
+            getBasketId :"BasketModule/_getSelectedBasketId",
+            getUserId : "AuthModule/_getUserId",
         }),
     },
 
@@ -168,7 +171,8 @@ export default{
             getCommentCountByBookId : "CommentModule/getCommentCountByBookId",
             getSelectedBookBasketCount : "BasketModule/getSelectedBookBasketCount",
             getOrderCountByBookId : "OrderModule/getOrderCountByBookId",
-            getAuthorById : "AuthorModule/getById"
+            getAuthorById : "AuthorModule/getById",
+            addBasketItemAction : "BasketModule/addBasketItem",
         }),
         bookDetailNavButtonNext(){
             this.bookDetailCardWrapper.slideNext();
@@ -191,6 +195,20 @@ export default{
             this.getCommentCountByBookId(this.selectedBookId);
             this.getSelectedBookBasketCount(this.selectedBookId);
             this.getOrderCountByBookId(this.selectedBookId);
+        },
+        addBasket(){
+            let index = 0;
+            if(this.getSelectedBasketItems)
+                index = this.getSelectedBasketItems.findIndex((basketItem) => {return basketItem.bookId == this.selectedBook.id});
+            
+            if(index == -1 && this.getUserId != 0){
+                this.addBasketItemAction({
+                    userId : this.getUserId,
+                    basketId : this.getBasketId, 
+                    bookId : this.selectedBook.id,
+                    quantity : 1 
+                });
+            }
         }
     },
 

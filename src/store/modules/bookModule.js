@@ -1,13 +1,6 @@
 import BookService from "@/services/bookService";
-import createPersistedState from "vuex-persistedstate";
 
 const BookModule = {
-
-    plugins : [createPersistedState({
-        key : "BookModuleKey",
-        paths : ["selectedBookId"],
-    })],
-
     namespaced : true,
 
     state:{
