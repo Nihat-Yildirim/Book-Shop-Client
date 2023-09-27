@@ -203,6 +203,11 @@ export default{
             this.cartLocationLeft = this.$refs.cartContainerRef.getBoundingClientRect().left;
             this.cartIconHover = hover;
             this.cardViewDisplay = hover;
+
+            if(this.getUserProfileGetter != null && this.getUserId != 0)
+                if(this.getUserProfileGetter.basketId == 0)
+                    this.addBasket(this.getUserId);
+
         },
         searchContainerClickedMethod(){
             this.searchContainerClicked = true
@@ -343,11 +348,7 @@ export default{
             this.search(newValue);
         },
         getUserProfileGetter(){
-            if(this.getUserProfileGetter != null && this.getUserId != 0)
-                if(this.getUserProfileGetter.basketId == 0)
-                    this.addBasket(this.getUserId);
-                else
-                    this.getSelectedUserBasket(this.getUserId);
+            this.getSelectedUserBasket(this.getUserId);
         },
         getBasketItems(){
             this.basketItemsQuantity = 0;

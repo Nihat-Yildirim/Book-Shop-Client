@@ -12,7 +12,7 @@ import AuthModule from "./modules/authModule";
 const store = createStore({
     plugins : [createPersistedState({
         key : "BookShopKey",
-        paths : ["BookModule","AuthorModule","AuthModule","BasketModule","PublisherModule"],
+        paths : ["BookModule","AuthorModule","AuthModule","BasketModule","PublisherModule","CommentModule"],
         overwrites : true
     })],
 

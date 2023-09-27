@@ -98,11 +98,89 @@
                 </div>
             </div>
         </div>
-        <div v-if="selectedAuthor" id="book-detail-bottom">
-            <div id="book-detail-comments">
-
+        <div  id="book-detail-bottom">
+            <div id="book-detail-bottom-left">
+                <div id="book-detail-comment-child">
+                    <div v-if="selectedBookUserComment == null && getUserId != 0" class="book-detail-user-comment">
+                        <div class="book-detail-user-comment-titles">
+                            <span>Yorum Yap</span>
+                            <span>{{ comment.length }}/1000</span>
+                        </div>
+                        <div class="book-detail-user-write-comment">
+                            <textarea maxlength="1000" v-model="comment" spellcheck="false"></textarea>
+                        </div>
+                        <div id="book-detail-user-add-comment-button">
+                            <button @click="addComment">Gönder</button>
+                        </div>
+                    </div>
+                    <div v-else-if="selectedBookUserComment != null && getUserId != 0" class="book-detail-user-comment">
+                        <div class="book-detail-user-comment-titles">
+                            <span>Yorumum</span>
+                            <span>{{ comment.length }}/1000</span>
+                        </div>
+                        <div class="book-detail-user-write-comment">
+                            <textarea maxlength="1000" v-model="comment" spellcheck="false" ></textarea>
+                        </div>
+                        <div id="book-detail-user-bottom-container">
+                            <div id="my-comment-rating">
+                                <div id="my-comment-ratings-like">
+                                    <i class="bi bi-hand-thumbs-up"></i>
+                                    <span>{{ selectedBookUserComment.totalUsefulRating }}</span>
+                                </div>
+                                <div id="my-comment-ratings-dislike">
+                                    <i class="bi bi-hand-thumbs-down"></i>
+                                    <span>{{ selectedBookUserComment.totalNotUsefulRating }}</span>
+                                </div>
+                            </div>
+                            <button @click="deleteComment">Sil</button>
+                        </div>
+                    </div>
+                    <div id="book-detail-other-user-comments">
+                    <div id="book-detail-comments-contents">
+                        <ul>
+                            <li v-for="comment in getFilteredCommentDatas()" :key="comment.commentId">
+                                <div class="book-detail-comment">
+                                    <div class="book-detail-comment-header">
+                                        <div class="book-detail-comment-left">
+                                            <img :src="getUserPictureUrl(comment.userPictureUrl)" alt="">
+                                            <span>{{ comment.userName }}</span>
+                                        </div>
+                                        <div class="book-detail-comment-right">
+                                            <span>{{ new Date(comment.createdDate).toLocaleDateString() }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="book-detail-other-user-comment">
+                                        <p>{{ comment.comment }}</p>
+                                    </div>
+                                    <div class="book-detail-comment-rating">
+                                        <div class="book-detail-comment-like-rating">
+                                            <i v-if="comment.selectedCommentRating != 1 || comment.selectedCommentRating == 0" @click="like(comment.commentId,comment.selectedCommentRating)" class="bi bi-hand-thumbs-up"></i>
+                                            <i @click="deleteCommentRating(comment.commentId)" v-if="comment.selectedCommentRating == 1" class="bi bi-hand-thumbs-up-fill"></i>
+                                            <span>{{ comment.totalUsefulRating }}</span>
+                                        </div>
+                                        <div class="book-detail-comment-dislike-rating">
+                                            <i v-if="comment.selectedCommentRating != 2 || comment.selectedCommentRating == 0" @click="dislike(comment.commentId,comment.selectedCommentRating)" class="bi bi-hand-thumbs-down"></i>
+                                            <i @click="deleteCommentRating(comment.commentId)" v-if="comment.selectedCommentRating == 2" class="bi bi-hand-thumbs-down-fill"></i>
+                                            <span>{{ comment.totalNotUsefulRating }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    </div>
+                    <div id="book-detail-other-user-comments-pagination">
+                        <div>Gösterilen 1 ile 5 arası, toplam {{ this.getSelectedBookComments.comments.length }}</div>
+                        <div id="other-user-comments-pagination">
+                            <i class="bi bi-chevron-left"></i>
+                            <span>10/20</span>
+                            <i class="bi bi-chevron-right"></i>
+                        </div>
+                        <div id="other-user-comments-pagination-last">Son</div>
+                    </div>
+                </div>
             </div>
-            <div id="book-detail-author-detail">
+            <div v-if="selectedAuthor" id="book-detail-author-detail">
                 <div id="book-detail-author-detail-img">
                     <img :src="getBookPictureUrl(selectedAuthor.pictureUrl)" alt="">
                 </div>
@@ -136,6 +214,7 @@ export default{
             bookDetailCardWrapper : null,
             bookDetialChangeHeight : false,
             updated : false,
+            comment : ""
         }
     },
 
@@ -162,6 +241,9 @@ export default{
             selectedBookId : "BookModule/_getSelectedBookId",
             getBasketId :"BasketModule/_getSelectedBasketId",
             getUserId : "AuthModule/_getUserId",
+            selectedBookUserComment : "CommentModule/_getSelectedBookUserComment",
+            getSelectedBookComments : "CommentModule/_getSelectedBookComments",
+            selectedCommentRating : "CommentModule/_getSelectedCommentRating",
         }),
     },
 
@@ -173,6 +255,14 @@ export default{
             getOrderCountByBookId : "OrderModule/getOrderCountByBookId",
             getAuthorById : "AuthorModule/getById",
             addBasketItemAction : "BasketModule/addBasketItem",
+            addCommentAction : "CommentModule/addComment", 
+            getSelectedBookUserComment : "CommentModule/getSelectedBookUserComment",
+            deleteUserComment : "CommentModule/deleteUserComment",
+            getSelectedBookCommentsAction : "CommentModule/getSelectedBookComments",
+            addCommentRating : "CommentModule/addCommentRating",
+            getSelectedCommentRatingAction : "CommentModule/getSelectedCommentRating",
+            updateCommentRating  :"CommentModule/updateCommentRating",
+            deleteUserCommentRatingAction : "CommentModule/deleteCommentRating"
         }),
         bookDetailNavButtonNext(){
             this.bookDetailCardWrapper.slideNext();
@@ -190,11 +280,24 @@ export default{
                 return require("@/assets/no-image-available.jpg");
             return pictureUrl;
         },
+        getUserPictureUrl(pictureUrl){
+            if(pictureUrl=="")
+                return require("@/assets/no-user-image.jpg");
+            return pictureUrl;
+        },
         getDatas(){
             this.getBookById(this.selectedBookId);
             this.getCommentCountByBookId(this.selectedBookId);
             this.getSelectedBookBasketCount(this.selectedBookId);
             this.getOrderCountByBookId(this.selectedBookId);
+            this.getSelectedBookUserComment({
+                bookId : this.selectedBookId,
+                userId : this.getUserId});
+            this.getSelectedBookCommentsAction({
+                page : 0,
+                size : 50,
+                bookId : this.selectedBookId,
+                userId : this.getUserId});
         },
         addBasket(){
             let index = 0;
@@ -209,17 +312,91 @@ export default{
                     quantity : 1 
                 });
             }
+        },
+        addComment(){
+            if(this.getUserId == 0)
+                return;
+            if(this.comment.length == 0 || this.comment == "")
+                return;
+            if(this.selectedBookId == 0)
+                return;
+
+            this.addCommentAction({
+                userId : this.getUserId,
+                comment : this.comment,
+                bookId : this.selectedBookId, 
+            });
+        },
+        deleteComment(){
+            this.deleteUserComment({
+                userId : this.getUserId,
+                bookId : this.selectedBookId,
+                commentId : this.selectedBookUserComment.commentId
+            });
+            this.comment = "";
+        },
+        getFilteredCommentDatas(){
+            if(this.getSelectedBookComments.comments == null)
+                return null;
+            return this.getSelectedBookComments.comments.filter(comment => comment.userId != this.getUserId);
+        },
+        like(commentId,selectedCommentRating){
+            if(this.getUserId != 0 && selectedCommentRating == 0)
+                this.addCommentRating({
+                    commentId : commentId,
+                    userId : this.getUserId,
+                    useful : true,
+                    bookId :this.selectedBookId
+                });
+            
+            if(selectedCommentRating == 2)
+                this.updateCommentRating({
+                    userId : this.getUserId,
+                    bookId : this.selectedBookId,
+                    useful : true,
+                    commentId : commentId,
+                })
+        },
+        dislike(commentId,selectedCommentRating){
+            if(this.getUserId != 0 && selectedCommentRating == 0)
+                this.addCommentRating({
+                    commentId : commentId,
+                    userId : this.getUserId,
+                    useful : false,
+                    bookId :this.selectedBookId
+                });
+
+            if(selectedCommentRating == 1)
+                this.updateCommentRating({
+                    userId : this.getUserId,
+                    bookId : this.selectedBookId,
+                    useful : false,
+                    commentId : commentId,
+                })
+        },
+        deleteCommentRating(commentId){
+            this.deleteUserCommentRatingAction({
+                commentId : commentId,
+                userId : this.getUserId,
+                commentRatingId : this.selectedCommentRating.commentRatingId,
+                bookId : this.selectedBookId,
+            })
         }
     },
 
     watch:{
         selectedBook(){
-            this.bookDetailCardWrapper = document.querySelector("#book-detail-card-wrapper").swiper;
+            if(this.selectedBook)
+                this.bookDetailCardWrapper = document.querySelector("#book-detail-card-wrapper").swiper;
             this.getAuthorById(this.selectedBook.authors[0].id);
         },
         selectedBookId(){
             this.getDatas();    
-        }
+        },
+        selectedBookUserComment(){
+            if(this.selectedBookUserComment != null )
+                this.comment = this.selectedBookUserComment.comment
+        } 
     },
 
     created(){
@@ -308,18 +485,258 @@ export default{
         width: 100%;
         display: flex;
         flex-direction: row;
-        height: 600px;
+        height: auto;
     }
 
-    #book-detail-comments{
+    /* book comment start */
+    #book-detail-bottom-left{
         width: 75%;
-        height: 100%;
+        height: auto;
         margin-right: 20px;
+    }
+
+    #book-detail-comment-child{
+        padding: 15px 15px 5px 15px;
+        height: auto;
         background-color: #f8f9f9;
         border: 2px solid #D5DBDB;
         border-radius: 5px;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     }
+
+    .book-detail-user-comment{
+        display: flex;
+        flex-direction: column;
+        height: 150px;
+    }
+
+    .book-detail-user-comment-titles{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        border-bottom: 1px solid #D5DBDB;
+        margin-bottom: 5px;
+    }
+
+    .book-detail-user-comment-titles span:first-child{
+        font-size: 19px;
+        color: orange;
+    }
+
+    .book-detail-user-comment-titles span:last-child{
+        margin-top: 5px;
+        font-size: 15px;
+        color: orange;
+    }
+
+    .book-detail-user-write-comment{
+        border-radius: 4px;
+        border: 1.5px solid #E5E8E8;
+        width: 100%;
+        height: 80px;
+        margin-bottom: 5px;
+    }
+
+    .book-detail-user-write-comment textarea{
+        border: none;
+        color: #17202A;
+        font-size: 15px;
+        padding:7px;
+        background-color: #F2F4F4;
+        outline: none;
+        border-radius: 4px;
+        width: 100%;
+        height: 100%;
+        resize: none;
+    }
+
+    #book-detail-user-add-comment-button{
+        display: flex;
+        justify-content: right;
+        border-bottom: 1.5px solid #E5E8E8;
+    }
+
+    #book-detail-user-add-comment-button button{
+        cursor: pointer;
+        width: 75px;
+        height: 23px;
+        border-radius: 4px;
+        background-color: orange;
+        color: #fff;
+        border: 1px solid #D35400;
+        transition: all 250ms;
+        opacity: 1;
+        margin-bottom: 5px;
+    }
+
+    #book-detail-user-add-comment-button button:hover{
+        opacity: 0.8;
+        transition: all 250ms;
+    }
+
+    #book-detail-user-bottom-container{
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1.5px solid #E5E8E8;
+        height: 28px;
+    }
+
+    #my-comment-rating{
+        display: flex;
+    }
+
+    #my-comment-ratings-like{
+        margin-right: 10px;
+        color: #229954;
+    }
+
+    #my-comment-ratings-dislike{
+        color: #CB4335;
+    }
+
+    #book-detail-user-bottom-container button{
+        cursor: pointer;
+        width: 75px;
+        height: 23px;
+        border-radius: 4px;
+        background-color: #CB4335;
+        color: #fff;
+        border: 1px solid #A93226;
+        transition: all 250ms;
+        opacity: 1;
+        margin-bottom: 4px;
+    }
+
+    #book-detail-user-bottom-container button:hover{
+        opacity: 0.8;
+        transition: all 250ms;
+    }
+
+    #book-detail-other-user-comments{
+        height: auto;
+    }
+
+    #book-detail-comments-contents li:last-child .book-detail-comment:last-child{
+        border: none !important;
+        margin-bottom: 15px;
+    }
+
+    .book-detail-comment-header{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+
+    .book-detail-comment-left{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .book-detail-comment-left img{
+        height: 40px;
+        width: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+        border: 1.5px solid orange;
+    }
+
+    .book-detail-comment-left span{
+        display: block;
+        color: orange;
+        font-size: 20px;
+    }
+
+    .book-detail-comment-right{
+        display: flex;
+        align-items: center;
+    }
+
+    .book-detail-comment-right span{
+        font-size: 14px;
+        color: #F4D03F;
+    }
+
+    .book-detail-comment{
+        padding: 5px 10px 3px 10px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-height: 120px;
+        border-bottom: 1.5px solid #E5E8E8;
+    }
+
+    .book-detail-other-user-comment{
+        padding-left: 40px;
+    }
+
+    .book-detail-other-user-comment p{
+        max-width: 820px;
+    }
+
+    .book-detail-comment-rating{
+        display: flex;
+        flex-direction: row;
+        justify-content: right;
+    }
+
+    .book-detail-comment-like-rating{
+        margin-right: 10px;
+        color: #229954;
+    }
+
+    .book-detail-comment-like-rating i,
+    .book-detail-comment-dislike-rating i{
+        font-size: 18px;
+        cursor: pointer;
+        margin-right: 1px;
+    }
+
+    .book-detail-comment-dislike-rating{
+        color: #CB4335;
+    }
+
+    #book-detail-other-user-comments-pagination{
+        bottom: 5px;
+        display: flex;
+        align-items: center;
+        border-top:1.5px solid #E5E8E8;
+        height: 30px;
+        width: 100%;
+    }
+
+    #book-detail-other-user-comments-pagination  div:first-child{
+        font-size: 15px;
+        margin-right: 510px;
+    }
+
+    #other-user-comments-pagination{
+        margin-right: 15px;
+    }
+
+    #other-user-comments-pagination span{
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    #other-user-comments-pagination i{
+        cursor: pointer;
+    }
+
+    #other-user-comments-pagination i:hover{
+        color: orange;
+    }
+
+    #other-user-comments-pagination-last{
+        cursor: pointer;
+        user-select: none;
+    } 
+
+    #other-user-comments-pagination-last:hover{
+        color: orange;
+    }
+    /* book comment end */
 
     /*Book Detail Author*/
     #book-detail-author-detail{
@@ -328,7 +745,7 @@ export default{
         flex-direction: column;
         justify-content: start;
         align-items: center;
-        min-height: 600px;
+        height: 600px !important;
         height: auto;
         width: 25%;
         background-color: #f8f9f9;

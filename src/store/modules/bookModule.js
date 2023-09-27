@@ -35,7 +35,6 @@ const BookModule = {
             .catch(error => console.log(error));
         },
         async getBooksByPattern(context,params){
-            console.log(params)
             await BookService.getBooksByNamePattern(params)
             .then(response => context.commit('setSearchBooks',response.data))
             .catch(error => console.log(error));

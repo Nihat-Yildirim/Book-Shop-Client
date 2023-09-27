@@ -34,7 +34,6 @@ const BasketModule = {
             .catch(error => console.log(error));
         },
         async getSelectedUserBasket(context,selectedUserId){
-            console.log("çalıştı");
             await BasketService.getBasketByUserId(selectedUserId)
             .then(response => {
                 context.commit('setSelectedBasketItems',response.data.basketItems);
