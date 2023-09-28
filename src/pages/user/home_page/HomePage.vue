@@ -19,8 +19,8 @@
                     
                 </div>
                 <div id="last-content">
-                    <BookCardSliderComponent :datas="books" sliderTitle="Çok Yorum Alan Kitaplar"/>
-                    <BookCardSliderComponent :datas="books" sliderTitle="Sepete En Çok Eklenenler"/>
+                    <BookCardSliderComponent v-if="booksByCommentCount" :datas="booksByCommentCount" sliderTitle="Çok Yorum Alan Kitaplar"/>
+                    <BookCardSliderComponent v-if="booksByBasketCount" :datas="booksByBasketCount" sliderTitle="Sepete En Çok Eklenenler"/>
                     <BookCardSliderComponent :datas="worldClassics" sliderTitle="Dünya Klasikleri"/>
                 </div>
             </div>
@@ -43,78 +43,6 @@ import { mapActions,mapGetters } from 'vuex';
 export default {
     data(){
         return{
-            books:[
-                {
-                    id:1,
-                    name :"Kitap 1",
-                    authorName : "Yazar 1",
-                    price : "123 TL",
-                    pictureUrls : []
-                },
-                {
-                    id:2,
-                    name :"Kitap 2",
-                    authorName : "Yazar 2",
-                    price : "123 TL",
-                    pictureUrls : []
-                },
-                {
-                    id:3,
-                    name :"Kitap 3",
-                    authorName : "Yazar 3",
-                    price : "123 TL",
-                    pictureUrls : []
-                },
-                {
-                    id:4,
-                    name :"Kitap 4",
-                    authorName : "Yazar 4",
-                    price : "123 TL",
-                    pictureUrls : []
-                },
-                {
-                    id:6,
-                    name :"Kitap 6",
-                    authorName : "Yazar 6",
-                    price : "123 TL",
-                    pictureUrls : []
-                },
-                {
-                    id:7,
-                    name :"Kitap 7",
-                    authorName : "Yazar 7",
-                    price : "123 TL",
-                    pictureUrls : []
-                },
-                {
-                    id:8,
-                    name :"Kitap 8",
-                    authorName : "Yazar 8",
-                    price : "123 TL",
-                    pictureUrls : []
-                },
-                {
-                    id:9,
-                    name :"Kitap 9",
-                    authorName : "Yazar 9",
-                    price : "123 TL",
-                    pictureUrls : []
-                },
-                {
-                    id:10,
-                    name :"Kitap 10",
-                    authorName : "Yazar 10",
-                    price : "123 TL",
-                    pictureUrls : []
-                },
-                {
-                    id:11,
-                    name :"Kitap 11",
-                    authorName : "Yazar 11",
-                    price : "123 TL",
-                    pictureUrls : []
-                },
-            ]
         }
     },
     
@@ -131,7 +59,9 @@ export default {
         ...mapGetters({
             allAuthors : "AuthorModule/_getAll",
             allPublisher : "PublisherModule/_getAll",
-            worldClassics : "BookModule/_getWorldClassics"
+            worldClassics : "BookModule/_getWorldClassics",
+            booksByCommentCount : "BookModule/_getBooksByCommentCount",
+            booksByBasketCount : "BookModule/_getBooksByBasketCount",
         }),
     },
 
@@ -139,7 +69,9 @@ export default {
         ...mapActions({
             getAllAuthor : "AuthorModule/getAll",
             getAllPublisher : "PublisherModule/getAll",
-            getWorldClassics : "BookModule/getWorldClassics"
+            getWorldClassics : "BookModule/getWorldClassics",
+            getBooksByCommentCount : "BookModule/getBooksByCommentCount",
+            getBooksByBasketCount : "BookModule/getBooksByBasketCount",
         })
     },
 
@@ -147,6 +79,14 @@ export default {
         this.getAllPublisher();
         this.getAllAuthor();
         this.getWorldClassics({categoryId : 10,page : 0,size : 20});
+        this.getBooksByCommentCount({
+            page : 0,
+            size : 20
+        });
+        this.getBooksByBasketCount({
+            page : 0,
+            size : 30
+        });
     }
 }
 </script>

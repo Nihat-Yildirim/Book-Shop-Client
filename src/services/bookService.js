@@ -99,8 +99,18 @@ const BookService = {
         return result.data;
     },
 
-    async GetBooksByCategoryId(params){
+    async getBooksByCategoryId(params){
         const result = await appAxios.get(`/Books/GetBooksByCategoryId?Id=${params.categoryId}&Page=${params.page}&Size=${params.size}`);
+        return result.data;
+    },
+
+    async getBooksByCommentCount(pagination){
+        const result = await appAxios.get(`/Books/GetBooksByCommentCount?Page=${pagination.page}&Size=${pagination.size}`);
+        return result.data;
+    },
+
+    async getBooksByBasketCount(pagination){
+        const result = await appAxios.get(`/Books/GetBooksByBasketCount?Page=${pagination.page}&Size=${pagination.size}`);
         return result.data;
     }
 }

@@ -56,7 +56,7 @@
                                 </div>  
                                 <div class="book-detail-quantity" id="book-detail-book-comment-quantity">
                                     <i class="bi bi-chat-dots" id="comment-icon"></i>
-                                    <span id="comment-quentity-value">{{ selectedBookCommentCount.count == null? '0' : selectedBookCommentCount.count }}</span>
+                                    <span id="comment-quentity-value">{{ this.getSelectedBookComments == null? '0' : this.getSelectedBookComments.comments.length }}</span>
                                 </div> 
                             </div>
                             <div id="book-detail-buying-book-totals">
