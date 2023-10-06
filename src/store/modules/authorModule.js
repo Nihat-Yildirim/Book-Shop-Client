@@ -5,7 +5,8 @@ const AuthorModule = {
 
     state : {
         authors : [],
-        selectedAuthor : null
+        selectedAuthor : null,
+        selectedAuthorId : 0,
     },
 
     mutations:{
@@ -16,6 +17,7 @@ const AuthorModule = {
     getters :{
         _getAll : (state) => state.authors,
         _getSelectedAuthor : (state) => state.selectedAuthor,
+        _getSelectedAuthorId : (state) => state.selectedAuthorId,
     },
 
     actions:{

@@ -17,7 +17,7 @@
                 pauseOnMouseEnter : true
             }" class="circle-card-wrapper" :class="('circle-card-wrapper-' + name)">
                 <SwiperSlide v-for="data in datas" :key="data.id">
-                    <div class="circle-card">
+                    <div @click="navigatePublisherDetail(data)" class="circle-card">
                        <img :src="getDataPictureUrl(data.pictureUrl)" :alt="data.name">
                     </div>
                 </SwiperSlide>
@@ -57,6 +57,27 @@ export default{
             if(pictureUrl == null)
                 return require("@/assets/no-image-available.jpg");
             return pictureUrl;
+        },
+        navigatePublisherDetail(data){
+            if(this.uiName =="Yayıncılar"){
+                this.$store.state.PublisherModule.selectedPublisherId = data.id;
+                this.$router.push({
+                    name : "PublisherDetailPage",
+                    params : {
+                        publisherName : data.name.toLowerCase().replace(/\s+/g, "-")
+                    }
+                });
+            }
+
+            if(this.uiName == "Yazarlar"){
+                this.$store.state.AuthorModule.selectedAuthorId = data.id,
+                this.$router.push({
+                    name : "AuthorDetailPage",
+                    params : {
+                        authorName : data.name.toLowerCase().replace(/\s+/g, "-")
+                    }
+                });
+            }
         }
     },
 

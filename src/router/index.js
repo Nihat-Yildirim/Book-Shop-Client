@@ -30,6 +30,16 @@ const routes = [
         name : "SearchPage",
         path : "/arama/:searchParameter",
         component : () => import("@/pages/user/search_page/SearchPage")
+    },
+    {
+        name: "PublisherDetailPage",
+        path : "/yayinci/:publisherName",
+        component : () => import ("@/pages/user/publisher_detail_page/PublisherDetailPage")
+    },
+    {
+        name : "AuthorDetailPage",
+        path : "/yazar/:authorName",
+        component : () => import("@/pages/user/author_detail_page/AuthorDetailPage")
     }
 ];
 

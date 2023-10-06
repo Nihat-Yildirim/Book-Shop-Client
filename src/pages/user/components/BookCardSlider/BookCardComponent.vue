@@ -28,7 +28,6 @@ export default{
             getSelectedBasketItems: "BasketModule/_getSelectedBasketItems",
             getBasketId :"BasketModule/_getSelectedBasketId",
             getUserId : "AuthModule/_getUserId",
-            getAddedBasketItemSuccessResult : "BasketModule/_getAddedBasketItemSuccessResult",
         }),
     },
 

@@ -34,9 +34,7 @@
                 <div id="book-detail-bottom-contents">
                     <div :class="{'book-detail-desc-content-height' : bookDetialChangeHeight }" id="book-detail-desc-content">
                         <div :class="{'book-detail-desc-content-height' : bookDetialChangeHeight }" id="book-detail-desc-content-container">
-                            <p id="book-detail-desc-content-value">
-                                {{ selectedBook.description }}
-                            </p>
+                            <p id="book-detail-desc-content-value">{{ selectedBook.description }}</p>
                         </div>
                         <button @click="bookDetialChangeHeight = !bookDetialChangeHeight" v-if="300<bookDetailDescContentValueHeight" id="book-detail-desc-more-button">{{ bookDetialChangeHeight ? 'Gizle' : 'Devamını Oku..' }}</button>
                     </div>
@@ -61,7 +59,7 @@
                             </div>
                             <div id="book-detail-buying-book-totals">
                                 <span>Bu üründen {{ selectedBookOrderCountByBookId.count == null ? '0' :selectedBookOrderCountByBookId.count }} adet satılmıştır</span>
-                                <span>Bu ürün {{ selectedBookBasketCount}} kişi sepete eklemiştir</span>
+                                <span>Bu ürünü {{ selectedBookBasketCount}} kişi sepete eklemiştir</span>
                             </div>
                         </div>
                         <div id="book-detail-explanation">

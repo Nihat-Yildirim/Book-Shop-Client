@@ -47,7 +47,7 @@
             </li>
         </ul>
     </div>
-    <div v-if="searchContainerClicked" id="search-view-popup" :style="{left : searchContainerLocationLeft+'px'}">
+    <div v-if="searchContainerClicked" id="search-view-popup" :style="{left : searchContainerLocationLeft+'px',width : searchContainerWidth+'px'}">
         <div v-if="getSearchedBooks.length != 0" class="results-container"  id="search-result-books">
             <div class="results-container">
                 <div :class="{'clicked-header' : bookSearchContainerClick}" @click="bookSearchContainerClick = !bookSearchContainerClick" class="search-results-container-header">
@@ -161,6 +161,7 @@ export default{
             authLocationLeft : 0,
             cartLocationLeft : 0,
             searchContainerLocationLeft : 0,
+            searchContainerWidth : 0,
             searchContainerClicked : false,
             searchedCategories : [],
             searchedPublishers : [],
@@ -212,6 +213,7 @@ export default{
         searchContainerClickedMethod(){
             this.searchContainerClicked = true
             this.searchContainerLocationLeft = this.$refs.searchContainerRef.getBoundingClientRect().left;
+            this.searchContainerWidth = this.$refs.searchContainerRef.offsetWidth;
         },
         navigateTo(pageName){
             this.$router.push({
@@ -365,6 +367,7 @@ export default{
 
     updated(){
         this.ignoreSearchPopUpElement();
+        this.searchContainerWidth = this.$refs.searchContainerRef.offsetWidth;
     },
 
     mounted(){
@@ -452,7 +455,6 @@ export default{
         position: absolute;
         background-color: #F8F9F9;
         top: 63px;
-        width:572.3px;
         height: auto;
         min-height: 100px;
         max-height: 550px;

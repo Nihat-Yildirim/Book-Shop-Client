@@ -95,7 +95,7 @@ export default {
     #home-page-container{
         height: 100%;
         width: 100%;
-        max-width: 1510px;
+        max-width: 1518px;
     }
 
     #home-page-content{

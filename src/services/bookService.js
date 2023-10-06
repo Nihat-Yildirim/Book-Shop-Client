@@ -79,8 +79,14 @@ const BookService = {
         return result.data;
     },
 
-    async getBooksByPublisherId(pagination,publisherId){
-        const result = await appAxios.get(`Books/GetBooksByPublisherId?Id=${publisherId}&Page=${pagination.Page}&Size=${pagination.Size}`);
+    async getBooksByPublisherId(params){
+        const result = await appAxios.get(`Books/GetBooksByPublisherId`,{
+            params:{
+                Id : params.id,
+                Page : params.page,
+                Size : params.size
+            }
+        });
         return result.data;
     },
 
