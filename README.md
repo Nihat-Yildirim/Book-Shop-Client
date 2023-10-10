@@ -1,4 +1,4 @@
-# Book-Shop-Client
+![Author-Detail-Page](https://github.com/Nihat-Yildirim/Book-Shop-Client/assets/124464907/56c3e82d-65be-4b27-b4a4-d36665ed9470)# Book-Shop-Client
 Bu proje Book-Shop-API projesinin client projesidir ve geliştirilmeye devam edilmektedir.
 
 ## Home Page
@@ -20,7 +20,10 @@ Bu proje Book-Shop-API projesinin client projesidir ve geliştirilmeye devam edi
 ## Publisher Detail Page
 ![Publisher-Detail-Page](https://github.com/Nihat-Yildirim/Book-Shop-Client/assets/124464907/b917aa00-de94-4c0b-8105-ea90e583d175)
 
-### Components
+## Author Detail Page
+![Author-Detail-Page](https://github.com/Nihat-Yildirim/Book-Shop-Client/assets/124464907/68b3f97f-50d1-4bad-8c61-067f3b2eb9e4)
+
+## Components
 ### Search Component
 ![Search](https://github.com/Nihat-Yildirim/Book-Shop-Client/assets/124464907/31734f0c-1b4e-4885-95cb-cde38c476654)
 ### Basket Component
