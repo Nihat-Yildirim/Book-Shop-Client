@@ -80,8 +80,6 @@ export default{
             this.$store.state.BookModule.selectedBookId = bookData.id;
         },
         addBasketItem(bookData){
-            console.log(bookData);
-            console.log(this.getSelectedBasketItems);
             let index = 0;
             if(this.getSelectedBasketItems)
                 index = this.getSelectedBasketItems.findIndex((basketItem) => {return basketItem.bookId == bookData.id});

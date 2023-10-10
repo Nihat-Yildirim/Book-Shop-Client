@@ -186,10 +186,8 @@
                     <span>{{this.selectedAuthor.name}}</span>
                 </div>
                 <div id="book-detail-author-detail-autobiography">
-                    <p id="book-detail-author-detail-autobiography-content">
-                        {{ this.selectedAuthor.autobiography }}
-                    </p>
-                    <button>Devamını Oku...</button>
+                    <p id="book-detail-author-detail-autobiography-content">{{ this.selectedAuthor.autobiography }}</p>
+                    <button @click="navigateAuthorDetailPage(selectedAuthor)">Detay ...</button>
                 </div>
             </div>
         </div>  
@@ -379,6 +377,15 @@ export default{
                 commentRatingId : this.selectedCommentRating.commentRatingId,
                 bookId : this.selectedBookId,
             })
+        },
+        navigateAuthorDetailPage(author){
+            this.$store.state.AuthorModule.selectedAuthorId = author.id;
+            this.$router.push({
+                name : "AuthorDetailPage",
+                params : {
+                    authorName : author.name.toLowerCase().replace(/\s+/g, "-")
+                }
+            });
         }
     },
 
@@ -790,12 +797,10 @@ export default{
         font-size: 16px;
         padding: 2px;
         width: 100%;
-        background-color: #229954;
         height: 275px ;
         margin-bottom: 10px;
         overflow: hidden;
-        background-color: #EAEDED;
-        border: 2px solid #D5DBDB;
+        text-align: center;
         border-radius: 2px;
     }
 

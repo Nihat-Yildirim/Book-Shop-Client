@@ -56,7 +56,7 @@
                     <i v-show="bookSearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon"></i>
                 </div>
                 <ul v-if="bookSearchContainerClick == false">
-                    <li @click="searchResultClick(book)" v-for="book in getSearchedBooks" class="search-result">{{ book.name }}</li>
+                    <li @click="navigateBookDetailPage(book)" v-for="book in getSearchedBooks" class="search-result">{{ book.name }}</li>
                 </ul>
             </div>
         </div>
@@ -68,7 +68,7 @@
                     <i v-show="authorSearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon"></i>
                 </div>
                 <ul v-if="authorSearchContainerClick == false">
-                    <li v-for="searchedAuthor in searchedAuthors" class="search-result">{{ searchedAuthor.name }}</li>
+                    <li @click="navigateAuthorDetailPage(searchedAuthor)" v-for="searchedAuthor in searchedAuthors" class="search-result">{{ searchedAuthor.name }}</li>
                 </ul>
             </div>
         </div>
@@ -92,7 +92,7 @@
                     <i v-show="publisherSearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon"></i>
                 </div>
                 <ul v-if="publisherSearchContainerClick == false">
-                    <li v-for="searchedPublisher in searchedPublishers" class="search-result">{{ searchedPublisher.name }}</li>
+                    <li @click="navigatePublisherDetailPage(searchedPublisher)" v-for="searchedPublisher in searchedPublishers" class="search-result">{{ searchedPublisher.name }}</li>
                 </ul>
             </div>
         </div>
@@ -290,7 +290,7 @@ export default{
                 this.searchBook(pattern);
             }
         },
-        searchResultClick(book){
+        navigateBookDetailPage(book){
             this.$store.state.BookModule.selectedBookId = book.id;
             this.$router.push({
                 name : "BookDetailPage",
@@ -336,6 +336,24 @@ export default{
                     basketItemId : basketItem.basketItemId,
                     quantity : basketItem.quantity +1
                 });
+        },
+        navigatePublisherDetailPage(publisher){
+            this.$store.state.PublisherModule.selectedPublisherId = publisher.id;
+            this.$router.push({
+                name : "PublisherDetailPage",
+                params : {
+                    publisherName : publisher.name.toLowerCase().replace(/\s+/g, "-")
+                }
+            });    
+        },
+        navigateAuthorDetailPage(author){
+            this.$store.state.AuthorModule.selectedAuthorId = author.id;
+            this.$router.push({
+                name : "AuthorDetailPage",
+                params : {
+                    authorName : author.name.toLowerCase().replace(/\s+/g, "-")
+                }
+            });
         }
     },
 
