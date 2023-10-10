@@ -1,4 +1,4 @@
-![Author-Detail-Page](https://github.com/Nihat-Yildirim/Book-Shop-Client/assets/124464907/56c3e82d-65be-4b27-b4a4-d36665ed9470)# Book-Shop-Client
+# Book-Shop-Client
 Bu proje Book-Shop-API projesinin client projesidir ve geliştirilmeye devam edilmektedir.
 
 ## Home Page
