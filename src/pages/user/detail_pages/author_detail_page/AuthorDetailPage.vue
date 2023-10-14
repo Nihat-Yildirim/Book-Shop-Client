@@ -12,7 +12,7 @@
             <button v-if="authorDetialChangeHeight < 296" @click="changeHeight">{{ authorDetialChangeHeight ? 'Gizle' : 'Devamını Oku...' }}</button>
         </div>
         <div id="author-detail-page-right-container">
-            <div id="author-detail-books-detail" v-if="selectedAuthor">{{ selectedAuthor.name }} - Kitaplar</div>
+            <div id="author-detail-books-title" v-if="selectedAuthor">{{ selectedAuthor.name }} - Kitaplar</div>
             <div id="author-detail-books">
                 <div @click="navigateBookDetail($event,book)" v-for="book in getAuthorBooks" class="author-book-card" :key="book.id">
                     <div class="author-book-card-content">
@@ -230,7 +230,7 @@ export default {
         height: max-content;
     }
 
-    #author-detail-books-detail{
+    #author-detail-books-title{
         display: flex;
         font-size: 25px;
         color: orange;

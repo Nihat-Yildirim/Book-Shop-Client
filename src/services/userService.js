@@ -1,8 +1,13 @@
 import appAxios from "@/utils/appAxios";
 
 const UserService = {
-    async addUserAvatar(addedUserAvatar){
-        var result = await appAxios.post("Users/AddUserAvatar",addedUserAvatar,{
+    async addUserAvatar(params){
+        var result = await appAxios.post("Users/AddUserAvatar",
+        {
+            UserId : params.userId,
+            UserAvatar : params.userAvatar
+        },
+        {
             headers : {'Content-Type': 'multipart/form-data'}
         });
         return result.data;
@@ -13,16 +18,28 @@ const UserService = {
         return result.data;
     },
 
-    async updateUserAvatar(updatedUserAvatar){
-        var result = await appAxios.put("Users/UpdateUserAvatar",updatedUserAvatar,{
+    async updateUserAvatar(params){
+        var result = await appAxios.put("Users/UpdateUserAvatar",
+        {
+            UserId : params.userId,
+            UserAvatar : params.userAvatar
+        },
+        {
             headers : {'Content-Type': 'multipart/form-data'}
         });
 
         return  result.data;
     },
 
-    async updateUserProfile(updatedUserProfile){
-        var result = await appAxios.put("Users",updatedUserProfile);
+    async updateUserProfile(params){
+        var result = await appAxios.put("Users",null,
+        {
+            params:{
+                Id : params.id,
+                Name : params.name,
+                LastName : params.lastName
+            }
+        });
         return result.data;
     },
 

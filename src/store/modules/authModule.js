@@ -6,6 +6,7 @@ const AuthModule = {
 
     state:{
         registeredUserEmail : "",
+        updatePasswordSuccessResult : false,
         userRegisterSuccesResult : false,
         userRegisterMessageResult : null,
         loginSuccessResult:false,
@@ -18,6 +19,7 @@ const AuthModule = {
     getters:{
         _getUserRegisterSuccesResult : (state) => state.userRegisterSuccesResult,
         _getUserRegisterMessageResult : (state) => state.userRegisterMessageResult,
+        _getUpdatePasswordSuccessResult : (state) => state.updatePasswordSuccessResult,
         _getRegisteredUserMail : (state) => state.registeredUserEmail,
         _getLoginSuccessResult : (state) => state.loginSuccessResult,
         _getUserProfile : (state) => state.userProfile,
@@ -27,6 +29,7 @@ const AuthModule = {
     mutations:{
         setUserRegisterSuccesResult : (state , successResult) => state.userRegisterSuccesResult = successResult,
         setUserRegisterMessageResult : (state , messageResult) => state.userRegisterMessageResult = messageResult,
+        setUpdatePasswordSuccessResult : (state,successResult) => state.updatePasswordSuccessResult = successResult,
         setRegisteredUserEmail : (state,mail) => state.registeredUserEmail = mail,
         setRefreshToken : (state,refreshToken) => state.refreshToken = refreshToken,
         setAccessToken : (state,accessToken) => state.accessToken = accessToken,
@@ -71,6 +74,12 @@ const AuthModule = {
                 context.commit('setAccessToken',response.data.token.accessToken);
                 context.commit('setLoginSuccessResult',response.success);
             })
+            .catch(error => console.log(error));
+        },
+        async updatePassword(context,params){
+            context.commit('setUpdatePasswordSuccessResult',false);
+            await AuthenticationService.updatePassword(params)
+            .then(response => context.commit('setUpdatePasswordSuccessResult',response.success))
             .catch(error => console.log(error));
         }
     }

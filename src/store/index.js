@@ -8,6 +8,7 @@ import CommentModule from "./modules/commentModule";
 import BasketModule from "./modules/basketModule";
 import OrderModule from "./modules/orderModule";
 import AuthModule from "./modules/authModule";
+import UserModule from "./modules/userModule";
 
 const store = createStore({
     plugins : [createPersistedState({
@@ -24,7 +25,8 @@ const store = createStore({
         CommentModule,
         BasketModule,
         OrderModule,
-        AuthModule
+        AuthModule,
+        UserModule
     }
 });
 

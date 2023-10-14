@@ -1,13 +1,13 @@
 <template>
     <HeaderComponent/>
     <div id="publisher-detail-page-container">
-        <div id="publisher-detail-left-container">
-            <div v-if="selectedPublisher" id="publisher-detail-logo">
-                <img :src="getPictureUrl(selectedPublisher.pictureUrl)" alt="">
+        <div v-if="selectedPublisher" id="publisher-detail-left-container">
+            <div id="publisher-detail-logo">
+                <img :src="getPictureUrl(selectedPublisher.pictureUrl)" :alt="selectedPublisher.name + ' Logo'">
             </div>
             <div id="publisher-detail-name">{{ selectedPublisher.name }}</div>
         </div>
-        <div id="publisher-detail-right-container">
+        <div v-if="selectedPublisher && selectedPublisherBooks" id="publisher-detail-right-container">
             <div id="publisher-detail-books-title">{{ selectedPublisher.name }} - Kitaplar</div>
             <div v-if="selectedPublisherBooks" id="publisher-detail-books">
                 <div @click="navigateBookDetail($event,book)" v-for="book in selectedPublisherBooks" class="publisher-book-card" :key="book.id">
@@ -177,7 +177,7 @@ export default{
         color: orange;
         height: 40px;
         border-bottom: 1.5px solid #D5DBDB;
-        margin-bottom: 25px
+        margin-bottom: 25px;
     }
 
     #publisher-detail-books{

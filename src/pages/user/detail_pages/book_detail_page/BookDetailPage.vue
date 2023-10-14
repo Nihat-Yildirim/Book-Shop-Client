@@ -54,7 +54,7 @@
                                 </div>  
                                 <div class="book-detail-quantity" id="book-detail-book-comment-quantity">
                                     <i class="bi bi-chat-dots" id="comment-icon"></i>
-                                    <span id="comment-quentity-value">{{ this.getSelectedBookComments == null? '0' : this.getSelectedBookComments.comments.length }}</span>
+                                    <span id="comment-quentity-value">{{ this.getSelectedBookComments == null? '0' : this.getSelectedBookComments.comments == null ? '0' : this.getSelectedBookComments.comments.length }}</span>
                                 </div> 
                             </div>
                             <div id="book-detail-buying-book-totals">
@@ -102,7 +102,7 @@
                     <div v-if="selectedBookUserComment == null && getUserId != 0" class="book-detail-user-comment">
                         <div class="book-detail-user-comment-titles">
                             <span>Yorum Yap</span>
-                            <span>{{ comment.length }}/1000</span>
+                            <span>{{ comment != "" ? comment.length : 0 }}/1000</span>
                         </div>
                         <div class="book-detail-user-write-comment">
                             <textarea maxlength="1000" v-model="comment" spellcheck="false"></textarea>
@@ -114,7 +114,7 @@
                     <div v-else-if="selectedBookUserComment != null && getUserId != 0" class="book-detail-user-comment">
                         <div class="book-detail-user-comment-titles">
                             <span>Yorumum</span>
-                            <span>{{ comment.length }}/1000</span>
+                            <span>{{ comment != "" ? comment.length : 0 }}/1000</span>
                         </div>
                         <div class="book-detail-user-write-comment">
                             <textarea maxlength="1000" v-model="comment" spellcheck="false" ></textarea>
@@ -168,7 +168,7 @@
                     </div>
                     </div>
                     <div id="book-detail-other-user-comments-pagination">
-                        <div>Gösterilen 1 ile 5 arası, toplam {{ this.getSelectedBookComments.comments.length }}</div>
+                        <div>Gösterilen 1 ile 5 arası, toplam {{ this.getSelectedBookComments != null && this.getSelectedBookComments.comments != null ? this.getSelectedBookComments.comments.length : 0  }}</div>
                         <div id="other-user-comments-pagination">
                             <i class="bi bi-chevron-left"></i>
                             <span>10/20</span>
@@ -198,7 +198,7 @@
 import { Swiper , SwiperSlide  } from 'swiper/vue';
 import {Autoplay,Pagination} from 'swiper/modules';
 import { mapActions, mapGetters } from 'vuex';
-import HeaderComponent from '../components/HeaderComponent.vue';
+import HeaderComponent from '@/pages/user/components/HeaderComponent';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
@@ -374,7 +374,6 @@ export default{
             this.deleteUserCommentRatingAction({
                 commentId : commentId,
                 userId : this.getUserId,
-                commentRatingId : this.selectedCommentRating.commentRatingId,
                 bookId : this.selectedBookId,
             })
         },
@@ -391,8 +390,9 @@ export default{
 
     watch:{
         selectedBook(){
-            if(this.selectedBook)
+            if(this.selectedBook.id == this.selectedBookId && document.querySelector("#book-detail-card-wrapper") != null)
                 this.bookDetailCardWrapper = document.querySelector("#book-detail-card-wrapper").swiper;
+  
             this.getAuthorById(this.selectedBook.authors[0].id);
         },
         selectedBookId(){

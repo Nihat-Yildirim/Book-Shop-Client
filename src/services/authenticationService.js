@@ -13,6 +13,17 @@ const AuthenticationService = {
         return result.data;
     },
 
+    async updatePassword(params){
+        var result  = await appAxios.put("Authentications/UpdatePassword",null,{
+            params:{
+                UserId : params.userId,
+                NewPassword : params.newPassword,
+                OldPassword : params.oldPassword
+            }
+        });
+        return result.data;
+    },
+
     async addOtpAuthentication(addedOtpAuthenticaiton){
         var result = await appAxios.post("Authentications/AddOtpAuthentication",addedOtpAuthenticaiton);
         return result.data;

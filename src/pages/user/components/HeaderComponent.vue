@@ -18,14 +18,14 @@
                 <i :class="{iconhover : authIconHover}" class="bi bi-person"></i>
                 <span :class="{iconhover : authIconHover}">Giriş Yap</span>
             </div>
-            <div v-else id="user-profile-container">
-                <img id="user-profile-avatar" :src="getBookPictureUrl(getUserProfileGetter.pictureUrl)" alt="">
+            <div @click="navigateTo('UserInformationPage')" v-else ref="userProfileContainerRef" @mousemove="userProfileDisplayAndHover(true)" @mouseleave="userProfileDisplayAndHover(false)" id="user-profile-container">
+                <img id="user-profile-avatar" :src="getUserPictureUrl(getUserProfileGetter.pictureUrl)" :alt="getUserProfileGetter.firstName + ' Picture'">
                 <div>{{ getUserProfileGetter.firstName }}</div>
             </div>
         </div>
     </div>
     <div @mousemove="authsDisplayAndHover(true)" @mouseleave="authsDisplayAndHover(false)" :style="{left : authLocationLeft - 40 + 'px' }" v-if="authsDisplay" id="auths">
-        <div :style="{left : authLocationLeft + 40 + 'px' }" class="triangle"></div>
+        <div :style="{left : 75 + 'px' }" class="triangle"></div>
         <ul>
             <li>
                 <div @click="navigateTo('LoginPage')" class="auths-button" id="login">
@@ -98,7 +98,7 @@
         </div>
     </div>
     <div @mousemove="cartViewDisplayAndHover(true)" @mouseleave="cartViewDisplayAndHover(false)" v-if="cardViewDisplay == true && getBasketItems && getBasketItems.length> 0" id="basket-view-popup" :style="{left : cartLocationLeft- 400 + 'px'}">
-        <div :style="{left : cartLocationLeft + 45 + 'px'}" class="triangle"></div>
+        <div :style="{right : 40 + 'px'}" class="triangle"></div>
         <div id="basket-view-popup-content">
             <div id="basket-view-popup-title">Sepetim</div>
             <div id="basket-view-popup-basket-items">
@@ -136,6 +136,29 @@
             </div>
         </div>
     </div>
+    <div v-if="userProfilePopupDisplay" :style="{left : userProfilePopupLeftLocation - 85+ 'px'}" @mousemove="userProfileDisplayAndHover(true)" @mouseleave="userProfileDisplayAndHover(false)" id="user-profile-popup">
+        <div :style="{right : 28 + 'px'}" class="triangle"></div>
+        <div @click="navigateTo('UserInformationPage')" id="user-information" class="user-profile-button">
+            <i class="bi bi-person"></i>
+            <span>Kullanıcı Bilgilerim</span>
+        </div>
+        <div @click="navigateTo('UserOrderPage')" class="user-profile-button">
+            <i class="bi bi-box2"></i>
+            <span>Siparişlerim</span>
+        </div>
+        <div @click="navigateTo('UserMessagePage')" class="user-profile-button">
+            <i class="bi bi-envelope"></i>
+            <span>Mesajlarım</span>
+        </div>
+        <div @click="navigateTo('UserCommentPage')" class="user-profile-button">
+            <i class="bi bi-chat-dots"></i>
+            <span>Değerlendirmelerim</span>
+        </div>
+        <div class="user-profile-button">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Çıkış Yap</span>
+        </div>
+    </div>
     <CategoriesComponent/>
 </template>
 
@@ -160,6 +183,8 @@ export default{
             authsDisplay : false,
             authLocationLeft : 0,
             cartLocationLeft : 0,
+            userProfilePopupLeftLocation : 0,
+            userProfilePopupDisplay : false,
             searchContainerLocationLeft : 0,
             searchContainerWidth : 0,
             searchContainerClicked : false,
@@ -210,6 +235,10 @@ export default{
                     this.addBasket(this.getUserId);
 
         },
+        userProfileDisplayAndHover(hover){
+            this.userProfilePopupLeftLocation = this.$refs.userProfileContainerRef.getBoundingClientRect().left;
+            this.userProfilePopupDisplay = hover;
+        },
         searchContainerClickedMethod(){
             this.searchContainerClicked = true
             this.searchContainerLocationLeft = this.$refs.searchContainerRef.getBoundingClientRect().left;
@@ -220,6 +249,11 @@ export default{
                 name : pageName,
             });
         },
+        getUserPictureUrl(pictureUrl){
+            if(pictureUrl==null)
+                return require("@/assets/no-user-image.jpg");
+            return pictureUrl;
+        },
         getBookPictureUrl(pictureUrl){
             if(pictureUrl=="")
                 return require("@/assets/no-image-available.jpg");
@@ -229,11 +263,11 @@ export default{
             document.querySelector("#app").addEventListener("click",(e) =>{
             if(e.srcElement.id == "search-view-popup")
                 return;
-            if(e.srcElement.parentElement.id == "search-container")
+            if(e.srcElement.parentElement != null && e.srcElement.parentElement.id == "search-container")
                 return;
             if(e.srcElement.className == "search-result")
                 return;
-            if(e.srcElement.parentElement.className == "results-container")
+            if(e.srcElement.parentElement != null && e.srcElement.parentElement.className == "results-container")
                 return;
             if(e.srcElement.className == "search-results-container-header-title")
                 return;
@@ -354,7 +388,7 @@ export default{
                     authorName : author.name.toLowerCase().replace(/\s+/g, "-")
                 }
             });
-        }
+        },
     },
 
     watch:{
@@ -526,6 +560,7 @@ export default{
 
     /* search end */
 
+    /* User Profile Start */
     #user-profile-container{
         display: flex;
         height: 100%;
@@ -549,6 +584,58 @@ export default{
         border-radius: 50%;
         border: 1px solid #F39C12;
     }
+
+    #user-profile-popup{
+        padding: 10px 5px 3px 5px;
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 75px;
+        width: 205px;
+        height: 220px;
+        background-color: #fefefe;
+        border: 0.1rem solid #F8F9F9;
+        border-radius: 5px;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        z-index: 200;
+    }
+
+    .user-profile-button{
+        height: 40px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        user-select: none;
+        cursor: pointer;
+        margin-bottom: 5px;
+        border-radius: 3px;
+        padding: 3px 3px 3px 10px;
+    }
+
+    .user-profile-button .bi-person{
+        font-size: 24px;
+        margin-right: 9px;
+    }
+
+    .user-profile-button i{
+        font-size: 20px;
+        margin-right: 12px;
+    }
+
+    .user-profile-button span{
+        font-size: 15px;
+    }
+
+    #user-information{
+        padding: 3px 3px 3px 7px !important;
+    }
+
+    .user-profile-button:hover{
+        background-color: #F8C471;
+        color: #FFF;
+    }
+
+    /* User Profile End */
 
     #auths-login-user-profile-container{
         height: 100%;
@@ -619,7 +706,7 @@ export default{
         min-height: 150px;
         z-index: 200;
         border-radius: 5px;
-        position: fixed;
+        position: absolute;
         background-color: #fefefe;
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     }
@@ -781,7 +868,6 @@ export default{
 
     #auths-container span{
         display: inline-block;
-
         width: 80px;
     }
 
@@ -803,7 +889,7 @@ export default{
         display: flex;
         flex-direction: column;
         padding: 20px;
-        position: fixed;
+        position: absolute;
         border-radius: 5px;
         top: 75px;
         height: 160px;
@@ -814,13 +900,13 @@ export default{
     }
 
     .triangle{
-        position: fixed;
-        top: 61px;
+        position: absolute;
         width: 0;
         height: 0;
+        top: -15px;
         border-style: solid;
         border-width: 0 15px 15px 15px;
-        border-color: transparent transparent #F8F9F9 transparent;
+        border-color: transparent transparent #f8f9f9 transparent;
         -webkit-filter: drop-shadow(rgba(0, 0, 0, 0.24) 0px 0px 6px);
         filter: drop-shadow(rgba(0, 0, 0, 0.24) 0px 0px 6px);
     }
