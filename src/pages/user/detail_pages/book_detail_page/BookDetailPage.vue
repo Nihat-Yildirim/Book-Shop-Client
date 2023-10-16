@@ -197,7 +197,7 @@
 <script>
 import { Swiper , SwiperSlide  } from 'swiper/vue';
 import {Autoplay,Pagination} from 'swiper/modules';
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters,mapMutations } from 'vuex';
 import HeaderComponent from '@/pages/user/components/HeaderComponent';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -240,6 +240,7 @@ export default{
             selectedBookUserComment : "CommentModule/_getSelectedBookUserComment",
             getSelectedBookComments : "CommentModule/_getSelectedBookComments",
             selectedCommentRating : "CommentModule/_getSelectedCommentRating",
+            getVisitedBooks : "BookModule/_getVisitedBooks",
         }),
     },
 
@@ -259,6 +260,11 @@ export default{
             getSelectedCommentRatingAction : "CommentModule/getSelectedCommentRating",
             updateCommentRating  :"CommentModule/updateCommentRating",
             deleteUserCommentRatingAction : "CommentModule/deleteCommentRating"
+        }),
+        ...mapMutations({
+            addVisitedBook : "BookModule/addVisitedBook",
+            deleteLastVisitedBook : "BookModule/deleteLastVisitedBook",
+            updateVisitedBookViewsCount : "BookModule/updateVisitedBookViewsCount",
         }),
         bookDetailNavButtonNext(){
             this.bookDetailCardWrapper.slideNext();
@@ -385,11 +391,38 @@ export default{
                     authorName : author.name.toLowerCase().replace(/\s+/g, "-")
                 }
             });
+        },
+        addUpdateVisitedBook(){
+            const selectedVisitedBook = this.getVisitedBooks.find(visitedBook => {
+                return visitedBook.visitedBook.id == this.selectedBookId;
+            });
+
+            if(selectedVisitedBook == null){
+                if(this.getVisitedBooks.length < 40)
+                    this.addVisitedBook({
+                        visitedBook : this.selectedBook,
+                        viewsCount : 1
+                    });
+
+                if(this.getVisitedBooks.length == 40){
+                    this.addVisitedBook({
+                        visitedBook : this.selectedBook,
+                        viewsCount : 1
+                    });
+                    this.deleteLastVisitedBook();    
+                } 
+            }
+
+            if(selectedVisitedBook != null)
+                this.updateVisitedBookViewsCount(selectedVisitedBook.visitedBook.id);
         }
     },
 
     watch:{
         selectedBook(){
+            if(this.selectedBook.id == this.selectedBookId)            
+                this.addUpdateVisitedBook(); 
+
             if(this.selectedBook.id == this.selectedBookId && document.querySelector("#book-detail-card-wrapper") != null)
                 this.bookDetailCardWrapper = document.querySelector("#book-detail-card-wrapper").swiper;
   

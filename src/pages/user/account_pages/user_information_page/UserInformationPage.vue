@@ -225,9 +225,9 @@ export default{
         },
         updateUserProfile(){
             const firstNameValidatorResult = this.userFirstNameValidator();
-            const lasttNameValidatorResult = this.userLastNameValidator();
+            const lastNameValidatorResult = this.userLastNameValidator();
 
-            if(firstNameValidatorResult == false || lasttNameValidatorResult == false)
+            if(firstNameValidatorResult == false || lastNameValidatorResult == false)
                 return;
 
             this.updateUserProfileAction({
@@ -279,18 +279,20 @@ export default{
             return true; 
         },
         updatePassword(){
-            const isValidOldPassword =  this.oldPasswordValidator();
-            const isValidNewPassword = this.newPasswordValidator();
-            const isValidNewPasswordRepeat = this.newPasswordRepeatValidator();
+            if(this.oldPassword != "" || this.newPassword != "" || this.newPasswordRepeat != ""){
+                const isValidOldPassword =  this.oldPasswordValidator();
+                const isValidNewPassword = this.newPasswordValidator();
+                const isValidNewPasswordRepeat = this.newPasswordRepeatValidator();
 
-            if(!isValidOldPassword || !isValidNewPassword || !isValidNewPasswordRepeat)
-                return;
-            
-            this.updatePasswordAction({
-                userId : this.getUserId,
-                oldPassword : this.oldPassword, 
-                newPassword : this.newPassword,
-            });
+                if(!isValidOldPassword || !isValidNewPassword || !isValidNewPasswordRepeat)
+                    return;
+                
+                this.updatePasswordAction({
+                    userId : this.getUserId,
+                    oldPassword : this.oldPassword, 
+                    newPassword : this.newPassword,
+                });
+            }
         }
     },
 

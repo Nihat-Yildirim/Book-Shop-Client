@@ -12,6 +12,7 @@ const BookModule = {
         booksByBasketCount : [],
         publisherBooks : [],
         authorBooks : [],
+        visitedBooks : [],
     },
 
     mutations:{
@@ -22,6 +23,17 @@ const BookModule = {
         setBooksByBasketCount : (state,books) => state.booksByBasketCount = books,
         setPublisherBooks : (state,books) => state.publisherBooks = books,
         setAuthorBooks : (state,books) => state.authorBooks = books,
+        addVisitedBook : (state,book) => state.visitedBooks.push(book),
+        deleteLastVisitedBook : (state) => {
+            state.visitedBooks.splice(state.visitedBooks.lenght,1);
+        },
+        updateVisitedBookViewsCount : (state,bookId) => {
+            const updatedBookIndex = state.visitedBooks.findIndex(book => {
+                return book.visitedBook.id == bookId;
+            });
+            state.visitedBooks[updatedBookIndex].viewsCount++;
+            state.visitedBooks.sort((value1 , value2) => value1.viewsCount - value2.viewsCount).reverse();
+        }
     },
 
     getters :{
@@ -33,6 +45,7 @@ const BookModule = {
         _getBooksByBasketCount : (state) => state.booksByBasketCount,
         _getPublisherBooks : (state) => state.publisherBooks,
         _getAuthorBooks : (state) => state.authorBooks,
+        _getVisitedBooks : (state) => state.visitedBooks,
     },
 
     actions:{
