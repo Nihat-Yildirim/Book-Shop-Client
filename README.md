@@ -26,6 +26,8 @@ Bu proje Book-Shop-API projesinin client projesidir ve geliştirilmeye devam edi
 ## My Account Pages
 ### User Information Page
 ![User-Information-Page](https://github.com/Nihat-Yildirim/Book-Shop-Client/assets/124464907/ac41f3b6-03a9-4888-a985-4ca0d975ac59)
+### User Visited Book Page
+![User-Visited-Book-Page](https://github.com/Nihat-Yildirim/Book-Shop-Client/assets/124464907/b329fb86-99f3-4e46-bf82-48f2a9f3c42c)
 
 ## Components
 ### Search Component
