@@ -144,8 +144,8 @@ export default{
 
     #visited-books-container-title{
         padding-left: 2px;
-        margin-bottom: 10px;
-        height: 40px;
+        margin-bottom: 15px;
+        height: 30px;
         font-size: 18px;
         color: orange;
         border-bottom: 2px solid #D5DBDB;

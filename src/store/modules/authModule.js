@@ -8,7 +8,7 @@ const AuthModule = {
         registeredUserEmail : "",
         updatePasswordSuccessResult : false,
         userRegisterSuccesResult : false,
-        userRegisterMessageResult : null,
+        verifyMailComfirmCodeSuccessResult : false,
         loginSuccessResult:false,
         refreshToken : null,
         accessToken : null,
@@ -18,6 +18,7 @@ const AuthModule = {
 
     getters:{
         _getUserRegisterSuccesResult : (state) => state.userRegisterSuccesResult,
+        _getVerifyMailComfirmCodeSuccessResult : (state) => state.verifyMailComfirmCodeSuccessResult,
         _getUserRegisterMessageResult : (state) => state.userRegisterMessageResult,
         _getUpdatePasswordSuccessResult : (state) => state.updatePasswordSuccessResult,
         _getRegisteredUserMail : (state) => state.registeredUserEmail,
@@ -30,6 +31,7 @@ const AuthModule = {
         setUserRegisterSuccesResult : (state , successResult) => state.userRegisterSuccesResult = successResult,
         setUserRegisterMessageResult : (state , messageResult) => state.userRegisterMessageResult = messageResult,
         setUpdatePasswordSuccessResult : (state,successResult) => state.updatePasswordSuccessResult = successResult,
+        setVerifyMailComfirmCodeSuccessResult : (state,successResult) => state.verifyMailComfirmCodeSuccessResult = successResult,
         setRegisteredUserEmail : (state,mail) => state.registeredUserEmail = mail,
         setRefreshToken : (state,refreshToken) => state.refreshToken = refreshToken,
         setAccessToken : (state,accessToken) => state.accessToken = accessToken,
@@ -40,6 +42,7 @@ const AuthModule = {
 
     actions:{
         async userRegister(context,registeredUser){
+            context.commit('setUserRegisterSuccesResult',false);
             await AuthenticationService.userRegister(registeredUser)
             .then(response =>{
                 context.commit('setUserRegisterSuccesResult',response.success);
@@ -53,11 +56,13 @@ const AuthModule = {
             .catch(error => console.log(error));
         },
         async verifyMailComfirmCode(context,params){
+            context.commit('setVerifyMailComfirmCodeSuccessResult',false);
             await AuthenticationService.verifyMailComfirmCode(params)
             .then(response => {
                 context.commit('setUserId',response.data.userId);
                 context.commit('setAccessToken',response.data.token.accessToken);
                 context.commit('setRefreshToken',response.data.token.refreshToken);
+                context.commit('setVerifyMailComfirmCodeSuccessResult',response.success);
             })
             .catch(error => console.log(error));
         },

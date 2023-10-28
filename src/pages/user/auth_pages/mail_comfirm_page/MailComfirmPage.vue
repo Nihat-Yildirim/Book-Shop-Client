@@ -27,7 +27,8 @@ export default {
             waitTime : 0,
             invalidMailComfirmCode : false,
             newMailComfirmCodeText : "Yeni Kod",
-            mailComfirmCode : ""
+            mailComfirmCode : "",
+            verifyMailComfirmCodeButtonClick : false,
         }
     },
 
@@ -38,6 +39,7 @@ export default {
     computed:{
         ...mapGetters({
             getRegisteredUserMail : "AuthModule/_getRegisteredUserMail",
+            getVerifyMailComfirmCodeSuccessResult : "AuthModule/_getVerifyMailComfirmCodeSuccessResult",
             getUserId : "AuthModule/_getUserId",
         }),
     },
@@ -85,14 +87,13 @@ export default {
         verify(){
             this.mailComfirmCodeValidator();
             
-            if(this.getUserId == 0)
+            if(!this.verifyMailComfirmCodeButtonClick){
                 this.verifyMailComfirmCode({
                     mail : this.getRegisteredUserMail,
                     code : this.mailComfirmCode
                 });
-            
-            if(this.getUserId != 0)
-                navigateTo("HomePage");
+                this.verifyMailComfirmCodeButtonClick = true;
+            }
         }
     },
 
@@ -102,6 +103,14 @@ export default {
                 this.invalidMailComfirmCode = true;
             if(this.mailComfirmCode.length <= 6)
                 this.invalidMailComfirmCode = false;
+        },
+
+        getVerifyMailComfirmCodeSuccessResult(){
+            if(this.getVerifyMailComfirmCodeSuccessResult)
+                this.navigateTo("HomePage");
+
+            if(!this.getVerifyMailComfirmCodeSuccessResult)
+                this.verifyMailComfirmCodeButtonClick = false;    
         }
     }
 }

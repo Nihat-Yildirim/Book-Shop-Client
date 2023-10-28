@@ -395,6 +395,7 @@ export default{
         getUserId(newValue,oldValue){
             if(newValue != 0)
                 this.getUserProfile(this.getUserId);
+            
             if(newValue != oldValue && newValue != 0)
                 this.getUserProfile(this.getUserId);
         },
@@ -402,7 +403,8 @@ export default{
             this.search(newValue);
         },
         getUserProfileGetter(){
-            this.getSelectedUserBasket(this.getUserId);
+            if(this.getUserId != 0)
+                this.getSelectedUserBasket(this.getUserId);
         },
         getBasketItems(){
             this.basketItemsQuantity = 0;
@@ -411,9 +413,9 @@ export default{
             });
         },
         getBookPictureUrl(pictureUrl){
-            if(pictureUrls==null)
+            if(pictureUrl==null)
                 return require("@/assets/no-image-available.jpg");
-            return pictureUrls;
+            return pictureUrl;
         },
     },
 

@@ -54,7 +54,8 @@ export default{
             invalidUserLastName : false,
             invalidUserMail : false,
             invalidUserPassword : false,
-            invalidUserPasswordRepeat : false
+            invalidUserPasswordRepeat : false,
+            registerButtonClicked : false,
         }
     },
 
@@ -128,7 +129,7 @@ export default{
             this.invalidUserPasswordRepeat)
                 return;
 
-            if(this.getUserRegisterMessageResult == null)
+            if(!this.registerButtonClicked){
                 this.userRegister({
                 firstName : this.userName,
                 lastName : this.userLastName,
@@ -136,11 +137,22 @@ export default{
                 password : this.userPassword,
                 });
 
+                this.registerButtonClicked = true;
+            }
+        }   
+    },
+
+    watch:{
+        getUserRegisterSuccessResult(){
             if(this.getUserRegisterSuccessResult){
                 this.$store.commit('AuthModule/setRegisteredUserEmail',this.userMail);
                 this.navigateTo("MailComfirmPage");
             }
-        }   
+
+            if(!this.getUserRegisterSuccessResult){
+                this.registerButtonClicked = false
+            }
+        },
     },
 
     computed:{
