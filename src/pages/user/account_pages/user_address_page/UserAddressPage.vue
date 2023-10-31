@@ -8,7 +8,20 @@
             <div id="user-address-container">
                 <div id="user-address-container-title">Adreslerim</div>
                 <div id="user-address-content-container">
-                    <div @click="addAddressButtonClick" id="user-address-add-button">+</div>
+                    <div v-if="getUserAddresses == null" @click="addAddressButtonClick" id="user-address-add-button">+</div>
+                    <div v-for="address in getUserAddresses" class="user-address-container" :key="address.id">
+                        <div class="user-address-title">{{ address.addressTitle }}</div>
+                        <div class="user-address-content">
+                            <div class="user-address-province-district user-address-param">{{ changeAddressValueText(address.province.name) }} / {{ changeAddressValueText(address.district.name) }}</div>
+                            <div class="user-address-neighbourhood user-address-param">{{ address.neighbourhood.name.toLowerCase() }}</div>
+                            <div class="user-address-open-address user-address-param">{{ address.openAddress.toLowerCase() }}</div>
+                            <div class="user-address-description user-address-param">{{ address.description.toLowerCase() }}</div>
+                        </div>
+                        <div class="user-address-buttons">
+                            <i class="bi bi-trash user-address-delete-button"></i>
+                            <i class="bi bi-pencil user-address-update-button"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -105,6 +118,7 @@ export default{
             getSelectedDistricts : "DistrictModule/_getSelectedDistricts",
             getSelectedNeighbourhoods : "NeighbourhoodModule/_getSelectedNeighbourhoods",
             getAddAddressSuccessResult : "AddressModule/_getAddAddressSuccessResult",
+            getUserAddresses : "AddressModule/_getUserAddresses",
             getUserId : "AuthModule/_getUserId",
         }),
     },
@@ -114,6 +128,7 @@ export default{
             getDistrictsByProvinceIdAction : "DistrictModule/getDistrictByProvinceId",
             getSelectedNeighbourhoodsAction : "NeighbourhoodModule/getNeighbourhoodByDistrictId",
             addAddressAction : "AddressModule/addAddress",
+            getUserAddressesAction : "AddressModule/getUserAddresses",
         }),
         districtDropDownClick(){
             if(this.selectedProvince)
@@ -138,7 +153,10 @@ export default{
             let newText = "";
             for(let index = 0;index < text.length ;index++){
                 if(index != 0)
-                    newText += text[index].toLowerCase();
+                    if(text[index] == "I")
+                        newText += "ı"
+                    else
+                        newText += text[index].toLowerCase();
                 else
                     newText += text[index];
             }
@@ -318,6 +336,7 @@ export default{
     },
     mounted(){
         this.getAllProvinceAction();
+        this.getUserAddressesAction(this.getUserId);
     },
     updated(){
         this.hideProvinceDropDown();
@@ -369,6 +388,7 @@ export default{
     }
 
     #user-address-content-container{
+        padding-left: 15px;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
@@ -395,6 +415,87 @@ export default{
         color: orange;
         transition: all 500ms;
     }
+
+    /* User Address Container Start */
+    .user-address-container{
+        display: flex;
+        flex-direction: column;
+        width: 290px;
+        height: 255px;
+        border-radius: 5px;
+        background-color: #FBFCFC;
+        border: 2px solid #D5DBDB;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+
+    .user-address-title{
+        height: 35px;
+        border-top-right-radius: 3px;
+        border-top-left-radius: 3px;
+        border-bottom: 1.5px solid #D5DBDB;
+        background-color: #E5E7E9;
+        padding-left: 10px;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+    }
+
+    .user-address-content{
+        height: 190px;
+        padding: 10px;
+    }
+
+    .user-address-param{
+        font-size: 15px;
+        margin-bottom: 3px;
+    }
+
+    .user-address-buttons{
+        padding-top: 1px;
+        padding-left: 5px;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 25px;
+        border-top: 2px solid #D5DBDB;
+        border-bottom-left-radius: 3px;
+        border-bottom-right-radius: 3px;
+    }
+
+    .user-address-update-button,
+    .user-address-delete-button{
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        height: 22px;
+        width: 22px;
+        cursor: pointer;
+        color: #fff;
+        transition: 150ms all;
+    }
+
+    .user-address-delete-button{
+        padding-top: 2px;
+        margin-right: 7px;
+        background-color: red;
+        border: 1.4px solid #CB4335;
+    }
+
+    .user-address-update-button{
+        background-color: orange;
+        border: 1.4px solid #E67E22;
+    }
+    
+    .user-address-update-button:hover,
+    .user-address-delete-button:hover{
+        opacity: 0.7;
+        transition: 150ms all;
+    }
+
+    /* User Address Container End */
 
     /* Add-Update Adress PopUp Start*/
     #add-update-address-popup{
