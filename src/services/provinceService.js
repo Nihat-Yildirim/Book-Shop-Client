@@ -2,7 +2,7 @@ import appAxios from "@/utils/appAxios";
 
 const ProvinceService = {
     async addProvince(addedProvince){
-        const result = appAxios.post("Provinces/AddProvince",null,{
+        const result =await appAxios.post("Provinces/AddProvince",null,{
             params:{
                 Name : addedProvince.name
             }
@@ -11,7 +11,7 @@ const ProvinceService = {
     },
 
     async updateProvince(updatedProvince){
-        const result = appAxios.put("Provinces/UpdateProvince",null,{
+        const result = await appAxios.put("Provinces/UpdateProvince",null,{
             params:{
                 ProvinceId : updatedProvince.provinceId,
                 Name : updatedProvince.name
@@ -21,7 +21,7 @@ const ProvinceService = {
     },
 
     async deleteProvince(deletedProvinceId){
-        const result = appAxios.delete("Provinces/DeleteProvince",{
+        const result = await appAxios.delete("Provinces/DeleteProvince",{
             params : {
                 Id : deletedProvinceId
             }
@@ -30,12 +30,12 @@ const ProvinceService = {
     },
 
     async getAll(){
-        const result = appAxios.get("Provinces/GetAll");
+        const result = await appAxios.get("Provinces/GetAll");
         return result.data;
     },
 
     async getProvinceById(provinceId){
-        const result = appAxios.get(`Provinces/GetProvinceById?Id=${provinceId}`);
+        const result = await appAxios.get(`Provinces/GetProvinceById?Id=${provinceId}`);
         return result.data;
     }
 }

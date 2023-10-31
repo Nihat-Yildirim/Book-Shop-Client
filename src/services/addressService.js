@@ -2,7 +2,17 @@ import appAxios from "@/utils/appAxios";
 
 const AddressService = {
     async addAddress(addedAddress){
-        const result = appAxios.post("Addresses",addedAddress);
+        const result = appAxios.post("Addresses",null,{
+            params:{
+                UserId : addedAddress.userId,
+                ProvinceId : addedAddress.provinceId,
+                DistrictId : addedAddress.districtId,
+                NeighbourhoodId : addedAddress.neighbourhoodId,
+                OpenAddress : addedAddress.openAddress,
+                AddressTitle : addedAddress.addressTitle,
+                Description : addedAddress.description,
+            }
+        });
         return result.data;
     },
 

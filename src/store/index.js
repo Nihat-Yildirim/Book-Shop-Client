@@ -9,11 +9,15 @@ import BasketModule from "./modules/basketModule";
 import OrderModule from "./modules/orderModule";
 import AuthModule from "./modules/authModule";
 import UserModule from "./modules/userModule";
+import ProvinceModule from "./modules/provinceModule";
+import DistrictModule from "./modules/districtModule";
+import NeighbourhoodModule from "./modules/neighbourhoodModule";
+import AddressModule from "./modules/addressModule";
 
 const store = createStore({
     plugins : [createPersistedState({
         key : "BookShopKey",
-        paths : ["BookModule","AuthorModule","AuthModule","BasketModule","PublisherModule","CommentModule"],
+        paths : ["BookModule","AuthorModule","AuthModule","BasketModule","PublisherModule","CommentModule","ProvinceModule","DistrictModule","NeighbourhoodModule","AddressModule"],
         overwrites : true
     })],
 
@@ -26,7 +30,11 @@ const store = createStore({
         BasketModule,
         OrderModule,
         AuthModule,
-        UserModule
+        UserModule,
+        ProvinceModule,
+        DistrictModule,
+        AddressModule,
+        NeighbourhoodModule
     }
 });
 

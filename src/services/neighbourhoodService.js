@@ -2,7 +2,7 @@ import appAxios from "@/utils/appAxios";
 
 const NeighbourhoodService = {
     async addNeighbourhood(addedNeighbourhood){
-        const result = appAxios.post("Neighbourhoods/AddNeighbourhood",null,{
+        const result = await appAxios.post("Neighbourhoods/AddNeighbourhood",null,{
             params:{
                 DistrictId : addedNeighbourhood.districtId,
                 Name : addedNeighbourhood.name
@@ -12,7 +12,7 @@ const NeighbourhoodService = {
     },
 
     async updateNeighbourhood(updatedNeighbourhood){
-        const result = appAxios.post("Neighbourhoods/UpdateNeighbourhood",null,{
+        const result = await appAxios.post("Neighbourhoods/UpdateNeighbourhood",null,{
             params:{
                 Id : updatedNeighbourhood.neighbourhoodId,
                 Name : updatedNeighbourhood.name
@@ -22,7 +22,7 @@ const NeighbourhoodService = {
     },
 
     async deleteNeighbourhood(deletedNeighbourhoodId){
-        const result = appAxios.delete("Neighbourhoods/DeleteNeighbourhood",{
+        const result = await appAxios.delete("Neighbourhoods/DeleteNeighbourhood",{
             params:{
                 Id : deletedNeighbourhoodId
             }
@@ -31,17 +31,17 @@ const NeighbourhoodService = {
     },
 
     async getAllNeighbourhood(){
-        const result = appAxios.get("Neighbourhoods/GetAllNeighbourhood");
+        const result = await appAxios.get("Neighbourhoods/GetAllNeighbourhood");
         return result.data;
     },
 
     async getNeighbourhoodById(neighbourhoodId){
-        const result = appAxios.get(`Neighbourhoods/GetNeighbourhoodById?Id=${neighbourhoodId}`);
+        const result = await appAxios.get(`Neighbourhoods/GetNeighbourhoodById?Id=${neighbourhoodId}`);
         return result.data
     },
 
     async getNeighbourhoodByDistrictId(districtId){
-        const result = appAxios.get(`Neighbourhoods/GetNeighbourhoodByDistrictId?DistrictId=${districtId}`);
+        const result = await appAxios.get(`Neighbourhoods/GetNeighbourhoodByDistrictId?DistrictId=${districtId}`);
         return result.data;
     }
 }

@@ -89,7 +89,7 @@
                             </div>
                             <div class="book-explanation-content">
                                 <span class="book-explanation">Boyut:</span>
-                                <span class="book-explanation-value">{{ selectedBook.dimension}} cm</span>
+                                <span class="book-explanation-value">{{ selectedBook.dimension}}</span>
                             </div>
                         </div>
                     </div>
