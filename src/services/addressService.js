@@ -17,7 +17,29 @@ const AddressService = {
     },
 
     async updateAddress(updatedAddress){
-        const result = await appAxios.put("Addresses",updatedAddress);
+        const result = await appAxios.put("Addresses",null,{
+            params:{
+                UserId : updatedAddress.userId,
+                AddressId : updatedAddress.addressId,
+                ProvinceId : updatedAddress.provinceId,
+                DistrictId : updatedAddress.districtId,
+                NeighbourhoodId : updatedAddress.neighbourhoodId,
+                AddressTitle : updatedAddress.addressTitle,
+                Description : updatedAddress.description,
+                OpenAddress : updatedAddress.openAddress,
+                Selected : updatedAddress.selected,
+            }
+        });
+        return result.data;
+    },
+
+    async updateAddressSelectedValue(params){
+        const result = await appAxios.put("Addresses/UpdateAddressSelectedValue",null,{
+            params:{
+                UserId : params.userId,
+                AddressId : params.userId,
+            }
+        });
         return result.data;
     },
 
@@ -38,6 +60,16 @@ const AddressService = {
 
     async getUserAddress(userId){
         const result = await appAxios.get(`Addresses/GetAllAddressByUserId?UserId=${userId}`);
+        return result.data;
+    },
+    
+    async getAddressByUserAndAddressId(params){
+        const result = await appAxios.get("Addresses/GetAddressByUserAndAddressId",{
+            params:{
+                UserId : params.userId,
+                AddressId : params.addressId
+            }
+        });
         return result.data;
     }
 };

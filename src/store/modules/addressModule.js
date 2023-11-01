@@ -4,21 +4,27 @@ const AddressModule = {
     namespaced : true,
 
     state : {
+        userAddresses : [],
         addAddressSuccessResult : false,
         deleteAddressSuccessResult : false,
-        userAddresses : [],
+        updateAddressSuccessResult : false,
+        updateAddressSelectedValueSuccessResult : false,
     },
 
     getters : {
-        _getAddAddressSuccessResult : (state) => state.addAddressSuccessResult,
         _getUserAddresses : (state) => state.userAddresses,
-        _getDeleteAddressSuccessResult : (state) => state.deleteAddressSuccessResult
+        _getAddAddressSuccessResult : (state) => state.addAddressSuccessResult,
+        _getDeleteAddressSuccessResult : (state) => state.deleteAddressSuccessResult,
+        _getUpdateAddressSuccessResult : (state) => state.updateAddressSuccessResult,
+        _getUpdateAddressSelectedValueSuccessResult : (state) => state.updateAddressSelectedValueSuccessResult,
     },
 
     mutations : {
-        setAddAddressSuccessResult : (state,successResult) => state.addAddressSuccessResult = successResult,
         setUserAddresses : (state,addresses) => state.userAddresses = addresses,
+        setAddAddressSuccessResult : (state,successResult) => state.addAddressSuccessResult = successResult,
         setDeleteAddressSuccessResult : (state,successResult) => state.deleteAddressSuccessResult = successResult,
+        setUpdateAddressSuccessResult : (state,successResult) => state.updateAddressSuccessResult = successResult,
+        setUpdateAddressSelectedValueSuccessResult : (state,successResult) => state.updateAddressSelectedValueSuccessResult = successResult,
     },
 
     actions : {
@@ -37,6 +43,18 @@ const AddressModule = {
             context.commit('setDeleteAddressSuccessResult',false);
             await AddressService.deleteAddress(params)
             .then(response => context.commit('setDeleteAddressSuccessResult',response.success))
+            .catch(error => console.log(error));
+        },
+        async updateAddress(context,params){
+            context.commit('setUpdateAddressSuccessResult',false);
+            await AddressService.updateAddress(params)
+            .then(response => context.commit('setUpdateAddressSuccessResult',response.success))
+            .catch(error => console.log(error));
+        },
+        async updateAddressSelectedValue(context,params){
+            context.commit('setUpdateAddressSelectedValueSuccessResult',false);
+            await AddressService.updateAddressSelectedValue(params)
+            .then(response => context.commit('setUpdateAddressSelectedValueSuccessResult',response.success))
             .catch(error => console.log(error));
         }
     }

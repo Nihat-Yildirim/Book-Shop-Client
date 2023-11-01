@@ -22,7 +22,7 @@
                         </div>
                         <div class="user-address-buttons">
                             <i @click="deleteButtonClick(address)" class="bi bi-trash user-address-delete-button"></i>
-                            <i class="bi bi-pencil user-address-update-button"></i>
+                            <i @click="updateAddressButtonClick(address)" class="bi bi-pencil user-address-update-button"></i>
                         </div>
                     </div>
                 </div>
@@ -32,7 +32,7 @@
     <div v-if="addUpdateAddressPopUpVisibility" id="add-update-address-popup">
         <div id="add-update-address-container">
             <div id="add-update-address-title">
-                <div>{{ addUpdateAddressPopUpTitle }}</div>
+                <div>{{ addUpdateAddressPopUpParams.titleName }}</div>
                 <i @click="hideAddUpdateAddressPopPup" class="bi bi-x-lg"></i>
             </div>
             <div id="add-update-address-content">
@@ -83,7 +83,7 @@
                     </div>
                 </div>
                 <div id="add-update-address-content-bottom">
-                    <button @click="addAddress" class="address-add-button">Ekle</button>
+                    <button :class="{'address-update-button' : addUpdateAddressPopUpParams.isAddressAdd == false}" @click="addUpdateAddressButtonAction" class="address-add-button">{{ addUpdateAddressPopUpParams.buttonName }}</button>
                 </div>
             </div>
         </div>
@@ -116,7 +116,9 @@ export default{
             neighbourhoodDropDownInputClick : false,
             addButtonClicked : false,
             deleteButtonClicked : false,
-            addUpdateAddressPopUpTitle : "",
+            updateButtonClicked : false,
+            addUpdateAddressPopUpParams : null,
+            selectedAddress : null,
             selectedProvince : null,
             selectedDistrict : null,
             selectedNeighbourhood : null,
@@ -127,27 +129,30 @@ export default{
             addressTitleInputBorderClass  : "",
             openAddressInputBorderClass : "",
             deletedAddressId : null,
+            updatedAddress : null,
         }
     },
     computed:{
         ...mapGetters({
-            getAllProvince : "ProvinceModule/_getProvinces",
-            getSelectedDistricts : "DistrictModule/_getSelectedDistricts",
-            getSelectedNeighbourhoods : "NeighbourhoodModule/_getSelectedNeighbourhoods",
-            getAddAddressSuccessResult : "AddressModule/_getAddAddressSuccessResult",
-            getUserAddresses : "AddressModule/_getUserAddresses",
             getUserId : "AuthModule/_getUserId",
+            getAllProvince : "ProvinceModule/_getProvinces",
+            getUserAddresses : "AddressModule/_getUserAddresses",
+            getSelectedDistricts : "DistrictModule/_getSelectedDistricts",
+            getAddAddressSuccessResult : "AddressModule/_getAddAddressSuccessResult",
+            getSelectedNeighbourhoods : "NeighbourhoodModule/_getSelectedNeighbourhoods",
             getDeleteAddressSuccessResult : "AddressModule/_getDeleteAddressSuccessResult",
+            getUpdateAddressSuccessResult : "AddressModule/_getUpdateAddressSuccessResult",
         }),
     },
     methods:{
         ...mapActions({
             getAllProvinceAction : "ProvinceModule/getAllProvince",
             getDistrictsByProvinceIdAction : "DistrictModule/getDistrictByProvinceId",
-            getSelectedNeighbourhoodsAction : "NeighbourhoodModule/getNeighbourhoodByDistrictId",
+            getSelectedNeighbourhoodsByDistrictIdAction : "NeighbourhoodModule/getNeighbourhoodByDistrictId",
             addAddressAction : "AddressModule/addAddress",
             getUserAddressesAction : "AddressModule/getUserAddresses",
             deleteAddressAction : "AddressModule/deleteAddress",
+            updateAddressAction : "AddressModule/updateAddress",
         }),
         districtDropDownClick(){
             if(this.selectedProvince)
@@ -166,7 +171,7 @@ export default{
         districtValueClick(district){
             this.selectedDistrict = district;
             this.selectedNeighbourhood = null;
-            this.getSelectedNeighbourhoodsAction(district.id);
+            this.getSelectedNeighbourhoodsByDistrictIdAction(district.id);
         },
         changeAddressValueText(text){
             let newText = "";
@@ -183,11 +188,31 @@ export default{
         },
         addAddressButtonClick(){
             this.addUpdateAddressPopUpVisibility = true;
-            this.addUpdateAddressPopUpTitle = "Adres Ekle"
+            this.addUpdateAddressPopUpParams = {
+                buttonName : "Ekle",
+                titleName : "Adres Ekle",
+                isAddressAdd : true
+            }
         },
-        updateAddressButtonClick(){
+        updateAddressButtonClick(selectedAddress){
             this.addUpdateAddressPopUpVisibility = true;
-            this.addUpdateAddressPopUpTitle = "Adres Güncelle"
+            this.addUpdateAddressPopUpParams = {
+                buttonName : "Güncelle",
+                titleName : "Adres Güncelle",
+                isAddressAdd : false,
+            }
+            this.updatedAddress = selectedAddress;
+            if(selectedAddress){
+                this.selectedAddress = selectedAddress;
+                this.addressTitle = selectedAddress.addressTitle;
+                this.openAddress = selectedAddress.openAddress;
+                this.addressDescription = selectedAddress.description;
+                this.selectedProvince = selectedAddress.province;
+                this.selectedDistrict = selectedAddress.district;
+                this.selectedNeighbourhood = selectedAddress.neighbourhood;
+                this.getDistrictsByProvinceIdAction(selectedAddress.province.id);
+                this.getSelectedNeighbourhoodsByDistrictIdAction(selectedAddress.district.id);
+            }
         },
         hideProvinceDropDown(){
             document.querySelector("#app").addEventListener("click",(e)=>{
@@ -248,6 +273,8 @@ export default{
             this.addressDescription = "";
             this.openAddress = "";
             this.addressTitle = "";
+            this.addUpdateAddressPopUpParams = null;
+            this.selectedAddress = null;
         },
         addressDescriptionValidator(){
             if(this.addressDescription == "" || this.addressDescription == null){
@@ -289,6 +316,9 @@ export default{
             return true;    
         },
         addAddress(){
+            if(!this.addUpdateAddressPopUpParams.isAddressAdd)
+                return;
+
             const isValidAddressTitle = this.addressTitleValidator();
             const isValidAddressDescription = this.addressDescriptionValidator();
             const isValidOpenAddress = this.openAddressValidator();
@@ -335,6 +365,42 @@ export default{
                 this.deleteButtonClicked = true;
             }
         },
+        updateAddress(){
+            if(this.addUpdateAddressPopUpParams.isAddressAdd)
+                return;
+
+            const isValidAddressTitle = this.addressTitleValidator();
+            const isValidAddressDescription = this.addressDescriptionValidator();
+            const isValidOpenAddress = this.openAddressValidator();
+
+            if(!isValidOpenAddress || !isValidAddressTitle || !isValidAddressDescription)
+                return;
+
+            if(this.selectedProvince == null || this.selectedDistrict == null || this.selectedNeighbourhood == null)
+                return;
+
+            if(this.selectedProvince.id != this.selectedDistrict.provinceId || this.selectedDistrict.id != this.selectedNeighbourhood.districtId)
+                return;
+
+            if(this.getUserId == null)
+                return;
+            
+            if(!this.updateButtonClicked){
+                this.updateAddressAction({
+                    userId : this.getUserId,
+                    addressId : this.selectedAddress.id,
+                    provinceId : this.selectedProvince.id,
+                    districtId : this.selectedDistrict.id,
+                    neighbourhoodId : this.selectedNeighbourhood.id,
+                    addressTitle : this.addressTitle,
+                    description : this.addressDescription,
+                    openAddress :  this.openAddress,
+                    selected : this.selectedAddress.selected, 
+                });
+
+                this.updateButtonClicked = true;
+            }
+        },
         deleteButtonClick(address){
             this.deletedAddressId = address.id;
             this.deleteAddressPopPupVisibility = true;
@@ -342,6 +408,12 @@ export default{
         hideDeleteAddressPopUp(){
             this.deletedAddressId = null;
             this.deleteAddressPopPupVisibility = false;
+        },
+        addUpdateAddressButtonAction(){
+            if(this.addUpdateAddressPopUpParams.isAddressAdd)
+                this.addAddress()
+            else
+                this.updateAddress();
         }
     },
     watch:{
@@ -377,6 +449,13 @@ export default{
             if(this.getDeleteAddressSuccessResult){
                 this.deleteButtonClicked = false;
                 this.hideDeleteAddressPopUp();
+                this.getUserAddressesAction(this.getUserId);
+            }
+        },
+        getUpdateAddressSuccessResult(){
+            if(this.getUpdateAddressSuccessResult){
+                this.updateButtonClicked = false;
+                this.hideAddUpdateAddressPopPup();
                 this.getUserAddressesAction(this.getUserId);
             }
         }
@@ -573,8 +652,9 @@ export default{
     #add-update-address-popup{
         top: 0;
         position: absolute;
-        width: 1535px;
+        width: 1519px;
         height: 100%;
+        min-height: 840px;
         background-color: rgba(213, 213, 213, 0.3);
         display: flex;
         justify-content: center;
@@ -757,6 +837,12 @@ export default{
         cursor: pointer;
         font-size: 18px;
         color: #fff;
+        transition: 250ms all;
+    }
+
+    #add-update-address-content-bottom button:hover{
+        opacity: 0.9;
+        transition: 250ms all;
     }
 
     .address-add-button{
