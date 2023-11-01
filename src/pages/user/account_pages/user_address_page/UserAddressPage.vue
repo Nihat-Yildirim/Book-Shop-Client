@@ -6,7 +6,10 @@
         </div>
         <div id="user-address-right-container">
             <div id="user-address-container">
-                <div id="user-address-container-title">Adreslerim</div>
+                <div id="user-address-container-title">
+                    <div>Adreslerim</div>
+                    <div @click="addAddressButtonClick" v-if="getUserAddresses.length != 5 && getUserAddresses != null" id="user-address-title-add-button">Adres Ekle</div>
+                </div>
                 <div id="user-address-content-container">
                     <div v-if="getUserAddresses == null" @click="addAddressButtonClick" id="user-address-add-button">+</div>
                     <div v-for="address in getUserAddresses" class="user-address-container" :key="address.id">
@@ -18,7 +21,7 @@
                             <div class="user-address-description user-address-param">{{ address.description.toLowerCase() }}</div>
                         </div>
                         <div class="user-address-buttons">
-                            <i class="bi bi-trash user-address-delete-button"></i>
+                            <i @click="deleteButtonClick(address)" class="bi bi-trash user-address-delete-button"></i>
                             <i class="bi bi-pencil user-address-update-button"></i>
                         </div>
                     </div>
@@ -85,6 +88,17 @@
             </div>
         </div>
     </div>
+    <div v-if="deleteAddressPopPupVisibility" id="delete-address-popup">
+        <div id="delete-address-container">
+            <div id="delete-address-container-top">
+                <i @click="hideDeleteAddressPopUp" class="bi bi-x-lg"></i>
+            </div>
+            <div id="delete-address-container-bottom">
+                <div>Silmek İstediğinize Eminmisiniz ?</div>
+                <button @click="deleteAddress">Sil</button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -96,10 +110,12 @@ export default{
     data(){
         return{
             addUpdateAddressPopUpVisibility : false,
+            deleteAddressPopPupVisibility : false,
             provinceDropDownInputClick : false,
             districtDropDownInputClick : false,
             neighbourhoodDropDownInputClick : false,
-            updateButtonClicked : false,
+            addButtonClicked : false,
+            deleteButtonClicked : false,
             addUpdateAddressPopUpTitle : "",
             selectedProvince : null,
             selectedDistrict : null,
@@ -110,6 +126,7 @@ export default{
             addressDescriptionInputBorderClass : "",
             addressTitleInputBorderClass  : "",
             openAddressInputBorderClass : "",
+            deletedAddressId : null,
         }
     },
     computed:{
@@ -120,6 +137,7 @@ export default{
             getAddAddressSuccessResult : "AddressModule/_getAddAddressSuccessResult",
             getUserAddresses : "AddressModule/_getUserAddresses",
             getUserId : "AuthModule/_getUserId",
+            getDeleteAddressSuccessResult : "AddressModule/_getDeleteAddressSuccessResult",
         }),
     },
     methods:{
@@ -129,6 +147,7 @@ export default{
             getSelectedNeighbourhoodsAction : "NeighbourhoodModule/getNeighbourhoodByDistrictId",
             addAddressAction : "AddressModule/addAddress",
             getUserAddressesAction : "AddressModule/getUserAddresses",
+            deleteAddressAction : "AddressModule/deleteAddress",
         }),
         districtDropDownClick(){
             if(this.selectedProvince)
@@ -286,7 +305,7 @@ export default{
             if(this.getUserId == null)
                 return;
 
-            if(!this.updateButtonClicked){
+            if(!this.addButtonClicked){
                 this.addAddressAction({
                     userId : this.getUserId,
                     provinceId : this.selectedProvince.id,
@@ -297,8 +316,32 @@ export default{
                     description : this.addressDescription
                 });
 
-                this.updateButtonClicked = true;
+                this.addButtonClicked = true;
             }
+        },
+        deleteAddress(){
+            if(this.getUserId == null)
+                return;
+
+            if(this.deletedAddressId == null)
+                return;
+
+            if(!this.deleteButtonClicked){
+                this.deleteAddressAction({
+                    userId : this.getUserId,
+                    addressId : this.deletedAddressId
+                });
+
+                this.deleteButtonClicked = true;
+            }
+        },
+        deleteButtonClick(address){
+            this.deletedAddressId = address.id;
+            this.deleteAddressPopPupVisibility = true;
+        },
+        hideDeleteAddressPopUp(){
+            this.deletedAddressId = null;
+            this.deleteAddressPopPupVisibility = false;
         }
     },
     watch:{
@@ -324,9 +367,17 @@ export default{
                 this.addressDescriptionInputBorderClass = "address-input-error-border";
         },
         getAddAddressSuccessResult(){
-            if(this.getAddAddressSuccessResult == true){
-                this.updateButtonClicked = false;
+            if(this.getAddAddressSuccessResult){
+                this.addButtonClicked = false;
                 this.hideAddUpdateAddressPopPup();
+                this.getUserAddressesAction(this.getUserId);
+            }
+        },
+        getDeleteAddressSuccessResult(){
+            if(this.getDeleteAddressSuccessResult){
+                this.deleteButtonClicked = false;
+                this.hideDeleteAddressPopUp();
+                this.getUserAddressesAction(this.getUserId);
             }
         }
     },
@@ -379,12 +430,33 @@ export default{
     }
 
     #user-address-container-title{
+        display: flex;
+        justify-content: space-between;
         padding-left: 2px;
         margin-bottom: 15px;
         height: 30px;
         font-size: 18px;
         color: orange;
         border-bottom: 2px solid #D5DBDB;
+    }
+
+    #user-address-title-add-button{
+        cursor: pointer;
+        font-size: 14px;
+        width: 90px;
+        color: #fff;
+        background-color: #229954;
+        text-align: center;
+        border-radius: 4px;
+        padding-top: 2px;
+        height: 25px;
+        border: 1.5px solid #196F3D;
+        transition: 250ms all;
+    }
+
+    #user-address-title-add-button:hover{
+        opacity: 0.9;
+        transition: 250ms all;
     }
 
     #user-address-content-container{
@@ -701,4 +773,69 @@ export default{
         border: 1.5px solid red !important;
     }
     /* Add-Update Adress PopUp End*/
+
+    /* Delete Address PopUp Start */
+    #delete-address-popup{
+        top: 0;
+        position: absolute;
+        width: 1519px;
+        min-height: 840px;
+        height: 100%;
+        background-color: rgba(213, 213, 213, 0.3);
+        display: flex;
+        justify-content: center;
+        padding-top: 230px;
+    }
+
+    #delete-address-container{
+        background-color: #f8f9f9;
+        border: 2px solid #D5DBDB;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        border-radius: 5px;
+        width: 500px;
+        height: 230px;
+        padding: 10px;
+    }
+
+    #delete-address-container-top{
+        display: flex;
+        justify-content: right;
+        margin-bottom: 30px;
+    }
+
+    #delete-address-container-top i{
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        color: grey;
+    }
+
+    #delete-address-container-bottom{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #delete-address-container-bottom div{
+        font-size: 20px;
+        margin-bottom: 50px;
+    }
+
+    #delete-address-container-bottom button{
+        width: 125px;
+        height: 30px;
+        cursor: pointer;
+        border-radius: 5px;
+        background-color: #E74C3C;
+        color: #fff;
+        border: 1.6px solid #C0392B;
+        transition: all 250ms;
+    }
+
+    #delete-address-container-bottom button:hover{
+        opacity: 0.8;
+        transition: all 250ms;
+    }
+    /* Delete Address PopUp End */
 </style>

@@ -21,8 +21,13 @@ const AddressService = {
         return result.data;
     },
 
-    async deleteAddress(userId , addressId){
-        const result = await appAxios.delete(`Addresses?UserId=${userId}&AddressId=${addressId}`);
+    async deleteAddress(params){
+        const result = await appAxios.delete("Addresses",{
+            params:{
+                UserId : params.userId,
+                AddressId : params.addressId
+            }
+        });
         return result.data;
     },
 
