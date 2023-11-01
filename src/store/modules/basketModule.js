@@ -17,6 +17,12 @@ const BasketModule = {
         setAddedBasketSuccessResult : (state,successResult) => state.addedBasketSuccessResult = successResult,
         setAddedBasketItemSuccessResult : (state,successResult) => state.addedBasketItemSuccessResult = successResult,
         setSelectedBasketId : (state,basketId) => state.selectedBasketId = basketId,
+        clearUserAccountDatas(state){
+            state.selectedBasketId = 0;
+            state.selectedBasketItems = [];
+            state.addedBasketSuccessResult = false;
+            state.addedBasketItemSuccessResult = false;
+        }
     },
 
     getters:{

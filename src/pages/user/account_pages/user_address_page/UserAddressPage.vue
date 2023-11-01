@@ -8,10 +8,10 @@
             <div id="user-address-container">
                 <div id="user-address-container-title">
                     <div>Adreslerim</div>
-                    <div @click="addAddressButtonClick" v-if="getUserAddresses.length != 5 && getUserAddresses != null" id="user-address-title-add-button">Adres Ekle</div>
+                    <div @click="addAddressButtonClick" v-if="getUserAddresses.length != 5 && getUserAddresses.length != 0 && getUserAddresses != null" id="user-address-title-add-button">Adres Ekle</div>
                 </div>
                 <div id="user-address-content-container">
-                    <div v-if="getUserAddresses == null" @click="addAddressButtonClick" id="user-address-add-button">+</div>
+                    <div v-if="getUserAddresses.length == 0" @click="addAddressButtonClick" id="user-address-add-button">+</div>
                     <div v-for="address in getUserAddresses" class="user-address-container" :key="address.id">
                         <div class="user-address-title">{{ address.addressTitle }}</div>
                         <div class="user-address-content">
@@ -656,9 +656,9 @@ export default{
         height: 100%;
         min-height: 840px;
         background-color: rgba(213, 213, 213, 0.3);
+        padding-top: 150px;
         display: flex;
         justify-content: center;
-        align-items: center;
     }
 
     #add-update-address-container{
@@ -780,7 +780,7 @@ export default{
         position: absolute;
         max-height: 251px;
         overflow: auto;
-        width: 220px;
+        width: 215px;
         background-color: #fff;
         border : 1.5px solid orange;
         border-radius: 0px 0px 3px 3px;

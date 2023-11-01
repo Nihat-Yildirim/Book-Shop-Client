@@ -33,6 +33,9 @@ const BookModule = {
             });
             state.visitedBooks[updatedBookIndex].viewsCount++;
             state.visitedBooks.sort((value1 , value2) => value1.viewsCount - value2.viewsCount).reverse();
+        },
+        clearUserAccountDatas(state){
+            state.visitedBook = [];
         }
     },
 

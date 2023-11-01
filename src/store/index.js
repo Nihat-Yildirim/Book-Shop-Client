@@ -18,7 +18,7 @@ const store = createStore({
     plugins : [createPersistedState({
         key : "BookShopKey",
         paths : ["BookModule","AuthorModule","AuthModule","BasketModule","PublisherModule","CommentModule","ProvinceModule","DistrictModule","NeighbourhoodModule","AddressModule"],
-        overwrites : true
+        overwrites : true,
     })],
 
     modules:{

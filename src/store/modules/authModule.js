@@ -38,6 +38,14 @@ const AuthModule = {
         setUserProfile : (state,userProfile) => state.userProfile = userProfile,
         setLoginSuccessResult : (state,successResult) => state.loginSuccessResult = successResult,
         setUserId : (state,userId) => state.userId = userId,
+        clearUserAccountDatas(state){
+            state.userId = null;
+            state.refreshToken = null;
+            state.accessToken = null;
+            state.userProfile = null;
+            state.loginSuccessResult = false;
+            state.registeredUserEmail = "";
+        }
     },
 
     actions:{

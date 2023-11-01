@@ -25,6 +25,12 @@ const AddressModule = {
         setDeleteAddressSuccessResult : (state,successResult) => state.deleteAddressSuccessResult = successResult,
         setUpdateAddressSuccessResult : (state,successResult) => state.updateAddressSuccessResult = successResult,
         setUpdateAddressSelectedValueSuccessResult : (state,successResult) => state.updateAddressSelectedValueSuccessResult = successResult,
+        clearUserAccountDatas(state){
+            state.userAddresses = [];
+            state.addAddressSuccessResult = false;
+            state.updateAddressSuccessResult = false;
+            state.deleteAddressSuccessResult = false;
+        }
     },
 
     actions : {

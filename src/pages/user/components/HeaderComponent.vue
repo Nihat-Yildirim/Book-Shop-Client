@@ -154,7 +154,7 @@
             <i class="bi bi-chat-dots"></i>
             <span>Değerlendirmelerim</span>
         </div>
-        <div class="user-profile-button">
+        <div @click="exitAccount" class="user-profile-button">
             <i class="bi bi-box-arrow-right"></i>
             <span>Çıkış Yap</span>
         </div>
@@ -164,7 +164,7 @@
 
 <script>
 import CategoriesComponent from '@/pages/user/components/CategoriesComponent';
-import { mapGetters,mapActions } from 'vuex';
+import { mapGetters,mapActions,mapMutations } from 'vuex';
 
 export default{
     components:{
@@ -220,6 +220,12 @@ export default{
             updateBasketItem : "BasketModule/updateBasketItem",
             getBookById : "BasketModule/getBookById",
         }),
+        ...mapMutations({
+            clearUserAccountAuthDatas : "AuthModule/clearUserAccountDatas",
+            clearUserAccountAddressDatas : "AddressModule/clearUserAccountDatas",
+            clearUserAccountBasketDatas : "BasketModule/clearUserAccountDatas",
+            clearUserAccountBookDatas : "BookModule/clearUserAccountDatas",
+        }),
         authsDisplayAndHover(hover){
             this.authLocationLeft=  this.$refs.authContainerRef.getBoundingClientRect().left;
             this.authIconHover = hover;
@@ -230,7 +236,7 @@ export default{
             this.cartIconHover = hover;
             this.cardViewDisplay = hover;
 
-            if(this.getUserProfileGetter != null && this.getUserId != 0)
+            if(this.getUserProfileGetter != null && this.getUserId != 0 && this.getUserId != null)
                 if(this.getUserProfileGetter.basketId == 0)
                     this.addBasket(this.getUserId);
 
@@ -339,7 +345,9 @@ export default{
                 basketId : this.getBasketId,
                 basketItemId : basketItem.basketItemId
             });
-            this.getSelectedUserBasket(this.getUserId);
+
+            if(this.getUserId != 0 && this.getUserId != null)
+                this.getSelectedUserBasket(this.getUserId);
         },
         totalPrice(){
             let price = 0;
@@ -389,21 +397,30 @@ export default{
                 }
             });
         },
+        exitAccount(){
+            this.clearUserAccountAuthDatas();
+            this.clearUserAccountAddressDatas();
+            this.clearUserAccountBasketDatas();
+            this.clearUserAccountBookDatas();
+            this.navigateTo("HomePage");
+            this.userProfilePopupDisplay = false;
+            this.authsDisplay = false;
+        }
     },
 
     watch:{
         getUserId(newValue,oldValue){
-            if(newValue != 0)
+            if(newValue != 0 && newValue != null)
                 this.getUserProfile(this.getUserId);
             
-            if(newValue != oldValue && newValue != 0)
+            if(newValue != oldValue && newValue != 0 && newValue != null)
                 this.getUserProfile(this.getUserId);
         },
         searchedPattern(newValue,oldValue){
             this.search(newValue);
         },
         getUserProfileGetter(){
-            if(this.getUserId != 0)
+            if(this.getUserId != 0 && this.getUserId != null)
                 this.getSelectedUserBasket(this.getUserId);
         },
         getBasketItems(){
@@ -425,7 +442,7 @@ export default{
     },
 
     mounted(){
-        if(this.getUserId != 0)
+        if(this.getUserId != 0 && this.getUserId!= null)
             this.getUserProfile(this.getUserId);
     }
 }
