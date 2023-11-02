@@ -225,6 +225,7 @@ export default{
             clearUserAccountAddressDatas : "AddressModule/clearUserAccountDatas",
             clearUserAccountBasketDatas : "BasketModule/clearUserAccountDatas",
             clearUserAccountBookDatas : "BookModule/clearUserAccountDatas",
+            clearUserAccountCommentDatas : "CommentModule/clearUserAccountDatas",
         }),
         authsDisplayAndHover(hover){
             this.authLocationLeft=  this.$refs.authContainerRef.getBoundingClientRect().left;
@@ -402,6 +403,7 @@ export default{
             this.clearUserAccountAddressDatas();
             this.clearUserAccountBasketDatas();
             this.clearUserAccountBookDatas();
+            this.clearUserAccountCommentDatas();
             this.navigateTo("HomePage");
             this.userProfilePopupDisplay = false;
             this.authsDisplay = false;

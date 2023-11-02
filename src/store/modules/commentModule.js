@@ -8,20 +8,29 @@ const CommentModule = {
         selectedBookUserComment : null,
         selectedBookComments : [],
         selectedCommentRating : null,
+        deleteCommentSuccessResult : false,
+        userComments : [],
     },
 
     mutations:{
+        setDeleteCommentSuccessResult : (state,successResult) => state.deleteCommentSuccessResult = successResult,
         setSelectedBookCommentCount : (state , count) => state.selectedBookCommentCount = count,
         setSelectedBookUserComment : (state , comment) => state.selectedBookUserComment = comment,
         setSelectedBookComments : (state,comments) => state.selectedBookComments = comments,
         setSelectedCommentRating : (state,commentRating) => state.selectedCommentRating = commentRating,
+        setUserComments : (state,comments) => state.userComments = comments,
+        clearUserAccountDatas(state){
+            state.userComments = [];
+        }
     },
 
     getters:{
+        _getDeleteCommentSuccessResult : (state) => state.deleteCommentSuccessResult,
         _getSelectedBookCommentCount : (state) => state.selectedBookCommentCount,
         _getSelectedBookUserComment : (state) => state.selectedBookUserComment,
         _getSelectedBookComments : (state) => state.selectedBookComments,
         _getSelectedCommentRating : (state) => state.selectedCommentRating,
+        _getUserComments : (state) => state.userComments,
     },
 
     actions:{
@@ -49,6 +58,12 @@ const CommentModule = {
                 bookId: params.bookId}
             await CommentService.deleteComment(params)
             .then(() => context.dispatch('getSelectedBookUserComment',parameter))
+            .catch(error => console.log(error));
+        },
+        async deleteComment(context,params){
+            context.commit('setDeleteCommentSuccessResult',false);
+            await CommentService.deleteComment(params)
+            .then(response => context.commit('setDeleteCommentSuccessResult',response.success))
             .catch(error => console.log(error));
         },
         async getSelectedBookComments(context,params){
@@ -106,6 +121,11 @@ const CommentModule = {
                 useful : params.useful
             })
             .then(()=>context.dispatch('getSelectedBookComments',parameter))
+            .catch(error => console.log(error));
+        },
+        async getCommentsByUserId(context,params){
+            await CommentService.getCommentsByUserId(params)
+            .then(response => context.commit('setUserComments',response.data))
             .catch(error => console.log(error));
         }
     }

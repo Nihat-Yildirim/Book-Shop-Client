@@ -30,7 +30,12 @@ const CommentService = {
     },
 
     async deleteComment(deletCommentParameter){
-        var result = await appAxios.delete(`Comments/DeleteComment?UserId=${deletCommentParameter.userId}&CommentId=${deletCommentParameter.commentId}`);
+        var result = await appAxios.delete("Comments/DeleteComment",{
+            params : {
+                UserId : deletCommentParameter.userId,
+                CommentId : deletCommentParameter.commentId
+            }
+        });
         return result.data;
     },
 
@@ -66,8 +71,14 @@ const CommentService = {
         return result.data;
     },
 
-    async getCommentsByUserId(pagination,userId){
-        var result = await appAxios.get(`Comments/GetCommentsByUserId?Page=${pagination.page}&Size=${pagination.size}&UserId=${userId}`);
+    async getCommentsByUserId(params){
+        var result = await appAxios.get("Comments/GetCommentsByUserId",{
+            params:{
+                UserId : params.userId,
+                Page : params.page,
+                Size : params.size
+            }
+        });
         return result.data;
     },
 
