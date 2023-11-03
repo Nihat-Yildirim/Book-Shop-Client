@@ -6,7 +6,7 @@
             <i :class="{'search-icon-selected' : searchContainerClicked}" id="search-icon" class="bi bi-search"></i>
         </div>
         <div id="auths-login-user-profile-container">
-            <div ref="cartContainerRef" id="cart-container" @mouseenter="cartViewDisplayAndHover(true)" @mouseleave="cartViewDisplayAndHover(false)">
+            <div @click="navigateBasketDetailPage" ref="cartContainerRef" id="cart-container" @mouseenter="cartViewDisplayAndHover(true)" @mouseleave="cartViewDisplayAndHover(false)">
                 <div :class="{iconhover : cartIconHover}" id="cart-icon">
                     <div><span v-if="basketItemsQuantity>0" id="cart-count">{{ basketItemsQuantity }}</span></div>
                     <i class="bi bi-cart3 icon"></i>
@@ -132,7 +132,7 @@
                     <span>Toplam Tutar</span>
                     <span>{{ totalPrice() }} TL</span>
                 </div>
-                <button id="navigate-basket">Sepete Git</button>
+                <button @click="navigateBasketDetailPage" id="navigate-basket">Sepete Git</button>
             </div>
         </div>
     </div>
@@ -396,6 +396,11 @@ export default{
                 params : {
                     authorName : author.name.toLowerCase().replace(/\s+/g, "-")
                 }
+            });
+        },
+        navigateBasketDetailPage(){
+            this.$router.push({
+                name : "BasketDetailPage"
             });
         },
         exitAccount(){
@@ -801,7 +806,6 @@ export default{
 
     .basket-item-publisher-name{
         font-size: 15px;
-        color: #F5B041;
     }
 
     .basket-item-quantity-and-price{

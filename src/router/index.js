@@ -75,6 +75,11 @@ const routes = [
         name : "UserVisitedBookPage",
         path : "/hesabim/onceden-gezdiklerim",
         component : () => import("@/pages/user/account_pages/user_visited_book_page/UserVisitedBookPage")
+    },
+    {
+        name : "BasketDetailPage",
+        path : "/sepetim",
+        component : () => import("@/pages/user/detail_pages/basket_detail_page/BasketDetailPage")
     }
 ];
 
