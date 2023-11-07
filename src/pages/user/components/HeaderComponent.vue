@@ -109,7 +109,7 @@
                             <div class="basket-item-explantation">
                                 <div class="basket-item-titles">
                                     <span class="basket-item-name">{{ basketItem.bookName }}</span>
-                                    <span class="basket-item-publisher-name">{{ getSelectedPublisher(basketItem.publisherId) }}</span>
+                                    <span class="basket-item-publisher-name">{{ basketItem.publisher.name }}</span>
                                 </div>
                                 <div class="basket-item-quantity-and-price">
                                     <div class="basket-item-quantity">
@@ -356,10 +356,6 @@ export default{
                 price += basketItem.quantity * basketItem.price
             });
             return price;
-        },
-        getSelectedPublisher(publisherId){
-            var selectedPublisher = this.getAllPublisher.find(publisher => publisher.id == publisherId);
-            return selectedPublisher.name;
         },
         decreaseBasketItemQuantity(basketItem){
             if(basketItem.quantity -1 != 0)

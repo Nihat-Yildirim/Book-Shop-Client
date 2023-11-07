@@ -3,14 +3,31 @@
     <div id="basket-detail-page-container">
         <div id="basket-detail-page-left">
             <div id="basket-detail-page-left-top">
-                <div class="basket-publishers-item">
+                <div v-for="publisher in getPublishers()" class="basket-publishers-item" :key="publisher.id">
                     <div class="basket-publishers-item-title">
                         <input class="basket-item-checkbox" type="checkbox">
-                        <div class="basket-detail-item-publisher-name">
-                            Tetsett
+                        <div class="basket-detail-item-publisher-name">{{ publisher.name }}</div>
+                    </div>
+                    <div v-for="basketItem in getBasketItemsByPublisherId(publisher.id)" class="basket-detail-basket-item" :key="basketItem.id">
+                        <input class="basket-item-checkbox" type="checkbox">
+                        <div class="basket-detail-basket-item-img">
+                            <img :src="getBookPictureUrl(basketItem.bookPictureUrl)" alt="">
+                        </div>  
+                        <div class="basket-detail-basket-item-title">
+                            <div class="basket-detail-basket-item-book-name">{{ basketItem.bookName }}</div>
+                            <!--Burada yazarlar birden fazla olabilir sonra güncelle-->
+                            <div class="basket-detail-basket-item-author-name">{{ basketItem.authors[0].name }}</div>
+                        </div>
+                        <div class="basket-detail-basket-item-counter">
+                            <div @click="decreaseBasketItemQuantity(basketItem)" class="basket-detail-decrease-counter">-</div>
+                            <input :value="basketItem.quantity" type="number">
+                            <div @click="increaseBasketItemQuantity(basketItem)" class="basket-detail-increase-counter">+</div>    
+                        </div>
+                        <div class="basket-item-remove-price-container">
+                            <div class="basket-detail-basket-item-price">{{ basketItem.price * basketItem.quantity }} TL</div>
+                            <i class="bi bi-trash" @click="deleteBasketItem(basketItem)"></i>
                         </div>
                     </div>
-                    <div class="basket-item"></div>
                 </div>
             </div>
             <div id="basket-detail-page-left-bottom">
@@ -60,6 +77,8 @@ export default{
         return{
             sliderWrapper : null,
             sliderWrapperHover : false,
+            authors : [],
+            quantity : 0,
         }
     },
 
@@ -71,21 +90,30 @@ export default{
 
     computed:{
         ...mapGetters({
+            getSelectedBasketItems : "BasketModule/_getSelectedBasketItems",
+            getSelectedBasketId : "BasketModule/_getSelectedBasketId",
             getVisitedBooks : "BookModule/_getVisitedBooks",
+            getUserId : "AuthModule/_getUserId",
         })
     },
 
     methods:{
+        ...mapActions({
+            getSelectedUserBasket : "BasketModule/getSelectedUserBasket",
+            deleteBasketItemAction : "BasketModule/deleteBasketItem",
+            updateBasketItem : "BasketModule/updateBasketItem",
+            getAuthorById : "AuthorModule/getById",
+        }),
         nextSlide(){
             this.sliderWrapper.slideNext();
         },
         prevSlide(){
             this.sliderWrapper.slidePrev();
         },
-        getBookPictureUrl(pictureUrls){
-            if(pictureUrls==null)
+        getBookPictureUrl(pictureUrl){
+            if(pictureUrl==null)
                 return require("@/assets/no-image-available.jpg");
-            return pictureUrls[0];
+            return pictureUrl;
         },
         navigateBookDetail(bookData){
             this.$router.push({
@@ -96,6 +124,59 @@ export default{
             });
             this.$store.state.BookModule.selectedBookId = bookData.id;
         },
+        getPublishers(){
+            var publishers = [];
+            for(var basketItem of this.getSelectedBasketItems)
+                if(!publishers.find(x => x.id == basketItem.publisher.id))
+                    publishers.push({
+                        id : basketItem.publisher.id,
+                        name : basketItem.publisher.name,
+                        publisherBooksQuantity : this.getSelectedBasketItems.filter(x => x.publisher.id == basketItem.publisher.id).length
+                    });
+
+            publishers.sort((publisher1,publisher2)=> publisher1.publisherBooksQuantity - publisher2.publisherBooksQuantity);
+            return publishers;
+        },
+        getBasketItemsByPublisherId(publisherId){
+            var basketItems = [];
+            for(var basketItem of this.getSelectedBasketItems)
+                if(basketItem.publisher.id == publisherId)
+                    basketItems.push(basketItem);
+
+            return basketItems;
+        },
+        deleteBasketItem(basketItem){
+            if(basketItem != null && this.getUserId != null)
+                this.deleteBasketItemAction({
+                    userId: this.getUserId,
+                    basketId : this.getSelectedBasketId,
+                    basketItemId : basketItem.basketItemId
+                });
+        },
+        increaseBasketItemQuantity(basketItem){
+            if(basketItem != null && this.getUserId != null && this.getSelectedBasketId != null)
+                if(basketItem.quantity + 1<= 10){
+                    basketItem.quantity++;
+                    this.updateBasketItem({
+                        userId : this.getUserId,
+                        basketId : this.getSelectedBasketId,
+                        basketItemId : basketItem.basketItemId,
+                        quantity : basketItem.quantity,
+                    });
+                }
+        },
+        decreaseBasketItemQuantity(basketItem){
+            if(basketItem != null && this.getUserId != null && this.getSelectedBasketId != null)
+                if(basketItem.quantity - 1 > 0){
+                    basketItem.quantity--;
+                    this.updateBasketItem({
+                        userId : this.getUserId,
+                        basketId : this.getSelectedBasketId,
+                        basketItemId : basketItem.basketItemId,
+                        quantity : basketItem.quantity,
+                    });
+                }
+        }
     },
 
     setup(){
@@ -106,6 +187,7 @@ export default{
 
     mounted(){
         this.sliderWrapper = document.querySelector("#visited-book-card-wrapper").swiper;
+        this.getSelectedUserBasket(this.getUserId);
     }
 }
 
@@ -126,7 +208,7 @@ export default{
     }
 
     #basket-detail-page-left-top{
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
 
     #basket-detail-page-right{
@@ -138,11 +220,21 @@ export default{
     .basket-publishers-item{
         display: flex;
         flex-direction: column;
-        height: 150px;
         background-color: #FBFCFC;
         border: 2px solid #D5DBDB;
         border-radius: 5px;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        margin-bottom: 15px;
+    }
+
+    .basket-publishers-item .basket-detail-basket-item{
+        border-bottom: 1.5px solid #D5DBDB;
+    }
+
+    .basket-publishers-item .basket-detail-basket-item:last-child{
+        border-bottom-left-radius: 3px;
+        border-bottom-right-radius: 3px;
+        border:none !important;
     }
 
     .basket-publishers-item-title{
@@ -153,10 +245,11 @@ export default{
         border-bottom: 2px solid #D5DBDB;
         background-color: #EAEDED;
         height: 35px;
+        padding-left: 10px;
     }
 
     .basket-item-checkbox{
-        margin-left: 5px;
+        margin-left: 10px;
         width: 18px;
         height: 18px;
         cursor: pointer;
@@ -181,10 +274,111 @@ export default{
     }
 
     .basket-detail-item-publisher-name {
-        margin-left: 7px;
+        margin-left: 15px;
         font-size: 18px;
         color: black;
         padding-bottom: 3px;
+    }
+
+    .basket-detail-basket-item{
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 145px;
+        padding-left: 10px;
+    }
+
+    .basket-item-remove-price-container{
+        display: flex;
+        justify-content: space-between;
+        width: 140px;
+    }
+
+    .basket-detail-basket-item-price{
+        color: orange;
+        font-size: 19px;
+    }
+
+    .basket-detail-basket-item i{
+        cursor: pointer;
+        font-size: 19px;
+    }
+
+    .basket-detail-basket-item i:hover{
+        color: red;
+    }
+
+    .basket-detail-basket-item-img img{
+        cursor: pointer;
+        margin-left: 15px;
+        height: 125px;
+        width: 82px;
+        border: 1.5px solid #D5DBDB;
+        border-radius: 3px;
+        margin-right: 15px;
+        object-fit: scale-down;
+    }
+
+    .basket-detail-basket-item-title{
+        padding-top: 15px;
+        display: flex;
+        flex-direction: column;
+        width: 450px;
+        height: 125px;
+    }
+
+    .basket-detail-basket-item-book-name{
+        color: orange;
+        font-size: 19px;
+        margin-bottom: 2px;
+    }
+
+    .basket-detail-basket-item-author-name{
+        font-size: 15px;
+    }
+
+    .basket-detail-basket-item-counter{
+        display: flex;
+        height: 40px;
+        border: 1.5px solid #D5DBDB;
+        border-radius: 5px;
+        margin-right: 25px;
+    }
+
+    .basket-detail-basket-item-counter div{
+        padding-top: 1px;
+        width: 30px;
+        text-align: center;
+        font-size: 25px;
+        font-weight: 200;
+        background-color: #EAEDED;
+        user-select: none;
+        cursor: pointer;
+        color: orange;
+    }
+
+    .basket-detail-basket-item-counter input::-webkit-inner-spin-button{
+        display: none;
+    }
+
+    .basket-detail-basket-item-counter input{
+        font-size: 18px;
+        text-align: center;
+        width: 50px;
+        border: none;
+        outline: none;
+        border-left: 1.5px solid #D5DBDB;
+        border-right: 1.5px solid #D5DBDB;
+    }
+
+    .basket-detail-increase-counter{
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+    }
+
+    .basket-detail-decrease-counter{
+        border-top-left-radius:3px ;
+        border-bottom-left-radius: 3px;
     }
 
     #visited-book-slider-container{
@@ -194,6 +388,7 @@ export default{
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
         height: 320px;
         border-radius: 5px;
+        margin-bottom: 20px;
     }
 
     #visited-book-slider-title{
