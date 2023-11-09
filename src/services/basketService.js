@@ -30,6 +30,19 @@ const BasketService = {
         return result.data;
     },
 
+    async updateBasketItemSelectedValue(updatedBasketItem){
+        var result = await appAxios.put("Baskets/UpdateBasketItemSelectedValue",null,{
+            params:{
+                UserId: updatedBasketItem.userId,
+                BasketId : updatedBasketItem.basketId,
+                BasketItemId : updatedBasketItem.basketItemId,
+                Selected : updatedBasketItem.selected,
+            }
+        });
+
+        return result.data;
+    },
+
     async deleteBasketItem(deletedBasketItem){
         var result = await appAxios.delete("Baskets/DeleteBasketItem",{
             params:{

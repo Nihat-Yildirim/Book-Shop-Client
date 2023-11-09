@@ -5,11 +5,11 @@
             <div id="basket-detail-page-left-top">
                 <div v-for="publisher in getPublishers()" class="basket-publishers-item" :key="publisher.id">
                     <div class="basket-publishers-item-title">
-                        <input class="basket-item-checkbox" type="checkbox">
+                        <input @click="updateBasketItemsSelectedValues(publisher)" class="basket-item-checkbox" :checked="publisher.selected" type="checkbox">
                         <div class="basket-detail-item-publisher-name">{{ publisher.name }}</div>
                     </div>
                     <div v-for="basketItem in getBasketItemsByPublisherId(publisher.id)" class="basket-detail-basket-item" :key="basketItem.id">
-                        <input class="basket-item-checkbox" type="checkbox">
+                        <input @click="updateBasketItemSelectedValue(basketItem)" class="basket-item-checkbox" :checked="basketItem.selected" type="checkbox">
                         <div class="basket-detail-basket-item-img">
                             <img :src="getBookPictureUrl(basketItem.bookPictureUrl)" alt="">
                         </div>  
@@ -77,8 +77,6 @@ export default{
         return{
             sliderWrapper : null,
             sliderWrapperHover : false,
-            authors : [],
-            quantity : 0,
         }
     },
 
@@ -99,6 +97,7 @@ export default{
 
     methods:{
         ...mapActions({
+            updateBasketItemSelectedValueAction :"BasketModule/updateBasketItemSelectedValue",
             getSelectedUserBasket : "BasketModule/getSelectedUserBasket",
             deleteBasketItemAction : "BasketModule/deleteBasketItem",
             updateBasketItem : "BasketModule/updateBasketItem",
@@ -131,8 +130,14 @@ export default{
                     publishers.push({
                         id : basketItem.publisher.id,
                         name : basketItem.publisher.name,
-                        publisherBooksQuantity : this.getSelectedBasketItems.filter(x => x.publisher.id == basketItem.publisher.id).length
+                        publisherBooksQuantity : this.getSelectedBasketItems.filter(x => x.publisher.id == basketItem.publisher.id).length,
+                        selected : false
                     });
+            
+            for(var publisher of publishers){
+                if(!this.getSelectedBasketItems.find(x => x.publisher.id == publisher.id && x.selected == false))
+                    publisher.selected = true
+            }        
 
             publishers.sort((publisher1,publisher2)=> publisher1.publisherBooksQuantity - publisher2.publisherBooksQuantity);
             return publishers;
@@ -176,6 +181,31 @@ export default{
                         quantity : basketItem.quantity,
                     });
                 }
+        },
+        updateBasketItemSelectedValue(basketItem){
+            if(basketItem != null && this.getUserId != null && this.getSelectedBasketId != null)
+                this.updateBasketItemSelectedValueAction({
+                    userId : this.getUserId,
+                    basketId : this.getSelectedBasketId,
+                    basketItemId : basketItem.basketItemId,
+                    selected : !basketItem.selected
+                });
+        },
+        updateBasketItemsSelectedValues(publisher){
+            if(this.getSelectedBasketItems != null){
+                var updatedBasketItems = []; 
+                updatedBasketItems = this.getSelectedBasketItems.filter(x => x.publisher.id == publisher.id && x.selected == publisher.selected);
+
+                for(var updatedBasketItem of updatedBasketItems){
+                    if(this.getUserId != null && this.getSelectedBasketId != null)
+                        this.updateBasketItemSelectedValueAction({
+                            userId : this.getUserId,
+                            basketId : this.getSelectedBasketId,
+                            basketItemId : updatedBasketItem.basketItemId,
+                            selected : !publisher.selected
+                        });
+                }
+            }
         }
     },
 

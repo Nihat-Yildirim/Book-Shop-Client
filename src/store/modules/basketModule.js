@@ -65,6 +65,11 @@ const BasketModule = {
             .then(() => context.dispatch('getSelectedUserBasket',basketItem.userId))
             .catch(error => console.log(error));
         },
+        async updateBasketItemSelectedValue(context,basketItem){
+            await BasketService.updateBasketItemSelectedValue(basketItem)
+            .then(() => context.dispatch('getSelectedUserBasket',basketItem.userId))
+            .catch(error => console.log(error));
+        },
         async deleteBasketItem(context,deletedBasketItem){
             await BasketService.deleteBasketItem(deletedBasketItem)
             .then(() => context.dispatch('getSelectedUserBasket',deletedBasketItem.userId))
