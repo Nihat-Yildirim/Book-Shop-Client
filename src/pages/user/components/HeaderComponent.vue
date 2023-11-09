@@ -395,9 +395,10 @@ export default{
             });
         },
         navigateBasketDetailPage(){
-            this.$router.push({
-                name : "BasketDetailPage"
-            });
+            if(this.getUserId != null)
+                this.$router.push({
+                    name : "BasketDetailPage"
+                });
         },
         exitAccount(){
             this.clearUserAccountAuthDatas();

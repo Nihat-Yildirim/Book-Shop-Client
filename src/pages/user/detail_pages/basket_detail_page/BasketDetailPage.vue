@@ -58,7 +58,20 @@
                 </div>
             </div>
         </div>
-        <div id="basket-detail-page-right">           
+        <div id="basket-detail-page-right">  
+            <div id="basket-summary-container">
+                <div id="basket-summary-title">Sipariş Özeti</div>
+                <div class="basket-summary-value">
+                    <span>Ürün Miktarı</span>
+                    <span>{{ selectedBasketItemQuantity }} Ürün</span>
+                </div>
+                <div class="basket-summary-value">
+                    <span>Ürün Toplamı</span>
+                    <span>{{ totalPrice }} TL</span>
+                </div>
+                <div id="basket-summary-total-payment"> {{ totalPrice }} TL</div>
+            </div>  
+            <div id="basket-confirm-button">Sepeti Onayla</div>       
         </div>
     </div>
 </template>
@@ -77,6 +90,8 @@ export default{
         return{
             sliderWrapper : null,
             sliderWrapperHover : false,
+            totalPrice : 0,
+            selectedBasketItemQuantity : 0,
         }
     },
 
@@ -88,6 +103,7 @@ export default{
 
     computed:{
         ...mapGetters({
+            getUpdateBasketItemSuccessResult : "BasketModule/_getUpdateBasketItemSuccessResult",
             getSelectedBasketItems : "BasketModule/_getSelectedBasketItems",
             getSelectedBasketId : "BasketModule/_getSelectedBasketId",
             getVisitedBooks : "BookModule/_getVisitedBooks",
@@ -206,6 +222,26 @@ export default{
                         });
                 }
             }
+        },
+        getBasketInfos(){
+            this.totalPrice = 0;
+            this.selectedBasketItemQuantity = 0;
+
+            var selectedBasketItem = this.getSelectedBasketItems.filter(x => x.selected == true);
+            selectedBasketItem.forEach(basketItem => {
+                this.totalPrice += basketItem.price * basketItem.quantity;
+                this.selectedBasketItemQuantity += basketItem.quantity;
+            });
+        }
+    },
+
+    watch:{
+        getUpdateBasketItemSuccessResult(){
+            if(this.getUpdateBasketItemSuccessResult)
+                this.getBasketInfos();
+        },
+        getSelectedBasketItems(){
+            this.getBasketInfos();
         }
     },
 
@@ -322,6 +358,7 @@ export default{
         display: flex;
         justify-content: space-between;
         width: 140px;
+        margin-right: 10px;
     }
 
     .basket-detail-basket-item-price{
@@ -517,5 +554,71 @@ export default{
         color: orange;
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
         transition: 250ms all;
+    }
+
+    #basket-summary-container{
+        width: 330px;
+        height: 200px;
+        border-radius: 5px;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        border: 2px solid #D5DBDB;
+        margin-bottom: 20px;
+        padding: 10px;
+        padding-top: 8px !important;
+        display: flex;
+        flex-direction: column;
+        background-color: #F7F9F9;
+    }
+
+    #basket-summary-title{
+        font-size: 23px;
+        font-weight: 400;
+        margin-bottom: 15px;
+        color: orange;
+    }
+
+    .basket-summary-value{
+        padding-left: 3px;
+        width: 100%;
+        font-size: 17px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .basket-summary-value span:last-child{
+        font-size: 17px;
+        font-weight: 500;
+        color: orange;
+    }
+
+    #basket-summary-total-payment{
+        font-weight: 500;
+        margin-top: 10px;
+        height: 60px;
+        border-top: 1.5px solid #D5DBDB;
+        text-align: right;
+        font-size: 23px;
+        color: orange;
+        padding-top: 13px;
+    }
+
+    #basket-confirm-button{
+        width: 330px;
+        text-align: center;
+        background-color: orange;
+        border: 1.5px solid #D68910;
+        border-radius: 5px;
+        color: #fff;
+        height: 47px;
+        font-size: 22px;
+        padding-top: 5px;
+        cursor: pointer;
+        transition: all 250ms;
+    }
+
+    #basket-confirm-button:hover{
+        opacity: 0.9;
+        transition: all 250ms;
     }
 </style>

@@ -9,6 +9,7 @@ const BasketModule = {
         selectedBasketId : 0, 
         addedBasketSuccessResult : false,
         addedBasketItemSuccessResult : false,
+        updateBasketItemSuccessResult : false,
     },
 
     mutations:{
@@ -17,6 +18,7 @@ const BasketModule = {
         setAddedBasketSuccessResult : (state,successResult) => state.addedBasketSuccessResult = successResult,
         setAddedBasketItemSuccessResult : (state,successResult) => state.addedBasketItemSuccessResult = successResult,
         setSelectedBasketId : (state,basketId) => state.selectedBasketId = basketId,
+        setUpdateBasketItemSuccessResult : (state,successResult) => state.updateBasketItemSuccessResult = successResult,
         clearUserAccountDatas(state){
             state.selectedBasketId = 0;
             state.selectedBasketItems = [];
@@ -26,6 +28,7 @@ const BasketModule = {
     },
 
     getters:{
+        _getUpdateBasketItemSuccessResult : (state) => state.updateBasketItemSuccessResult,
         _getSelectedBookBasketCount : (state) => state.selectedBookBasketCount,
         _getSelectedBasketItems : (state) => state.selectedBasketItems,
         _getSelectedBasketId :(state) => state.selectedBasketId,
@@ -61,8 +64,12 @@ const BasketModule = {
             .catch(error => console.log(error));
         },
         async updateBasketItem(context,basketItem){
+            context.commit('setUpdateBasketItemSuccessResult',false);
             await BasketService.updateBasketItem(basketItem)
-            .then(() => context.dispatch('getSelectedUserBasket',basketItem.userId))
+            .then((response) => {
+                context.dispatch('getSelectedUserBasket',basketItem.userId);
+                context.commit('setUpdateBasketItemSuccessResult',response.success);
+            })
             .catch(error => console.log(error));
         },
         async updateBasketItemSelectedValue(context,basketItem){
