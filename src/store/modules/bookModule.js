@@ -24,9 +24,7 @@ const BookModule = {
         setPublisherBooks : (state,books) => state.publisherBooks = books,
         setAuthorBooks : (state,books) => state.authorBooks = books,
         addVisitedBook : (state,book) => state.visitedBooks.push(book),
-        deleteLastVisitedBook : (state) => {
-            state.visitedBooks.splice(state.visitedBooks.lenght,1);
-        },
+        deleteLastVisitedBook : (state) => state.visitedBooks.splice(state.visitedBooks.lenght,1),
         updateVisitedBookViewsCount : (state,bookId) => {
             const updatedBookIndex = state.visitedBooks.findIndex(book => {
                 return book.visitedBook.id == bookId;

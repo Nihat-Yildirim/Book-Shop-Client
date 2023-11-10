@@ -5,6 +5,7 @@ const AuthModule = {
     namespaced : true,
 
     state:{
+        isRefreshTokenLoginExecuted : false,
         registeredUserEmail : "",
         updatePasswordSuccessResult : false,
         userRegisterSuccesResult : false,
@@ -28,6 +29,7 @@ const AuthModule = {
     },
 
     mutations:{
+        setIsRefreshTokenLoginExecuted : (state,value) => state.isRefreshTokenLoginExecuted = value,
         setUserRegisterSuccesResult : (state , successResult) => state.userRegisterSuccesResult = successResult,
         setUserRegisterMessageResult : (state , messageResult) => state.userRegisterMessageResult = messageResult,
         setUpdatePasswordSuccessResult : (state,successResult) => state.updatePasswordSuccessResult = successResult,
@@ -88,6 +90,24 @@ const AuthModule = {
                 context.commit('setLoginSuccessResult',response.success);
             })
             .catch(error => console.log(error));
+        },
+        async refreshTokenLogin(context){
+            if(!context.state.isRefreshTokenLoginExecuted){
+                context.commit('setIsRefreshTokenLoginExecuted',true);
+                await AuthenticationService.refreshTokenLogin({
+                    userId : context.state.userId,
+                    refreshToken : context.state.refreshToken.token
+                })
+                .then(response => {
+                    context.commit('setRefreshToken',response.data.token.refreshToken);
+                    context.commit('setAccessToken',response.data.token.accessToken);
+                    context.commit('setIsRefreshTokenLoginExecuted',false);
+                })
+                .catch(error =>{    
+                    console.log(error);
+                    context.commit('setIsRefreshTokenLoginExecuted',false);
+                })
+            }
         },
         async updatePassword(context,params){
             context.commit('setUpdatePasswordSuccessResult',false);

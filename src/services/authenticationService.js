@@ -1,4 +1,5 @@
 import appAxios from "@/utils/appAxios";
+import axios from "axios";
 
 const AuthenticationService = {
     async userRegister(registeredUser){
@@ -89,8 +90,14 @@ const AuthenticationService = {
         return result.data;
     },
 
-    async refreshTokenLogin(refreshTokenParameter){
-        var result = await appAxios.get(`Authentications/RefreshTokenLogin?UserId=${refreshTokenParameter.userId}&RefreshToken=${refreshTokenParameter.token}`);
+    async refreshTokenLogin(params){
+        //axios intercepter oluşturulmasında aynı appAxios kullanılır ise sonsuz döngüye girecektir bu sebeble salt axios kullandım
+        var result = await axios.get("https://localhost:7297/api/Authentications/RefreshTokenLogin",{
+            params:{
+                UserId : params.userId,
+                RefreshToken : params.refreshToken
+            }
+        });
         return result.data;
     },
 
