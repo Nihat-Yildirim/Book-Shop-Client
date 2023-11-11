@@ -18,6 +18,23 @@ const AuthModule = {
     },
 
     getters:{
+        _getIsAuthenticate : (state) => {
+            if(state.accessToken == null || state.refreshToken == null)
+                return false;
+
+            const accessTokenExpiration = new Date(state.accessToken.expiration);
+            const refreshTokenExpiration = new Date(state.refreshToken.expiration);
+            const date = new Date();
+
+            if(accessTokenExpiration > date)
+                return true;
+
+            if(accessTokenExpiration< date && refreshTokenExpiration > date)
+                return true;
+
+            if(refreshTokenExpiration < date)
+                return false;
+        },
         _getUserRegisterSuccesResult : (state) => state.userRegisterSuccesResult,
         _getVerifyMailComfirmCodeSuccessResult : (state) => state.verifyMailComfirmCodeSuccessResult,
         _getUserRegisterMessageResult : (state) => state.userRegisterMessageResult,
@@ -46,6 +63,7 @@ const AuthModule = {
             state.accessToken = null;
             state.userProfile = null;
             state.loginSuccessResult = false;
+            state.userRegisterSuccesResult = false;
             state.registeredUserEmail = "";
         }
     },
@@ -102,9 +120,10 @@ const AuthModule = {
                     context.commit('setRefreshToken',response.data.token.refreshToken);
                     context.commit('setAccessToken',response.data.token.accessToken);
                     context.commit('setIsRefreshTokenLoginExecuted',false);
+                    console.log("Veri geldi");
                 })
                 .catch(error =>{    
-                    console.log(error);
+                    alert(error);
                     context.commit('setIsRefreshTokenLoginExecuted',false);
                 })
             }

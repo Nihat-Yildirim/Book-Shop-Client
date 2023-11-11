@@ -134,38 +134,38 @@
                         </div>
                     </div>
                     <div id="book-detail-other-user-comments">
-                    <div id="book-detail-comments-contents">
-                        <ul>
-                            <li v-for="comment in getFilteredCommentDatas()" :key="comment.commentId">
-                                <div class="book-detail-comment">
-                                    <div class="book-detail-comment-header">
-                                        <div class="book-detail-comment-left">
-                                            <img :src="getUserPictureUrl(comment.userPictureUrl)" alt="">
-                                            <span>{{ comment.userName }}</span>
+                        <div id="book-detail-comments-contents">
+                            <ul>
+                                <li v-for="comment in getFilteredCommentDatas()" :key="comment.commentId">
+                                    <div class="book-detail-comment">
+                                        <div class="book-detail-comment-header">
+                                            <div class="book-detail-comment-left">
+                                                <img :src="getUserPictureUrl(comment.userPictureUrl)" alt="">
+                                                <span>{{ comment.userName }}</span>
+                                            </div>
+                                            <div class="book-detail-comment-right">
+                                                <span>{{ new Date(comment.createdDate).toLocaleDateString() }}</span>
+                                            </div>
                                         </div>
-                                        <div class="book-detail-comment-right">
-                                            <span>{{ new Date(comment.createdDate).toLocaleDateString() }}</span>
+                                        <div class="book-detail-other-user-comment">
+                                            <p>{{ comment.comment }}</p>
+                                        </div>
+                                        <div class="book-detail-comment-rating">
+                                            <div class="book-detail-comment-like-rating">
+                                                <i v-if="comment.selectedCommentRating != 1 || comment.selectedCommentRating == 0" @click="like(comment.commentId,comment.selectedCommentRating)" class="bi bi-hand-thumbs-up"></i>
+                                                <i @click="deleteCommentRating(comment.commentId)" v-if="comment.selectedCommentRating == 1" class="bi bi-hand-thumbs-up-fill"></i>
+                                                <span>{{ comment.totalUsefulRating }}</span>
+                                            </div>
+                                            <div class="book-detail-comment-dislike-rating">
+                                                <i v-if="comment.selectedCommentRating != 2 || comment.selectedCommentRating == 0" @click="dislike(comment.commentId,comment.selectedCommentRating)" class="bi bi-hand-thumbs-down"></i>
+                                                <i @click="deleteCommentRating(comment.commentId)" v-if="comment.selectedCommentRating == 2" class="bi bi-hand-thumbs-down-fill"></i>
+                                                <span>{{ comment.totalNotUsefulRating }}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="book-detail-other-user-comment">
-                                        <p>{{ comment.comment }}</p>
-                                    </div>
-                                    <div class="book-detail-comment-rating">
-                                        <div class="book-detail-comment-like-rating">
-                                            <i v-if="comment.selectedCommentRating != 1 || comment.selectedCommentRating == 0" @click="like(comment.commentId,comment.selectedCommentRating)" class="bi bi-hand-thumbs-up"></i>
-                                            <i @click="deleteCommentRating(comment.commentId)" v-if="comment.selectedCommentRating == 1" class="bi bi-hand-thumbs-up-fill"></i>
-                                            <span>{{ comment.totalUsefulRating }}</span>
-                                        </div>
-                                        <div class="book-detail-comment-dislike-rating">
-                                            <i v-if="comment.selectedCommentRating != 2 || comment.selectedCommentRating == 0" @click="dislike(comment.commentId,comment.selectedCommentRating)" class="bi bi-hand-thumbs-down"></i>
-                                            <i @click="deleteCommentRating(comment.commentId)" v-if="comment.selectedCommentRating == 2" class="bi bi-hand-thumbs-down-fill"></i>
-                                            <span>{{ comment.totalNotUsefulRating }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     <div id="book-detail-other-user-comments-pagination">
                         <div>Gösterilen 1 ile 5 arası, toplam {{ this.getSelectedBookComments != null && this.getSelectedBookComments.comments != null ? this.getSelectedBookComments.comments.length : 0  }}</div>
@@ -292,9 +292,13 @@ export default{
             this.getCommentCountByBookId(this.selectedBookId);
             this.getSelectedBookBasketCount(this.selectedBookId);
             this.getOrderCountByBookId(this.selectedBookId);
-            this.getSelectedBookUserComment({
-                bookId : this.selectedBookId,
-                userId : this.getUserId});
+            
+            if(this.getUserId != 0)
+                if(this.selectedBookId != null)
+                    this.getSelectedBookUserComment({
+                            bookId : this.selectedBookId,
+                            userId : this.getUserId});
+
             this.getSelectedBookCommentsAction({
                 page : 0,
                 size : 50,
@@ -432,7 +436,7 @@ export default{
             this.getDatas();    
         },
         selectedBookUserComment(){
-            if(this.selectedBookUserComment != null )
+            if(this.selectedBookUserComment != null)
                 this.comment = this.selectedBookUserComment.comment
         } 
     },

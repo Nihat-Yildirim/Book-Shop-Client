@@ -25,7 +25,7 @@ appAxios.interceptors.request.use(async (config)=>{
         config.headers["Authorization"] = `Bearer ${store.state.AuthModule.accessToken.token}`;
     }
 
-    if(accessToken.expiration < date && refreshToken.expiration < date)
+    if(accessTokenExpiration < date && refreshTokenExpiration < date)
         console.log("Kullanıcı Yeniden Login Olması Gerek !");
 
     return config;
