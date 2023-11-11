@@ -48,7 +48,7 @@
                         }" id="visited-book-card-wrapper">
                             <SwiperSlide @click="navigateBookDetail(visitedBook.visitedBook)" v-for="visitedBook in getVisitedBooks" :key="visitedBook.id">
                                 <div id="visited-book-wrapper-card">
-                                    <img :src="getBookPictureUrl(visitedBook.visitedBook.pictureUrls)">
+                                    <img :src="getVisitedBookPictureUrl(visitedBook.visitedBook.pictureUrls)">
                                     <div>{{ visitedBook.visitedBook.bookName }}</div>
                                 </div>
                             </SwiperSlide>
@@ -129,6 +129,12 @@ export default{
             if(pictureUrl==null)
                 return require("@/assets/no-image-available.jpg");
             return pictureUrl;
+        },
+        getVisitedBookPictureUrl(bookPictures){
+            if(bookPictures == null)
+                return require("@/assets/no-image-available.jpg");
+            
+            return bookPictures.find(x => x.showOrder == 1).pictureUrl;
         },
         navigateBookDetail(bookData){
             this.$router.push({

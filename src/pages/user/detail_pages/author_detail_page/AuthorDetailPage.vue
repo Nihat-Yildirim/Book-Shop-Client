@@ -74,10 +74,10 @@ export default {
                 return require("@/assets/no-image-available.jpg");
             return url;
         },
-        getBookPictureUrl(pictureUrls){
-            if(pictureUrls[0]==null)
+        getBookPictureUrl(bookPictures){
+            if(bookPictures == null)
                 return require("@/assets/no-image-available.jpg");
-            return pictureUrls[0];
+            return bookPictures.find(x => x.showOrder == 1).pictureUrl;
         },
         changeHeight(){
             if(this.autobiographyContentValueHeight > 296)

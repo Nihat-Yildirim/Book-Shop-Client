@@ -124,6 +124,18 @@ const BookService = {
     async getBooksByBasketCount(pagination){
         const result = await appAxios.get(`/Books/GetBooksByBasketCount?Page=${pagination.page}&Size=${pagination.size}`);
         return result.data;
+    },
+
+    async getBooksByCategoryAndAuthorId(params){
+        const result = await appAxios.get("/Books/GetBooksByCategoryAndAuthorId",{
+            params: {
+                BookId : params.bookId,
+                CategoryId : params.categoryId,
+                AuthorId : params.authorId,
+            }
+        });
+
+        return result.data;
     }
 }
 

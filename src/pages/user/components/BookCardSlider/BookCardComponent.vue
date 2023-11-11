@@ -36,10 +36,11 @@ export default{
             addBasketItemAction : "BasketModule/addBasketItem",
             getSelectedUserBasket : "BasketModule/getSelectedUserBasket"
         }),
-        getBookPictureUrl(pictureUrls){
-            if(pictureUrls[0]==null)
+        getBookPictureUrl(bookPictures){
+            if(bookPictures == null)
                 return require("@/assets/no-image-available.jpg");
-            return pictureUrls[0];
+            
+            return bookPictures.find(x => x.showOrder == 1).pictureUrl;
         },
         navigateBookDetail(event,bookData){
             if(event.srcElement.className == "book-card-button")

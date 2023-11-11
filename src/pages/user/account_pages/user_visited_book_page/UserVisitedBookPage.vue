@@ -12,7 +12,7 @@
                         <div @click="navigateBookDetail(visitedBook.visitedBook)" v-for="visitedBook in viewsVisitedBook" class="visited-book-card" :key="visitedBook.visitedBook.id">
                             <div class="visited-book-card-content">
                                 <div class="visited-book-card-top-content">
-                                    <img :src="getBookPictureUrl(visitedBook.visitedBook.pictureUrls[0])" alt="">
+                                    <img :src="getBookPictureUrl(visitedBook.visitedBook.pictureUrls)" alt="">
                                 </div>
                                 <div class="visited-book-card-bottom-content">
                                     <div class="visited-book-name">{{ visitedBook.visitedBook.bookName }}</div>
@@ -63,10 +63,10 @@ export default{
     },
 
     methods:{
-        getBookPictureUrl(pictureUrl){
-            if(pictureUrl==null)
+        getBookPictureUrl(bookPictures){
+            if(bookPictures == null)
                 return require("@/assets/no-image-available.jpg");
-            return pictureUrl;
+            return bookPictures.find(x => x.showOrder == 1).pictureUrl;
         },
         nextPage(){
             if(this.visitedBookPage == this.totalVisitedBookPage)

@@ -272,10 +272,10 @@ export default{
         bookDetailNavButtonPrev(){
             this.bookDetailCardWrapper.slidePrev();
         },
-        getBookPictureUrls(pictureUrls){
-            if(pictureUrls==null)
+        getBookPictureUrls(bookPictures){
+            if(bookPictures == null)
                 return require("@/assets/no-image-available.jpg");
-            return pictureUrls;
+            return bookPictures.map(x => x.pictureUrl);
         },
         getBookPictureUrl(pictureUrl){
             if(pictureUrl==null)
