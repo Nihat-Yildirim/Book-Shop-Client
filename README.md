@@ -15,7 +15,7 @@ Bu proje Book-Shop-API projesinin client projesidir ve geliştirilmeye devam edi
 
 ## Book Detail Page
 ![Book-Detail-Page-Top](https://github.com/Nihat-Yildirim/Book-Shop-Client/assets/124464907/0e095422-6545-4def-b8b5-53bd401795c0)
-![Book-Detail-Page-Bottom](https://github.com/Nihat-Yildirim/Book-Shop-Client/assets/124464907/fccb1857-ddac-48fb-89ad-054d004dadf9)
+![Book-Detail-Page-Bottom](https://github.com/Nihat-Yildirim/Book-Shop-Client/assets/124464907/d0559409-162e-47d6-8271-9d730c291ec7)
 
 ## Basket Detail Page
 ![Basket-Detail-Page](https://github.com/Nihat-Yildirim/Book-Shop-Client/assets/124464907/de9a9ed2-dead-46b9-a4d2-ba9d8a1ca123)
