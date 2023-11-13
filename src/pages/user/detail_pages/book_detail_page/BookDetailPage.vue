@@ -177,6 +177,33 @@
                         <div id="other-user-comments-pagination-last">Son</div>
                     </div>
                 </div>
+                <div v-show="getRelatedBooks != null" id="related-book-slider-container">
+                    <div id="related-book-slider-title">İlgili Kitaplar</div>
+                    <div @mousemove="relatedBookContainerHover = true" @mouseleave="relatedBookContainerHover = false" id="related-book-slider-content">
+                        <i @click="relatedBookCardWrapper.slidePrev()" :class="{'related-book-slider-hover' : relatedBookContainerHover}" id="related-book-slider-prev" class="bi bi-chevron-left"></i>
+                        <Swiper
+                        :modules="modules"
+                        :slides-per-view="4"
+                        :space-between="18"
+                        :centeredSlidesBounds= "true"
+                        :autoplay="{
+                            delay:1750,
+                            disableOnInteraction:false,
+                            pauseOnMouseEnter : true
+                        }" id="related-book-card-wrapper">
+                            <SwiperSlide v-for="relatedBook in getRelatedBooks" :key="relatedBook.id">
+                                <div @click="navigateBookDetail(relatedBook)" class="related-book-card">
+                                    <div class="related-book-img-container">
+                                        <img :src="getRelatedBookPicture(relatedBook.pictureUrls)" alt="">
+                                    </div>
+                                    <div class="related-book-name">{{ relatedBook.bookName }}</div>
+                                    <div class="related-book-price">{{ relatedBook.price }} TL</div>
+                                </div>
+                            </SwiperSlide>
+                        </Swiper>
+                        <i @click="relatedBookCardWrapper.slideNext()" :class="{'related-book-slider-hover' : relatedBookContainerHover}" id="related-book-slider-next" class="bi bi-chevron-right"></i>
+                    </div>
+                </div>
             </div>
             <div v-if="selectedAuthor" id="book-detail-author-detail">
                 <div id="book-detail-author-detail-img">
@@ -205,9 +232,11 @@ import 'swiper/css/pagination';
 export default{
     data(){
         return{
+            relatedBookContainerHover : false,
             bookDetailDescContentValueHeight : 0,
             bookDetailImgNavButton : false,
             bookDetailCardWrapper : null,
+            relatedBookCardWrapper : null,
             bookDetialChangeHeight : false,
             updated : false,
             comment : ""
@@ -241,6 +270,7 @@ export default{
             getSelectedBookComments : "CommentModule/_getSelectedBookComments",
             selectedCommentRating : "CommentModule/_getSelectedCommentRating",
             getVisitedBooks : "BookModule/_getVisitedBooks",
+            getRelatedBooks : "BookModule/_getRelatedBooks",
         }),
     },
 
@@ -259,18 +289,33 @@ export default{
             addCommentRating : "CommentModule/addCommentRating",
             getSelectedCommentRatingAction : "CommentModule/getSelectedCommentRating",
             updateCommentRating  :"CommentModule/updateCommentRating",
-            deleteUserCommentRatingAction : "CommentModule/deleteCommentRating"
+            deleteUserCommentRatingAction : "CommentModule/deleteCommentRating",
+            getRelatedBooksAction : "BookModule/getRelatedBooks",
         }),
         ...mapMutations({
             addVisitedBook : "BookModule/addVisitedBook",
             deleteLastVisitedBook : "BookModule/deleteLastVisitedBook",
             updateVisitedBookViewsCount : "BookModule/updateVisitedBookViewsCount",
         }),
+        navigateBookDetail(bookData){
+            this.$router.push({
+                name : "BookDetailPage",
+                params : {
+                    bookName : bookData.bookName.toLowerCase().replace(/\s+/g, "-")
+                }
+            });
+            this.$store.state.BookModule.selectedBookId = bookData.id;
+        },
         bookDetailNavButtonNext(){
             this.bookDetailCardWrapper.slideNext();
         },
         bookDetailNavButtonPrev(){
             this.bookDetailCardWrapper.slidePrev();
+        },
+        getRelatedBookPicture(bookPictures){
+            if(bookPictures == null)
+                return require("@/assets/no-image-available.jpg");
+            return bookPictures.find(x => x.showOrder == 1).pictureUrl;
         },
         getBookPictureUrls(bookPictures){
             if(bookPictures == null)
@@ -298,6 +343,12 @@ export default{
                     this.getSelectedBookUserComment({
                             bookId : this.selectedBookId,
                             userId : this.getUserId});
+
+            this.getRelatedBooksAction({
+                bookId : this.selectedBookId,
+                categoryIds : this.selectedBook.categories.map(x => x.id),
+                authorIds : this.selectedBook.authors.map(x => x.id),
+            });
 
             this.getSelectedBookCommentsAction({
                 page : 0,
@@ -429,7 +480,7 @@ export default{
 
             if(this.selectedBook.id == this.selectedBookId && document.querySelector("#book-detail-card-wrapper") != null)
                 this.bookDetailCardWrapper = document.querySelector("#book-detail-card-wrapper").swiper;
-  
+
             this.getAuthorById(this.selectedBook.authors[0].id);
         },
         selectedBookId(){
@@ -438,7 +489,11 @@ export default{
         selectedBookUserComment(){
             if(this.selectedBookUserComment != null)
                 this.comment = this.selectedBookUserComment.comment
-        } 
+        },
+        getRelatedBooks(){
+            if(this.getRelatedBooks != null && this.selectedBook != null)
+                this.relatedBookCardWrapper = document.querySelector("#related-book-card-wrapper").swiper;
+        }
     },
 
     created(){
@@ -532,7 +587,7 @@ export default{
 
     /* book comment start */
     #book-detail-bottom-left{
-        width: 75%;
+        width: 918px;
         height: auto;
         margin-right: 20px;
     }
@@ -1147,4 +1202,120 @@ export default{
         margin-bottom: 2px;
         font-size: 14px;
     }
+
+    /*Related Book Slider Start*/
+    #related-book-slider-container{
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+        background-color: #f8f9f9;
+        border: 2px solid #D5DBDB;
+        border-radius: 5px;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        height: 340px;
+    }
+
+    #related-book-slider-title{
+        padding-top: 4px;
+        background-color: #EAEDED;
+        color: orange;
+        padding-left: 10px;
+        font-size: 18px;
+        height: 35px;
+        border-bottom: 2px solid #D5DBDB;
+    }
+
+    #related-book-slider-content{
+        position: relative;
+        padding-left: 10px;
+        padding-right: 10px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+    #related-book-card-wrapper{
+        padding-top: 12px;
+        width: 100%;
+        height: 305px;
+    }
+
+    .related-book-card{
+        user-select: none;
+        padding: 10px 7px 7px 7px;
+        cursor: pointer;
+        height: 280px;
+        width: 210px;
+        border: 2px solid #D5DBDB;
+        border-radius: 7px;
+        background-color: #F2F3F4;
+        transition: 250ms all;
+        display : flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .related-book-img-container{
+        width: 165px;
+        height: 190px;
+        margin-bottom: 7px;
+    }
+
+    .related-book-img-container img{
+        width: 100%;
+        height: 100%;
+        object-fit: scale-down;
+    }
+
+    .related-book-price{
+        font-size: 14px;
+        user-select: none;
+    }
+
+    .related-book-name{
+        font-size: 15px;
+        text-align: center;
+        margin-bottom: 3px;
+    }
+
+    .related-book-card:hover{
+        color: orange;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        transition: 250ms all;
+    }
+
+    #related-book-slider-next,
+    #related-book-slider-prev{
+        padding-top: 5px;
+        text-align: center;
+        position: absolute;
+        background-color: orange;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        z-index: 150;
+        color: #fff;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        cursor: pointer;
+        font-size: 21px;
+        opacity: 0;
+        transition: all 250ms;
+    }
+
+    .related-book-slider-hover{
+        opacity: 1 !important;
+        transition: all 250ms;
+    }
+
+    #related-book-slider-prev{
+        padding-right: 3px;
+        left: -14px;
+    }
+
+    #related-book-slider-next{
+        padding-left: 3px;
+        right: -14px;
+    }
+    /*Related Book Slider End*/
 </style>

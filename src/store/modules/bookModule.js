@@ -13,10 +13,12 @@ const BookModule = {
         publisherBooks : [],
         authorBooks : [],
         visitedBooks : [],
+        relatedBooks : [],
     },
 
     mutations:{
         setWordClassics : (state,books) => state.worldClassics = books,
+        setRelatedBooks : (state,books) => state.relatedBooks = books,
         setSelectedBook : (state,book) => state.selectedBook = book,
         setSearchBooks : (state,books) => state.searchBooks = books,
         setBooksByCommentCount : (state,books) => state.booksByCommentCount = books,
@@ -38,6 +40,7 @@ const BookModule = {
     },
 
     getters :{
+        _getRelatedBooks : (state) => state.relatedBooks,
         _getWorldClassics : (state) => state.worldClassics,
         _getSelectedBook : (state) => state.selectedBook,
         _getSearchBooks : (state) => state.searchBooks,
@@ -83,6 +86,12 @@ const BookModule = {
         async getBooksByAuthorId(context,params){
             await BookService.getBooksByAuthorId(params)
             .then(response => context.commit('setAuthorBooks',response.data))
+            .catch(error => console.log(error));
+        },
+        async getRelatedBooks(context,params){
+            context.commit('setRelatedBooks',null)
+            await BookService.getBooksByCategoryAndAuthorId(params)
+            .then(response => context.commit('setRelatedBooks',response.data))
             .catch(error => console.log(error));
         }
     }

@@ -130,8 +130,8 @@ const BookService = {
         const result = await appAxios.get("/Books/GetBooksByCategoryAndAuthorId",{
             params: {
                 BookId : params.bookId,
-                CategoryId : params.categoryId,
-                AuthorId : params.authorId,
+                CategoryIds : params.categoryIds,
+                AuthorIds : params.authorIds,
             }
         });
 
