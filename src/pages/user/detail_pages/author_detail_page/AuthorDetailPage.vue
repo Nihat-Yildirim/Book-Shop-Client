@@ -54,6 +54,8 @@ export default {
 
     computed:{
         ...mapGetters({
+            getUpdateBasketItemSuccessResult: "BasketModule/_getUpdateBasketItemSuccessResult",
+            getAddedBasketItemSuccessResult : "BasketModule/_getAddedBasketItemSuccessResult",
             getSelectedBasketItems: "BasketModule/_getSelectedBasketItems",
             selectedAuthor : "AuthorModule/_getSelectedAuthor",
             selectedAuthorId :"AuthorModule/_getSelectedAuthorId",
@@ -68,6 +70,7 @@ export default {
             getAuthorById : "AuthorModule/getById",
             getBooksByAuthorId : "BookModule/getBooksByAuthorId",
             addBasketItemAction : "BasketModule/addBasketItem",
+            updateBasketItemAction : "BasketModule/updateBasketItem",
         }),
         getPictureUrl(url){
             if(url == "")
@@ -96,11 +99,11 @@ export default {
             this.$store.state.BookModule.selectedBookId = bookData.id;
         },
         addBasketItem(bookData){
-            let index = 0;
+            let selectedBasketItem = null;
             if(this.getSelectedBasketItems)
-                index = this.getSelectedBasketItems.findIndex((basketItem) => {return basketItem.bookId == bookData.id});
+                selectedBasketItem = this.getSelectedBasketItems.find(basketItem => basketItem.bookId == bookData.id);
             
-            if(index == -1 && this.getUserId != 0){
+            if(selectedBasketItem == null && this.getUserId != 0){
                 this.addBasketItemAction({
                     userId : this.getUserId,
                     basketId : this.getBasketId, 
@@ -108,6 +111,28 @@ export default {
                     quantity : 1 
                 });
             } 
+
+            if(selectedBasketItem != null && this.getUserId != 0 && selectedBasketItem.quantity != 10){
+                this.updateBasketItemAction({
+                    userId : this.getUserId,
+                    basketId : this.getBasketId,
+                    basketItemId : selectedBasketItem.basketItemId,
+                    quantity : selectedBasketItem.quantity + 1,
+                });
+            }
+        }
+    },
+
+    watch:{
+        getAddedBasketItemSuccessResult(){
+            if(this.getAddedBasketItemSuccessResult){
+                this.$toastr.success("Ürün Sepete Eklendi !");
+            }
+        },
+        getUpdateBasketItemSuccessResult(){
+            if(this.getUpdateBasketItemSuccessResult){
+                this.$toastr.info("Ürün Miktarı Artırıldı !");
+            }
         }
     },
 

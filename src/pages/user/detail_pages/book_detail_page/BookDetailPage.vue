@@ -232,6 +232,8 @@ import 'swiper/css/pagination';
 export default{
     data(){
         return{
+            addBasketItemMethod : false,
+            updateBasketItemMethod : false,
             relatedBookContainerHover : false,
             bookDetailDescContentValueHeight : 0,
             bookDetailImgNavButton : false,
@@ -271,6 +273,8 @@ export default{
             selectedCommentRating : "CommentModule/_getSelectedCommentRating",
             getVisitedBooks : "BookModule/_getVisitedBooks",
             getRelatedBooks : "BookModule/_getRelatedBooks",
+            getAddedBasketItemSuccessResult: "BasketModule/_getAddedBasketItemSuccessResult",
+            getUpdateBasketItemSuccessResult: "BasketModule/_getUpdateBasketItemSuccessResult",
         }),
     },
 
@@ -291,6 +295,7 @@ export default{
             updateCommentRating  :"CommentModule/updateCommentRating",
             deleteUserCommentRatingAction : "CommentModule/deleteCommentRating",
             getRelatedBooksAction : "BookModule/getRelatedBooks",
+            updateBasketItemAction : "BasketModule/updateBasketItem",
         }),
         ...mapMutations({
             addVisitedBook : "BookModule/addVisitedBook",
@@ -357,16 +362,27 @@ export default{
                 userId : this.getUserId});
         },
         addBasket(){
-            let index = 0;
+            let selectedBasketItem = null;
             if(this.getSelectedBasketItems)
-                index = this.getSelectedBasketItems.findIndex((basketItem) => {return basketItem.bookId == this.selectedBook.id});
+                selectedBasketItem = this.getSelectedBasketItems.find(basketItem => basketItem.bookId == this.selectedBook.id);
             
-            if(index == -1 && this.getUserId != 0){
+            if(selectedBasketItem == null && this.getUserId != 0){
+                this.addBasketItemMethod = true;
                 this.addBasketItemAction({
                     userId : this.getUserId,
                     basketId : this.getBasketId, 
                     bookId : this.selectedBook.id,
                     quantity : 1 
+                });
+            }
+
+            if(selectedBasketItem != null && this.getUserId != 0 && selectedBasketItem.quantity != 10){
+                this.updateBasketItemMethod = true;
+                this.updateBasketItemAction({
+                    userId : this.getUserId,
+                    basketId : this.getBasketId,
+                    basketItemId : selectedBasketItem.basketItemId,
+                    quantity : selectedBasketItem.quantity + 1,
                 });
             }
         },
@@ -474,6 +490,18 @@ export default{
     },
 
     watch:{
+        getAddedBasketItemSuccessResult(){
+            if(this.getAddedBasketItemSuccessResult && this.addBasketItemMethod){
+                this.$toastr.success("Ürün Sepete Eklendi !");
+                this.addBasketItemMethod = false;
+            }
+        },
+        getUpdateBasketItemSuccessResult(){
+            if(this.getUpdateBasketItemSuccessResult && this.updateBasketItemMethod){
+                this.$toastr.info("Ürün Miktarı Artırıldı !");
+                this.updateBasketItemMethod = false;
+            }
+        },
         selectedBook(){
             if(this.selectedBook.id == this.selectedBookId)            
                 this.addUpdateVisitedBook(); 
@@ -844,7 +872,7 @@ export default{
         align-items: center;
         height: 600px !important;
         height: auto;
-        width: 25%;
+        width: 307px;
         background-color: #f8f9f9;
         border: 2px solid #D5DBDB;
         border-radius: 5px;

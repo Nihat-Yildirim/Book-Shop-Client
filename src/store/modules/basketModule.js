@@ -8,17 +8,21 @@ const BasketModule = {
         selectedBasketItems : [],
         selectedBasketId : 0, 
         addedBasketSuccessResult : false,
+        deleteBasketItemSuccessResult : false,
         addedBasketItemSuccessResult : false,
         updateBasketItemSuccessResult : false,
+        updateBasketItemSelectedValueSuccessResult : false,
     },
 
     mutations:{
+        setDeleteBasketItemSuccessResult : (state,successResult) => state.deleteBasketItemSuccessResult = successResult,
         setSelectedBookBasketCount : (state,count) => state.selectedBookBasketCount = count,
         setSelectedBasketItems : (state,basket) => state.selectedBasketItems = basket,
         setAddedBasketSuccessResult : (state,successResult) => state.addedBasketSuccessResult = successResult,
         setAddedBasketItemSuccessResult : (state,successResult) => state.addedBasketItemSuccessResult = successResult,
         setSelectedBasketId : (state,basketId) => state.selectedBasketId = basketId,
         setUpdateBasketItemSuccessResult : (state,successResult) => state.updateBasketItemSuccessResult = successResult,
+        setUpdateBasketItemSelectedValueSuccessResult : (state,successResult) => state.updateBasketItemSelectedValueSuccessResult = successResult,
         clearUserAccountDatas(state){
             state.selectedBasketId = 0;
             state.selectedBasketItems = [];
@@ -28,6 +32,8 @@ const BasketModule = {
     },
 
     getters:{
+        _getDeleteBasketItemSuccessResult : (state) => state.deleteBasketItemSuccessResult,
+        _getUpdateBasketItemSelectedValueSuccessResult: (state) => state.updateBasketItemSelectedValueSuccessResult,
         _getUpdateBasketItemSuccessResult : (state) => state.updateBasketItemSuccessResult,
         _getSelectedBookBasketCount : (state) => state.selectedBookBasketCount,
         _getSelectedBasketItems : (state) => state.selectedBasketItems,
@@ -56,6 +62,7 @@ const BasketModule = {
             .catch(error => console.log(error));
         },
         async addBasketItem(context,basketItem){
+            context.commit('setAddedBasketItemSuccessResult',false);
             await BasketService.addBasketItem(basketItem)
             .then((response)=>{
                 context.commit('setAddedBasketItemSuccessResult',response.success);
@@ -73,13 +80,21 @@ const BasketModule = {
             .catch(error => console.log(error));
         },
         async updateBasketItemSelectedValue(context,basketItem){
+            context.commit('setUpdateBasketItemSelectedValueSuccessResult',false);
             await BasketService.updateBasketItemSelectedValue(basketItem)
-            .then(() => context.dispatch('getSelectedUserBasket',basketItem.userId))
+            .then(response =>{ 
+                context.dispatch('getSelectedUserBasket',basketItem.userId);
+                context.commit('setUpdateBasketItemSelectedValueSuccessResult',response.success);
+            })
             .catch(error => console.log(error));
         },
         async deleteBasketItem(context,deletedBasketItem){
+            context.commit('setDeleteBasketItemSuccessResult',false);
             await BasketService.deleteBasketItem(deletedBasketItem)
-            .then(() => context.dispatch('getSelectedUserBasket',deletedBasketItem.userId))
+            .then(response =>{
+                context.commit('setDeleteBasketItemSuccessResult',response.success);
+                context.dispatch('getSelectedUserBasket',deletedBasketItem.userId)
+            })
             .catch(error => console.log(error));
         }
     }

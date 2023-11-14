@@ -92,6 +92,10 @@ export default{
             sliderWrapperHover : false,
             totalPrice : 0,
             selectedBasketItemQuantity : 0,
+            basketItemSelected : false,
+            updateBasketItemSelectedValues : false,
+            publisher : null,
+            deleteBasketItemMethodProccess :false,
         }
     },
 
@@ -103,6 +107,8 @@ export default{
 
     computed:{
         ...mapGetters({
+            getDeleteBasketItemSuccessResult : "BasketModule/_getDeleteBasketItemSuccessResult",
+            getUpdateBasketItemSelectedValueSuccessResult: "BasketModule/_getUpdateBasketItemSelectedValueSuccessResult",
             getUpdateBasketItemSuccessResult : "BasketModule/_getUpdateBasketItemSuccessResult",
             getSelectedBasketItems : "BasketModule/_getSelectedBasketItems",
             getSelectedBasketId : "BasketModule/_getSelectedBasketId",
@@ -173,12 +179,14 @@ export default{
             return basketItems;
         },
         deleteBasketItem(basketItem){
-            if(basketItem != null && this.getUserId != null)
+            if(basketItem != null && this.getUserId != null){
+                this.deleteBasketItemMethodProccess = true;
                 this.deleteBasketItemAction({
                     userId: this.getUserId,
                     basketId : this.getSelectedBasketId,
                     basketItemId : basketItem.basketItemId
                 });
+            }
         },
         increaseBasketItemQuantity(basketItem){
             if(basketItem != null && this.getUserId != null && this.getSelectedBasketId != null)
@@ -205,27 +213,31 @@ export default{
                 }
         },
         updateBasketItemSelectedValue(basketItem){
-            if(basketItem != null && this.getUserId != null && this.getSelectedBasketId != null)
+            if(basketItem != null && this.getUserId != null && this.getSelectedBasketId != null){
+                this.basketItemSelected = !basketItem.selected;
                 this.updateBasketItemSelectedValueAction({
                     userId : this.getUserId,
                     basketId : this.getSelectedBasketId,
                     basketItemId : basketItem.basketItemId,
                     selected : !basketItem.selected
                 });
+            }
         },
         updateBasketItemsSelectedValues(publisher){
             if(this.getSelectedBasketItems != null){
                 var updatedBasketItems = []; 
                 updatedBasketItems = this.getSelectedBasketItems.filter(x => x.publisher.id == publisher.id && x.selected == publisher.selected);
-
+                this.updateBasketItemSelectedValues = true;
                 for(var updatedBasketItem of updatedBasketItems){
-                    if(this.getUserId != null && this.getSelectedBasketId != null)
+                    if(this.getUserId != null && this.getSelectedBasketId != null){
+                        this.publisher = publisher;
                         this.updateBasketItemSelectedValueAction({
                             userId : this.getUserId,
                             basketId : this.getSelectedBasketId,
                             basketItemId : updatedBasketItem.basketItemId,
                             selected : !publisher.selected
                         });
+                    }
                 }
             }
         },
@@ -242,9 +254,45 @@ export default{
     },
 
     watch:{
+        getUpdateBasketItemSelectedValueSuccessResult(){
+            if(this.getUpdateBasketItemSelectedValueSuccessResult){
+                if(!this.updateBasketItemSelectedValues){
+                    if(this.basketItemSelected){
+                        this.$toastr.success("Ürün Sparişlere Eklendi !");
+                        return;
+                    }
+
+                    if(!this.basketItemSelected){
+                        this.$toastr.info("Ürün Siparişlerden Silindi !");
+                        return;
+                    }
+                }
+
+                if(this.updateBasketItemSelectedValues){
+                    console.log("Test")
+                    if(this.publisher.selected){
+                        this.$toastr.info("Ürünler Siparişlere Silindi !");
+                        this.updateBasketItemSelectedValues = false;
+                        return;
+                    }
+
+                    if(!this.publisher.selected){
+                        this.$toastr.success("Ürünler Siparişlere Eklendi !");
+                        this.updateBasketItemSelectedValues = false;     
+                        return;
+                    }
+                }
+            }
+        },
+        getDeleteBasketItemSuccessResult(){
+            if(this.getDeleteBasketItemSuccessResult && this.deleteBasketItemMethodProccess)
+                this.$toastr.info("Ürün Sepetten Silindi");
+        },
         getUpdateBasketItemSuccessResult(){
-            if(this.getUpdateBasketItemSuccessResult)
+            if(this.getUpdateBasketItemSuccessResult){
+                this.$toastr.info("Ürün Miktarı Güncellendi !");
                 this.getBasketInfos();
+            }
         },
         getSelectedBasketItems(){
             this.getBasketInfos();

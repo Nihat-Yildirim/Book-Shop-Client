@@ -23,8 +23,17 @@ import { mapGetters,mapActions } from 'vuex';
 export default{
     props: ["bookData"],
 
+    data(){
+        return{
+            addBasketItemMethodRun: false,
+            updateBasketItemMethodRun: false,
+        }
+    },
+
     computed:{
         ...mapGetters({
+            getUpdateBasketItemSuccessResult: "BasketModule/_getUpdateBasketItemSuccessResult",
+            getAddedBasketItemSuccessResult : "BasketModule/_getAddedBasketItemSuccessResult",
             getSelectedBasketItems: "BasketModule/_getSelectedBasketItems",
             getBasketId :"BasketModule/_getSelectedBasketId",
             getUserId : "AuthModule/_getUserId",
@@ -34,7 +43,8 @@ export default{
     methods:{
         ...mapActions({
             addBasketItemAction : "BasketModule/addBasketItem",
-            getSelectedUserBasket : "BasketModule/getSelectedUserBasket"
+            getSelectedUserBasket : "BasketModule/getSelectedUserBasket",
+            updateBasketItemAction : "BasketModule/updateBasketItem",
         }),
         getBookPictureUrl(bookPictures){
             if(bookPictures == null)
@@ -55,11 +65,12 @@ export default{
             this.$store.state.BookModule.selectedBookId = bookData.id;
         },
         addBasketItem(bookData){
-            let index = 0;
+            let selectedBasketItem = null;
             if(this.getSelectedBasketItems)
-                index = this.getSelectedBasketItems.findIndex((basketItem) => {return basketItem.bookId == bookData.id});
+                selectedBasketItem = this.getSelectedBasketItems.find(basketItem => basketItem.bookId == bookData.id);
             
-            if(index == -1 && this.getUserId != 0){
+            if(selectedBasketItem == null && this.getUserId != 0){
+                this.addBasketItemMethodRun = true;
                 this.addBasketItemAction({
                     userId : this.getUserId,
                     basketId : this.getBasketId, 
@@ -67,6 +78,31 @@ export default{
                     quantity : 1 
                 });
             } 
+
+            if(selectedBasketItem != null && this.getUserId != 0 && selectedBasketItem.quantity != 10){
+                this.updateBasketItemMethodRun = true;
+                this.updateBasketItemAction({
+                    userId : this.getUserId,
+                    basketId : this.getBasketId,
+                    basketItemId : selectedBasketItem.basketItemId,
+                    quantity : selectedBasketItem.quantity + 1,
+                });
+            }
+        }
+    },
+
+    watch:{
+        getAddedBasketItemSuccessResult(){
+            if(this.getAddedBasketItemSuccessResult&& this.addBasketItemMethodRun){
+                this.addBasketItemMethodRun = false;
+                this.$toastr.success("Ürün Sepete Eklendi !");
+            }
+        },
+        getUpdateBasketItemSuccessResult(){
+            if(this.getUpdateBasketItemSuccessResult&& this.updateBasketItemMethodRun){
+                this.updateBasketItemMethodRun = false;
+                this.$toastr.info("Ürün Miktarı Artırıldı !");
+            }
         }
     }
 }

@@ -13,6 +13,6 @@ export default{
   },
   created(){
     this.getAllCategory();
-  }
+  },
 }
 </script>
