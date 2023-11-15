@@ -59,6 +59,7 @@ const BookModule = {
             .catch(error => console.log(error));
         },
         async getBookById(context,id){
+            context.commit('setSelectedBook',null);
             await BookService.getById(id)
             .then(responeBook => context.commit('setSelectedBook',responeBook.data))
             .catch(error => console.log(error));

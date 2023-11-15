@@ -348,13 +348,7 @@ export default{
                     this.getSelectedBookUserComment({
                             bookId : this.selectedBookId,
                             userId : this.getUserId});
-
-            this.getRelatedBooksAction({
-                bookId : this.selectedBookId,
-                categoryIds : this.selectedBook.categories.map(x => x.id),
-                authorIds : this.selectedBook.authors.map(x => x.id),
-            });
-
+                            
             this.getSelectedBookCommentsAction({
                 page : 0,
                 size : 50,
@@ -503,20 +497,28 @@ export default{
             }
         },
         selectedBook(){
-            if(this.selectedBook.id == this.selectedBookId)            
+            if(this.selectedBook != null && this.selectedBook.id == this.selectedBookId){          
                 this.addUpdateVisitedBook(); 
+                this.getRelatedBooksAction({
+                    bookId : this.selectedBookId,
+                    categoryIds : this.selectedBook.categories.map(x => x.id),
+                    authorIds : this.selectedBook.authors.map(x => x.id),
+                });
+                this.getAuthorById(this.selectedBook.authors[0].id);
+            }
 
-            if(this.selectedBook.id == this.selectedBookId && document.querySelector("#book-detail-card-wrapper") != null)
+            if(this.selectedBook != null && this.selectedBook.id == this.selectedBookId && document.querySelector("#book-detail-card-wrapper") != null)
                 this.bookDetailCardWrapper = document.querySelector("#book-detail-card-wrapper").swiper;
-
-            this.getAuthorById(this.selectedBook.authors[0].id);
         },
         selectedBookId(){
             this.getDatas();    
         },
         selectedBookUserComment(){
+            if(this.selectedBookUserComment == null)
+                this.comment = "";
+            
             if(this.selectedBookUserComment != null)
-                this.comment = this.selectedBookUserComment.comment
+                this.comment = this.selectedBookUserComment.comment;
         },
         getRelatedBooks(){
             if(this.getRelatedBooks != null && this.selectedBook != null)
@@ -533,7 +535,7 @@ export default{
     },
 
     updated(){
-        if(!this.updated)
+        if(!this.updated && this.selectedBook != null)
             this.bookDetailDescContentValueHeight = document.querySelector("#book-detail-desc-content-value").offsetHeight;
     }
 }

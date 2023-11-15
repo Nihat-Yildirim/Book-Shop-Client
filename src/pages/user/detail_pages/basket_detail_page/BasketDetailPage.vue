@@ -271,7 +271,7 @@ export default{
                 if(this.updateBasketItemSelectedValues){
                     console.log("Test")
                     if(this.publisher.selected){
-                        this.$toastr.info("Ürünler Siparişlere Silindi !");
+                        this.$toastr.info("Ürünler Siparişlerden Silindi !");
                         this.updateBasketItemSelectedValues = false;
                         return;
                     }

@@ -48,8 +48,9 @@ const CommentModule = {
             .catch(error => console.log(error));
         },
         async getSelectedBookUserComment(context,params){
+            context.commit('setSelectedBookUserComment',null);
             await CommentService.getSelectedBookUserComment(params)
-            .then(response => context.commit('setSelectedBookUserComment',response.data))
+            .then(response =>{context.commit('setSelectedBookUserComment',response.data)})
             .catch(error => console.log(error));
         },
         async deleteUserComment(context,params){
