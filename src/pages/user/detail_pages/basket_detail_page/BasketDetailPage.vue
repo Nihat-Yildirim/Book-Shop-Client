@@ -31,7 +31,7 @@
                 </div>
             </div>
             <div id="basket-detail-page-left-bottom">
-                <div id="visited-book-slider-container">
+                <div v-show="getVisitedBooks != null && getVisitedBooks.length >0" id="visited-book-slider-container">
                     <div id="visited-book-slider-title">Önceden Gezdiklerim</div>
                     <div @mousemove="sliderWrapperHover = true" @mouseleave="sliderWrapperHover = false" id="visited-book-slider-content">
                         <i :class="{'visited-book-buttons-visible' : sliderWrapperHover}" @click="prevSlide" id="visited-book-wrapper-prev" class="bi bi-chevron-left"></i>

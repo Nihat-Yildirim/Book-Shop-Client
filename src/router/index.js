@@ -53,11 +53,6 @@ const routes = [
         component : () => import("@/pages/user/account_pages/user_address_page/UserAddressPage")
     },
     {
-        name : "UserPhoneNumberPage",
-        path : "/hesabim/telefon-numaralarim",
-        component : () => import("@/pages/user/account_pages/user_phone_number_page/UserPhoneNumberPage")
-    },
-    {
         name : "UserOrderPage",
         path : "/hesabim/siparislerim",
         component : () => import("@/pages/user/account_pages/user_order_page/UserOrderPage")

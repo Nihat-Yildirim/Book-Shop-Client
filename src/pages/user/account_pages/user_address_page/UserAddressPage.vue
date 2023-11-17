@@ -19,6 +19,7 @@
                             <div class="user-address-neighbourhood user-address-param">{{ address.neighbourhood.name.toLowerCase() }}</div>
                             <div class="user-address-open-address user-address-param">{{ address.openAddress.toLowerCase() }}</div>
                             <div class="user-address-description user-address-param">{{ address.description.toLowerCase() }}</div>
+                            <div class="user-address-phone-number user-address-param">{{ address.phoneNumber.substr(0,3)}}*****{{ address.phoneNumber.substr(8,2)}}</div>
                         </div>
                         <div class="user-address-buttons">
                             <i @click="deleteButtonClick(address)" class="bi bi-trash user-address-delete-button"></i>
@@ -40,6 +41,10 @@
                     <div class="address-input" id="address-title-input">
                         <div class="input-title">Başlık</div>
                         <input :class="addressTitleInputBorderClass" v-model="addressTitle" type="text">
+                    </div>
+                    <div class="address-input" id="address-phone-number-input">
+                        <div class="input-title">Telefon Numarası</div>
+                        <input :class="phoneNumberInputBorderClass" v-model="phoneNumber" type="number">
                     </div>
                     <div class="address-input" id="province-district-neighbourhood-input">
                         <div class="address-dropdown" id="address-province-input">
@@ -125,6 +130,8 @@ export default{
             addressDescription :"",
             addressTitle : "",
             openAddress : "",
+            phoneNumber: "",
+            phoneNumberInputBorderClass : "",
             addressDescriptionInputBorderClass : "",
             addressTitleInputBorderClass  : "",
             openAddressInputBorderClass : "",
@@ -204,6 +211,7 @@ export default{
             this.updatedAddress = selectedAddress;
             if(selectedAddress){
                 this.selectedAddress = selectedAddress;
+                this.phoneNumber = selectedAddress.phoneNumber;
                 this.addressTitle = selectedAddress.addressTitle;
                 this.openAddress = selectedAddress.openAddress;
                 this.addressDescription = selectedAddress.description;
@@ -315,6 +323,19 @@ export default{
 
             return true;    
         },
+        phoneNumberValidator(){
+            if(this.phoneNumber == "" || this.phoneNumber == null){
+                this.phoneNumberInputBorderClass = "address-input-error-border";
+                return false;
+            }
+
+            if(!this.phoneNumber.match(/^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$/)){
+                this.phoneNumberInputBorderClass = "address-input-error-border";
+                return false;
+            }
+
+            return true;
+        },
         addAddress(){
             if(!this.addUpdateAddressPopUpParams.isAddressAdd)
                 return;
@@ -322,8 +343,9 @@ export default{
             const isValidAddressTitle = this.addressTitleValidator();
             const isValidAddressDescription = this.addressDescriptionValidator();
             const isValidOpenAddress = this.openAddressValidator();
+            const isValidPhoneNumber = this.phoneNumberValidator();
 
-            if(!isValidOpenAddress || !isValidAddressTitle || !isValidAddressDescription)
+            if(!isValidOpenAddress || !isValidAddressTitle || !isValidAddressDescription || !isValidPhoneNumber)
                 return;
 
             if(this.selectedProvince == null || this.selectedDistrict == null || this.selectedNeighbourhood == null)
@@ -343,7 +365,8 @@ export default{
                     neighbourhoodId : this.selectedNeighbourhood.id,
                     openAddress : this.openAddress,
                     addressTitle : this.addressTitle,
-                    description : this.addressDescription
+                    description : this.addressDescription,
+                    phoneNumber: this.phoneNumber
                 });
 
                 this.addButtonClicked = true;
@@ -372,8 +395,9 @@ export default{
             const isValidAddressTitle = this.addressTitleValidator();
             const isValidAddressDescription = this.addressDescriptionValidator();
             const isValidOpenAddress = this.openAddressValidator();
+            const isValidPhoneNumber = this.phoneNumberValidator();
 
-            if(!isValidOpenAddress || !isValidAddressTitle || !isValidAddressDescription)
+            if(!isValidOpenAddress || !isValidAddressTitle || !isValidAddressDescription || !isValidPhoneNumber)
                 return;
 
             if(this.selectedProvince == null || this.selectedDistrict == null || this.selectedNeighbourhood == null)
@@ -388,6 +412,7 @@ export default{
             if(!this.updateButtonClicked){
                 this.updateAddressAction({
                     userId : this.getUserId,
+                    phoneNumber : this.phoneNumber,
                     addressId : this.selectedAddress.id,
                     provinceId : this.selectedProvince.id,
                     districtId : this.selectedDistrict.id,
@@ -437,6 +462,14 @@ export default{
 
             if(this.addressDescription.length >125)
                 this.addressDescriptionInputBorderClass = "address-input-error-border";
+        },
+        phoneNumber(){
+            this.phoneNumber = this.phoneNumber.toString();
+            if(this.phoneNumber != null && this.phoneNumber != "" && this.phoneNumber.length <=10)
+                this.phoneNumberInputBorderClass = "";
+
+            if(this.phoneNumber.length >10 && !this.phoneNumber.match(/^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$/))
+                this.phoneNumberInputBorderClass = "address-input-error-border";
         },
         getAddAddressSuccessResult(){
             if(this.getAddAddressSuccessResult){
@@ -656,7 +689,7 @@ export default{
         height: 100%;
         min-height: 840px;
         background-color: rgba(213, 213, 213, 0.3);
-        padding-top: 150px;
+        padding-top: 95px;
         display: flex;
         justify-content: center;
     }
@@ -664,7 +697,7 @@ export default{
     #add-update-address-container{
         padding: 10px;
         width: 750px;
-        height: 500px;
+        height: 565px;
         background-color: #f8f9f9;
         border: 2px solid #D5DBDB;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
@@ -703,6 +736,17 @@ export default{
         display: flex;
         flex-direction: column;
         margin-bottom: 10px;
+    }
+
+    #address-phone-number-input{
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+
+    #address-phone-number-input input::-webkit-outer-spin-button,
+    #address-phone-number-input input::-webkit-inner-spin-button{
+        -webkit-appearance: none;
     }
 
     .input-title{

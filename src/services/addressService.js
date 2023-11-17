@@ -9,6 +9,7 @@ const AddressService = {
                 DistrictId : addedAddress.districtId,
                 NeighbourhoodId : addedAddress.neighbourhoodId,
                 OpenAddress : addedAddress.openAddress,
+                PhoneNumber: addedAddress.phoneNumber,
                 AddressTitle : addedAddress.addressTitle,
                 Description : addedAddress.description,
             }
@@ -20,6 +21,7 @@ const AddressService = {
         const result = await appAxios.put("Addresses",null,{
             params:{
                 UserId : updatedAddress.userId,
+                PhoneNumber: updatedAddress.phoneNumber,
                 AddressId : updatedAddress.addressId,
                 ProvinceId : updatedAddress.provinceId,
                 DistrictId : updatedAddress.districtId,

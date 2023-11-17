@@ -15,10 +15,6 @@
                 <i class="bi bi-pin-map"></i>
                 <div>Adreslerim</div>
             </div>
-            <div @click="navigateTo('UserPhoneNumberPage')" :class="{'header-component-button-select' : userPhoneNumberButtonSelect}" class="header-component-button">
-                <i class="bi bi-telephone"></i>
-                <div>Telefon Numaralarım</div>
-            </div>
         </div>
         <div class="user-account-header-component" id="user-order">
             <div class="header-component-title">
@@ -59,10 +55,6 @@ export default{
             default : false,
         },
         userAddressButtonSelect :{
-            type : Boolean,
-            default : false,
-        },
-        userPhoneNumberButtonSelect:{
             type : Boolean,
             default : false,
         },
