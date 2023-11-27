@@ -34,12 +34,6 @@
                 </div>
             </li>
             <li>
-                <div class="auths-button" id="login">
-                    <i class="bi bi-person-fill-gear"></i>
-                    <span>Admin Giriş</span>
-                </div>
-            </li>
-            <li>
                 <div @click="navigateTo('RegisterPage')" class="auths-button" id="login">
                     <i class="bi bi-person-fill-add"></i>
                     <span>Kaydol</span>
@@ -914,7 +908,7 @@ export default{
         position: absolute;
         border-radius: 5px;
         top: 75px;
-        height: 160px;
+        height: 125px;
         width: 200px;
         background-color: #fefefe;
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;

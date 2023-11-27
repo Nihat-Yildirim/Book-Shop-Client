@@ -76,6 +76,11 @@ const routes = [
         name : "BasketDetailPage",
         path : "/sepetim",
         component : () => import("@/pages/user/detail_pages/basket_detail_page/BasketDetailPage")
+    },
+    {
+        name : "AdminHomePage",
+        path : "/admin/anasayfa",
+        component : () => import("@/pages/admin/admin_home_page/AdminHomePage"),
     }
 ];
 

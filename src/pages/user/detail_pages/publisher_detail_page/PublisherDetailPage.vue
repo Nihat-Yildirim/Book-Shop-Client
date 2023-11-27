@@ -125,7 +125,7 @@ export default{
         this.getBooks({
             page : 0,
             size : 20,
-            id : this.selectedPublisherId
+            id : this.selectedPublisherId,
         });
     },
 }

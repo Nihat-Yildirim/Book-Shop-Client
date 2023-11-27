@@ -99,7 +99,7 @@
         <div  id="book-detail-bottom">
             <div id="book-detail-bottom-left">
                 <div id="book-detail-comment-child">
-                    <div v-if="selectedBookUserComment == null && getUserId != 0" class="book-detail-user-comment">
+                    <div v-if="selectedBookUserComment == null && getUserId != 0 && getUserId != null" class="book-detail-user-comment">
                         <div class="book-detail-user-comment-titles">
                             <span>Yorum Yap</span>
                             <span>{{ comment != "" ? comment.length : 0 }}/1000</span>
@@ -111,7 +111,7 @@
                             <button @click="addComment">Gönder</button>
                         </div>
                     </div>
-                    <div v-else-if="selectedBookUserComment != null && getUserId != 0" class="book-detail-user-comment">
+                    <div v-else-if="selectedBookUserComment != null && getUserId != 0 && getUserId != null" class="book-detail-user-comment">
                         <div class="book-detail-user-comment-titles">
                             <span>Yorumum</span>
                             <span>{{ comment != "" ? comment.length : 0 }}/1000</span>
@@ -343,7 +343,7 @@ export default{
             this.getSelectedBookBasketCount(this.selectedBookId);
             this.getOrderCountByBookId(this.selectedBookId);
             
-            if(this.getUserId != 0)
+            if(this.getUserId != 0 && this.getUserId != null)
                 if(this.selectedBookId != null)
                     this.getSelectedBookUserComment({
                             bookId : this.selectedBookId,
@@ -360,7 +360,7 @@ export default{
             if(this.getSelectedBasketItems)
                 selectedBasketItem = this.getSelectedBasketItems.find(basketItem => basketItem.bookId == this.selectedBook.id);
             
-            if(selectedBasketItem == null && this.getUserId != 0){
+            if(selectedBasketItem == null && this.getUserId != 0 && this.getUserId != null){
                 this.addBasketItemMethod = true;
                 this.addBasketItemAction({
                     userId : this.getUserId,
@@ -370,7 +370,7 @@ export default{
                 });
             }
 
-            if(selectedBasketItem != null && this.getUserId != 0 && selectedBasketItem.quantity != 10){
+            if(selectedBasketItem != null && this.getUserId != 0 && this.getUserId != null &&  selectedBasketItem.quantity != 10){
                 this.updateBasketItemMethod = true;
                 this.updateBasketItemAction({
                     userId : this.getUserId,
@@ -408,7 +408,7 @@ export default{
             return this.getSelectedBookComments.comments.filter(comment => comment.userId != this.getUserId);
         },
         like(commentId,selectedCommentRating){
-            if(this.getUserId != 0 && selectedCommentRating == 0)
+            if(this.getUserId != 0 && this.getUserId != null && selectedCommentRating == 0)
                 this.addCommentRating({
                     commentId : commentId,
                     userId : this.getUserId,
@@ -425,7 +425,7 @@ export default{
                 })
         },
         dislike(commentId,selectedCommentRating){
-            if(this.getUserId != 0 && selectedCommentRating == 0)
+            if(this.getUserId != 0 && this.getUserId != null && selectedCommentRating == 0)
                 this.addCommentRating({
                     commentId : commentId,
                     userId : this.getUserId,

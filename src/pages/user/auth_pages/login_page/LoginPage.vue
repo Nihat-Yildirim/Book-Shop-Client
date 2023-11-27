@@ -31,10 +31,10 @@ import { mapActions,mapGetters } from 'vuex';
 export default{
     data(){
         return{
-            invalidLoginUserMail : false,
             invalidLoginUserPassword : false,
-            loginUserMail : "",
+            invalidLoginUserMail : false,
             loginUserPassword : "",
+            loginUserMail : "",
         }
     },
 
@@ -81,6 +81,9 @@ export default{
         login(){
             this.loginUserMailValidator();
             this.loginUserPasswordValidator();
+
+            if(this.invalidLoginUserMail || this.invalidLoginUserPassword)
+                return;
 
             if(!this.getLoginResult)
                 this.loginAction({

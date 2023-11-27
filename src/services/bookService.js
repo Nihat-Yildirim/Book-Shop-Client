@@ -45,13 +45,23 @@ const BookService = {
         return result.data;
     },
 
-    async getAll(pagination){
-        const result = await appAxios.get(`Books/GetAllBook?Page=${pagination.Page}&Size=${pagination.Size}`);
+    async getAll(params){
+        const result = await appAxios.get("Books/GetAllBook",{
+            params : {
+                Page : params.page,
+                Size : params.size
+            }
+        });
         return result.data;
     },
 
     async getAllBookForAdmin(pagination){
-        const result = await appAxios.get(`Books/GetAllBookForAdmin?Page=${pagination.Page}&Size=${pagination.Size}`);
+        const result = await appAxios.get("Books/GetAllBookForAdmin",{
+            params:{
+                Page : pagination.page,
+                Size : pagination.size
+            }
+        });
         return result.data;
     },
 
@@ -102,34 +112,55 @@ const BookService = {
     },
 
     async getBookByISBN(isbn){
-        const result = await appAxios.get(`Books/GetBookByISBN?ISBN=${isbn}`);
+        const result = await appAxios.get(`/Books/GetBookByISBN?ISBN=${isbn}`);
         return result.data;
     },
 
-    async getBooksByLanguageId(languageId,pagination){
-        const result = await appAxios.get(`Books/GetBooksByLanguageId?Id=${languageId}&Page=${pagination.Page}&Size=${page.Size}`);
+    async getBooksByLanguageId(params){
+        const result = await appAxios.get("/Books/GetBooksByLanguageId",{
+            params:{
+                Id : params.languageId,
+                Page : params.page,
+                Size : params.Size
+            }
+        });
         return result.data;
     },
 
     async getBooksByCategoryId(params){
-        const result = await appAxios.get(`/Books/GetBooksByCategoryId?Id=${params.categoryId}&Page=${params.page}&Size=${params.size}`);
+        const result = await appAxios.get("/Books/GetBooksByCategoryId",{
+            params : {
+                Id : params.categoryId,
+                Page : params.page,
+                Size : params.size
+            }
+        });
         return result.data;
     },
 
-    async getBooksByCommentCount(pagination){
-        const result = await appAxios.get(`/Books/GetBooksByCommentCount?Page=${pagination.page}&Size=${pagination.size}`);
+    async getBooksByCommentCount(params){
+        const result = await appAxios.get("/Books/GetBooksByCommentCount",{
+            params:{
+                Page : params.page,
+                Size : params.size
+            }   
+        });
         return result.data;
     },
 
-    async getBooksByBasketCount(pagination){
-        const result = await appAxios.get(`/Books/GetBooksByBasketCount?Page=${pagination.page}&Size=${pagination.size}`);
+    async getBooksByBasketCount(params){
+        const result = await appAxios.get("/Books/GetBooksByBasketCount",{
+            params : {
+                Page : params.page,
+                Size : params.size
+            }
+        });
         return result.data;
     },
 
     async getBooksByCategoryAndAuthorId(params){
         const result = await appAxios.get("/Books/GetBooksByCategoryAndAuthorId",{
             params: {
-                BookId : params.bookId,
                 CategoryIds : params.categoryIds,
                 AuthorIds : params.authorIds,
             }

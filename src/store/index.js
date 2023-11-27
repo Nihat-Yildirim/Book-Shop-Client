@@ -34,7 +34,7 @@ const store = createStore({
         ProvinceModule,
         DistrictModule,
         AddressModule,
-        NeighbourhoodModule
+        NeighbourhoodModule,
     }
 });
 

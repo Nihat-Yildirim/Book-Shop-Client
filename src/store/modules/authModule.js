@@ -5,8 +5,8 @@ const AuthModule = {
     namespaced : true,
 
     state:{
-        isRefreshTokenLoginExecuted : false,
         registeredUserEmail : "",
+        isRefreshTokenLoginExecuted : false,
         updatePasswordSuccessResult : false,
         userRegisterSuccesResult : false,
         verifyMailComfirmCodeSuccessResult : false,
@@ -15,6 +15,7 @@ const AuthModule = {
         accessToken : null,
         userProfile : null,
         userId: 0,
+        isAdmin: false,
     },
 
     getters:{
@@ -43,6 +44,7 @@ const AuthModule = {
         _getLoginSuccessResult : (state) => state.loginSuccessResult,
         _getUserProfile : (state) => state.userProfile,
         _getUserId : (state) => state.userId,
+        _getIsAdmin : (state) => state.isAdmin,
     },
 
     mutations:{
@@ -57,6 +59,7 @@ const AuthModule = {
         setUserProfile : (state,userProfile) => state.userProfile = userProfile,
         setLoginSuccessResult : (state,successResult) => state.loginSuccessResult = successResult,
         setUserId : (state,userId) => state.userId = userId,
+        setIsAdmin : (state,isAdmin) => state.isAdmin = isAdmin,
         clearUserAccountDatas(state){
             state.userId = null;
             state.refreshToken = null;
@@ -102,6 +105,7 @@ const AuthModule = {
         async login(context,loginParams){
             await AuthenticationService.login(loginParams)
             .then(response => {
+                context.commit('setIsAdmin',response.data.isAdmin);
                 context.commit('setUserId',response.data.userId);
                 context.commit('setRefreshToken',response.data.token.refreshToken);
                 context.commit('setAccessToken',response.data.token.accessToken);
@@ -133,7 +137,7 @@ const AuthModule = {
             await AuthenticationService.updatePassword(params)
             .then(response => context.commit('setUpdatePasswordSuccessResult',response.success))
             .catch(error => console.log(error));
-        }
+        },
     }
 }
 

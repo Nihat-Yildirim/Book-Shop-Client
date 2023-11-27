@@ -56,6 +56,9 @@ export default{
             if(event.srcElement.className == "book-card-button")
                 return;
 
+            if(event.srcElement.className == "favorite-container" || event.srcElement.className == "bi bi-heart")
+                return;
+
             this.$router.push({
                 name : "BookDetailPage",
                 params : {
@@ -88,7 +91,7 @@ export default{
                     quantity : selectedBasketItem.quantity + 1,
                 });
             }
-        }
+        },
     },
 
     watch:{
@@ -134,7 +137,7 @@ export default{
         flex-direction: column;
         user-select: none;
     }
-
+    
     .book-card-content-above{
         display: flex;
         align-items: center;

@@ -57,6 +57,7 @@ export default {
 
     computed:{
         ...mapGetters({
+            getUserId : "AuthModule/_getUserId",
             allAuthors : "AuthorModule/_getAll",
             allPublisher : "PublisherModule/_getAll",
             worldClassics : "BookModule/_getWorldClassics",
@@ -78,7 +79,11 @@ export default {
     mounted(){
         this.getAllPublisher();
         this.getAllAuthor();
-        this.getWorldClassics({categoryId : 10,page : 0,size : 20});
+        this.getWorldClassics({
+            categoryId : 10,
+            page : 0,
+            size : 20
+        });
         this.getBooksByCommentCount({
             page : 0,
             size : 20
