@@ -152,7 +152,7 @@ export default {
         font-size: 17px;
         padding-top: 4px;
         border-radius: 5px;
-        padding-left: 2px;
+        padding-left: 3px;
     }
 
     .admin-navigation-button i{
