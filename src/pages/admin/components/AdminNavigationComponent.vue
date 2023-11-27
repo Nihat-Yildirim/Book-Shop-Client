@@ -5,27 +5,27 @@
             <i @click="navigationHide = !navigationHide" class="bi bi-list"></i>
         </div>
         <div id="admin-navigation-bottom">
-            <div :class="{'admin-nav-button-clicked' : adminHomePageNavButtonClicked}" class="admin-navigation-button">
+            <div @click="navigateTo('AdminHomePage')" :class="{'admin-nav-button-clicked' : adminHomePageNavButtonClicked}" class="admin-navigation-button">
                 <i class="bi bi-house-fill"></i>
                 <div :class="{'admin-nav-button-text-hide' : navigationHide}">Ana Sayfa</div>
             </div>
-            <div :class="{'admin-nav-button-clicked' : adminBooksPageNavButtonClicked}" class="admin-navigation-button">
+            <div @click="navigateTo('AdminBooksPage')" :class="{'admin-nav-button-clicked' : adminBooksPageNavButtonClicked}" class="admin-navigation-button">
                 <i class="bi bi-book-fill"></i>
                 <div :class="{'admin-nav-button-text-hide' : navigationHide}">Kitaplar</div>
             </div>
-            <div :class="{'admin-nav-button-clicked' : adminUsersPageNavButtonClicked}" class="admin-navigation-button">
+            <div @click="navigateTo('AdminUsersPage')" :class="{'admin-nav-button-clicked' : adminUsersPageNavButtonClicked}" class="admin-navigation-button">
                 <i class="bi bi-people-fill"></i>
                 <div :class="{'admin-nav-button-text-hide' : navigationHide}">Kullanıcılar</div>
             </div>
-            <div :class="{'admin-nav-button-clicked' : adminAuthorsPageNavButtonClicked}" class="admin-navigation-button">
+            <div @click="navigateTo('AdminAuthorsPage')" :class="{'admin-nav-button-clicked' : adminAuthorsPageNavButtonClicked}" class="admin-navigation-button">
                 <i class="bi bi-pen-fill"></i>
                 <div :class="{'admin-nav-button-text-hide' : navigationHide}">Yazarlar</div>
             </div>
-            <div :class="{'admin-nav-button-clicked' : adminPublishersPageNavButtonClicked}" class="admin-navigation-button">
+            <div @click="navigateTo('AdminPublisherPage')" :class="{'admin-nav-button-clicked' : adminPublishersPageNavButtonClicked}" class="admin-navigation-button">
                 <i class="bi bi-building-fill"></i>
                 <div :class="{'admin-nav-button-text-hide' : navigationHide}">Yayın Evleri</div>
             </div>
-            <div :class="{'admin-nav-button-clicked' : adminOrdersPageNavButtonClicked}" class="admin-navigation-button">
+            <div @click="navigateTo('AdminOrdersPage')" :class="{'admin-nav-button-clicked' : adminOrdersPageNavButtonClicked}" class="admin-navigation-button">
                 <i class="bi bi-box-seam-fill"></i>
                 <div :class="{'admin-nav-button-text-hide' : navigationHide}">Siparişler</div>
             </div>
@@ -69,15 +69,15 @@ export default {
         adminOrdersPageNavButtonClicked : {
             type : Boolean,
             default : false
-        },
-        adminLogoutNavButtonClicked : {
-            type : Boolean,
-            default : false
         }
     },
 
     methods: {
-        
+        navigateTo(pageName){
+            this.$router.push({
+                name : pageName,
+            });
+        }
     },
 
     watch:{
