@@ -127,7 +127,7 @@ const AuthModule = {
                     console.log("Veri geldi");
                 })
                 .catch(error =>{    
-                    alert(error);
+                    console.log(error);
                     context.commit('setIsRefreshTokenLoginExecuted',false);
                 })
             }

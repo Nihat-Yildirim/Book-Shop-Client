@@ -2,7 +2,6 @@
     <div :class="{'admin-navigation-hide' : navigationHide}" id="admin-navigation-container">
         <div id="admin-navigation-top">
             <div :class="{'hide-nav-name' : navigationHide}">Book Shop</div>
-            <i @click="navigationHide = !navigationHide" class="bi bi-list"></i>
         </div>
         <div id="admin-navigation-bottom">
             <div @click="navigateTo('AdminHomePage')" :class="{'admin-nav-button-clicked' : adminHomePageNavButtonClicked}" class="admin-navigation-button">
