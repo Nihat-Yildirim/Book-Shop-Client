@@ -53,6 +53,7 @@
 
 <script>
 import { Chart } from 'chart.js/auto';
+
 export default {
 
     methods:{
@@ -63,10 +64,12 @@ export default {
                 data: {
                     labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange',4,9],
                     datasets: [{
-                        data: [12, 19, 3, 5, 2, 3,5,7],
+                        data: [12, 19, 6, 5, 8, 8,5,7],
                         pointRadius: 0,
                         borderWidth: 2,
+                        fill: true,
                         borderColor: '#CA6F1E',
+                        backgroundColor: '#EDBB99'
                     }]
                 },
                 options: {
@@ -97,7 +100,7 @@ export default {
                 data: {
                     labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange',4,9],
                     datasets: [{
-                        data: [12, 19, 3, 5, 2, 3,5,7],
+                        data: [12, 19, 4, 5, 9, 6,5,7],
                         pointRadius: 0,
                         borderWidth: 2,
                         borderColor: '#CA6F1E',
@@ -169,10 +172,12 @@ export default {
                 data: {
                     labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange',4,9],
                     datasets: [{
-                        data: [12, 19, 3, 5, 2, 3,5,7],
+                        data: [12, 19, 12, 10, 9, 10,12,7],
                         pointRadius: 2,
                         borderWidth: 2,
+                        fill: true,
                         borderColor: '#CA6F1E',
+                        backgroundColor: '#EDBB99'
                     }]
                 },
                 options: {

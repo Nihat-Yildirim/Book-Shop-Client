@@ -90,7 +90,8 @@ export default {
 <style>
     #admin-navigation-container{
         width: 230px;
-        height: 703px;
+        min-height: 703px;
+        height: 100%;
         background-color: #F8F9F9;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
         transition: all 250ms;
@@ -187,7 +188,9 @@ export default {
     }
 
     #admin-logout-button{
-        margin-top: 330px;
+        position: absolute !important; 
+        bottom: -2px !important;
+        width: 215px;
     }
 
     .admin-nav-button-clicked{

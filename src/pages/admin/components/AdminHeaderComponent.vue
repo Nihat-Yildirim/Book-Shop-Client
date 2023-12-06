@@ -33,7 +33,7 @@ export default {
     #admin-header-container{
         display: flex;
         width: 100%;
-        min-width: 1290px;
+        min-width: 1289px;
         height: 50px;
         background-color: #F39C12;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
