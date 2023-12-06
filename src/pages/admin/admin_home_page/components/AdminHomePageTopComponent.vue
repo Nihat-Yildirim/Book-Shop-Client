@@ -73,6 +73,7 @@ export default {
                     }]
                 },
                 options: {
+                    tension : 0.2,
                     responsive: false,
                     scales: {
                         x: {
@@ -181,6 +182,7 @@ export default {
                     }]
                 },
                 options: {
+                    tension : 0.2,
                     responsive: false,
                     scales: {
                         x: {

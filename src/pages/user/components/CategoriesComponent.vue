@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default{
     data(){
@@ -19,8 +19,18 @@ export default{
 
     computed:{
         ...mapGetters({
-            getParentCategory : "CategoryModule/_getParentCategories"
+            getParentCategory : "CategoryModule/_getParentCategories",
         })
+    },
+
+    methods:{
+        ...mapActions({
+            getAllCategory : "CategoryModule/getAll",
+        })
+    },
+
+    created(){
+        this.getAllCategory();
     },
 }
 </script>

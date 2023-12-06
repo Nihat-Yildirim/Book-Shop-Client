@@ -24,7 +24,7 @@
                         <div class="province-income-table-title-column" id="province-income-table-income">Gelir</div>
                     </div>
                     <div id="province-income-table-value">
-                        <div v-for="i in 81" :class="{'table-valye-bacgournd-color': i%2 == 0}" key="i" class="province-income-table-row">
+                        <div v-for="i in 81" :class="{'table-value-bacgournd-color': i%2 == 0}" key="i" class="province-income-table-row">
                             <div class="province-income-table-province-column">
                                 Şehir {{ i }}
                             </div>
@@ -233,7 +233,7 @@ export default {
         background-color: #F2F4F4;
     }
 
-    .table-valye-bacgournd-color{
+    .table-value-bacgournd-color{
         background-color: #F7F9F9;
     }
 
