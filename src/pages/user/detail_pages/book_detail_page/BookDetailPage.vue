@@ -296,6 +296,7 @@ export default{
             deleteUserCommentRatingAction : "CommentModule/deleteCommentRating",
             getRelatedBooksAction : "BookModule/getRelatedBooks",
             updateBasketItemAction : "BasketModule/updateBasketItem",
+            addViewAction : "ViewModule/addView",
         }),
         ...mapMutations({
             addVisitedBook : "BookModule/addVisitedBook",
@@ -342,6 +343,7 @@ export default{
             this.getCommentCountByBookId(this.selectedBookId);
             this.getSelectedBookBasketCount(this.selectedBookId);
             this.getOrderCountByBookId(this.selectedBookId);
+            this.addViewAction({bookId : this.selectedBookId});
             
             if(this.getUserId != 0 && this.getUserId != null)
                 if(this.selectedBookId != null)
