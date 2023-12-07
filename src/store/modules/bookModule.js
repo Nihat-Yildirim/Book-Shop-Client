@@ -14,9 +14,11 @@ const BookModule = {
         authorBooks : [],
         visitedBooks : [],
         relatedBooks : [],
+        bookDataForAdmin : [],
     },
 
     mutations:{
+        setBookDataForAdmin : (state,books) => state.bookDataForAdmin = books,
         setWordClassics : (state,books) => state.worldClassics = books,
         setRelatedBooks : (state,books) => state.relatedBooks = books,
         setSelectedBook : (state,book) => state.selectedBook = book,
@@ -40,6 +42,7 @@ const BookModule = {
     },
 
     getters :{
+        _getBookDataForAdmin : (state) => state.bookDataForAdmin,
         _getRelatedBooks : (state) => state.relatedBooks,
         _getWorldClassics : (state) => state.worldClassics,
         _getSelectedBook : (state) => state.selectedBook,
@@ -93,6 +96,11 @@ const BookModule = {
             context.commit('setRelatedBooks',null)
             await BookService.getBooksByCategoryAndAuthorId(params)
             .then(response => context.commit('setRelatedBooks',response.data))
+            .catch(error => console.log(error));
+        },
+        async getAllBookForAdmin(context,params){
+            await BookService.getAllBookForAdmin(params)
+            .then(response => context.commit('setBookDataForAdmin',response.data))
             .catch(error => console.log(error));
         }
     }

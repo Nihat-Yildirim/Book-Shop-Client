@@ -74,18 +74,8 @@ const BookService = {
         return result.data;
     },
 
-    async getByIdForAdmin(bookId){
-        const result = await appAxios.get(`Books/GetByIdForAdmin=${bookId}`);
-        return result.data;
-    },
-
     async getBooksByNamePattern(params){
         const result = await appAxios.get(`Books/GetBooksByNamePattern?Page=${params.page}&Size=${params.size}&Pattern=${params.pattern}`);
-        return result.data;
-    },
-
-    async getBooksByNamePatternForAdmin(pagination , pattern){
-        const result = await appAxios.get(`Books/GetBooksByNamePatternForAdmin?Page=${pagination.Page}&Size=${pagination.Size}&Pattern=${pattern}`);
         return result.data;
     },
 
