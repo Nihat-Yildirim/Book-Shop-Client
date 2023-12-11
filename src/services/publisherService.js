@@ -43,6 +43,11 @@ const PublisherService = {
     async getPublisherByPatternForAdmin(pattern){
         var result = await appAxios.get(`Publishers/GetPublisherByPatternForAdmin?Pattern=${pattern}`);
         return result.data;
+    },
+
+    async getAllPublisherName(){
+        var result = await appAxios.get("Publishers/GetAllPublisherName");
+        return result.data;
     }
 }
 

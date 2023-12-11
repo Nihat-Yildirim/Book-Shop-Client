@@ -14,11 +14,12 @@ import DistrictModule from "./modules/districtModule";
 import NeighbourhoodModule from "./modules/neighbourhoodModule";
 import AddressModule from "./modules/addressModule";
 import ViewModule from "./modules/viewModule";
+import LanguageModule from "./modules/languageModule";
 
 const store = createStore({
     plugins : [createPersistedState({
         key : "BookShopKey",
-        paths : ["BookModule","AuthorModule","AuthModule","BasketModule","PublisherModule","CommentModule","ProvinceModule","DistrictModule","NeighbourhoodModule","AddressModule","ViewModule"],
+        paths : ["BookModule","AuthorModule","AuthModule","BasketModule","PublisherModule","CommentModule","ProvinceModule","DistrictModule","NeighbourhoodModule","AddressModule","ViewModule","LanguageModule"],
         overwrites : true
     })],
 
@@ -36,7 +37,8 @@ const store = createStore({
         DistrictModule,
         AddressModule,
         NeighbourhoodModule,
-        ViewModule
+        ViewModule,
+        LanguageModule
     }
 });
 

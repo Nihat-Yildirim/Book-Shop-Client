@@ -63,6 +63,11 @@ const AuthorService = {
     async getAuthorByPatternForAdmin(pattern){
         var result = await appAxios.get(`GetAuthorByPatternForAdmin?Pattern=${pattern}`);
         return result.data;
+    },
+
+    async getAllAuthorName(){
+        var result = await appAxios.get('Authors/GetAllAuthorName');
+        return result.data;
     }
 }
 
