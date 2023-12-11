@@ -7,7 +7,6 @@
             <AdminHeaderComponent/>
             <div id="admin-books-page-content">
                 <AdminBooksPageTopComponent/>
-                <AdminBooksPageBottomComponent/>
             </div>
         </div>
     </div>
@@ -17,11 +16,9 @@
 import AdminNavigationComponent from '@/pages/admin/components/AdminNavigationComponent';
 import AdminHeaderComponent from '@/pages/admin/components/AdminHeaderComponent';
 import AdminBooksPageTopComponent from '@/pages/admin/admin_books_page/components/AdminBooksPageTopComponent';
-import AdminBooksPageBottomComponent from '@/pages/admin/admin_books_page/components/AdminBooksPageBottomComponent';
 
 export default{
     components:{
-        AdminBooksPageBottomComponent,
         AdminBooksPageTopComponent,
         AdminNavigationComponent,
         AdminHeaderComponent

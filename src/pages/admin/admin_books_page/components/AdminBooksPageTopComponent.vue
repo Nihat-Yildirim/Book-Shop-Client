@@ -28,7 +28,7 @@
                     <div>{{ book.price }} TL</div>
                 </div>
                 <div class="admin-books-page-book-card-button-container">
-                    <div class="admin-books-page-book-card-button-update">
+                    <div @click="navigateUpdateBookPage(book)" class="admin-books-page-book-card-button-update">
                         <i class="bi bi-pencil-fill"></i>
                         <div>Güncelle</div>
                     </div>
@@ -93,10 +93,23 @@ export default{
                 for(minValue; minValue <= maxPageNumber; minValue++){
                     if(minValue > 0 && this.pageNumbers.length != 5)
                         this.pageNumbers.push(minValue);
+
+                    if(this.pageNumbers.length == 5)
+                        break;
                 }
             }
 
             return null;
+        },
+        navigateUpdateBookPage(bookData){
+            this.$store.state.BookModule.updatedBookId = bookData.id;
+
+            this.$router.push({
+                name : "AdminUpdateBookPage",
+                params : {
+                    bookName : bookData.bookName.toLowerCase().replace(/\s+/g, "-")
+                }
+            });
         }
     },
 
@@ -130,6 +143,7 @@ export default{
         border: 1px solid #F2F3F4;
         background-color: #F8F9F9;
         height: auto;
+        margin-bottom: 20px;
     }
 
     #admin-books-page-top-title{

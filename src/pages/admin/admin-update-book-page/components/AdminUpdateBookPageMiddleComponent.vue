@@ -1,6 +1,6 @@
 <template>
-    <div id="admin-books-page-bottom-container">
-        Bottom
+    <div id="admin-update-book-page-middle-container">
+        Middle
     </div>
 </template>
 

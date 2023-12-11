@@ -15,6 +15,7 @@ const BookModule = {
         visitedBooks : [],
         relatedBooks : [],
         bookDataForAdmin : [],
+        updatedBookId : 0,
     },
 
     mutations:{
@@ -42,6 +43,7 @@ const BookModule = {
     },
 
     getters :{
+        _getUpdatedBookId : (state) => state.updatedBookId,
         _getBookDataForAdmin : (state) => state.bookDataForAdmin,
         _getRelatedBooks : (state) => state.relatedBooks,
         _getWorldClassics : (state) => state.worldClassics,
