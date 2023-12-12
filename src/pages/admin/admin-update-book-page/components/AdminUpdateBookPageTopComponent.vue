@@ -7,7 +7,23 @@
         </div>
         <div id="admin-update-book-top-content">
             <div id="admin-update-book-top-content-left">
-                <div id="admin-update-book-pictures-slider"></div>
+                <div @mouseleave="buttonVisibility = false" @mouseenter="buttonVisibility = true" @mousemove="buttonVisibility = true" id="admin-update-book-pictures-slider">
+                    <i :class="{'update-book-picture-slider-button-visibility' : buttonVisibility}" class="bi bi-chevron-left"></i>
+                    <Swiper
+                    v-if="getUpdatedBook"
+                    :modules="modules"
+                    :slides-per-view="1"
+                    :space-between="15"
+                    :centeredSlidesBounds= "true"
+                    id="update-book-picture-wrapper">
+                        <SwiperSlide v-for="picture in getBookPictures(getUpdatedBook.pictureUrls)">
+                            <div class="update-book-picture-slide">
+                                <img :src="picture.pictureUrl">
+                            </div>
+                        </SwiperSlide>
+                    </Swiper>
+                    <i :class="{'update-book-picture-slider-button-visibility' : buttonVisibility}" class="bi bi-chevron-right"></i>
+                </div>
                 <div id="admin-update-book-values">
                     <div class="update-book-input-row">
                         <div class="update-book-input">
@@ -18,13 +34,13 @@
                     <div class="update-book-input-row">
                         <div class="update-book-input">
                             <span>Yayıncı</span>
-                            <div id="update-book-publisher-dropdown" class="update-book-dropdown-container">
-                                <div :class="{'update-book-dropdown-clicked' : publisherDropDownClicked}" @click="publisherDropDownClicked = !publisherDropDownClicked" class="update-book-dropdown">
-                                    <div id="update-book-publisher-dropdown-value" class="update-book-dropdown-value">{{ publisher.name }}</div>
+                            <div id="update-book-publisher-dropdown" class="publisher-dropdown-container update-book-dropdown-container">
+                                <div :class="{'update-book-dropdown-clicked' : publisherDropDownClicked}" @click="publisherDropDownClicked = !publisherDropDownClicked" class="publisher-dropdown-container update-book-dropdown">
+                                    <div id="update-book-publisher-dropdown-value" class="publisher-dropdown-container update-book-dropdown-value">{{ publisher.name }}</div>
                                     <i class="bi bi-chevron-down"></i>
                                 </div>
-                                <div v-if="publisherDropDownClicked" id="update-book-publisher-dropdown-values" class="update-book-dropdown-values">
-                                    <div :class="{'update-book-dropdown-select-value-selected' : publisher.id == data.id}" class="update-book-dropdown-select-value" v-for="data in getPublisherNames" :key="publisher.id"> {{data.name}}</div>
+                                <div @click="publisherDropDownClicked = false" v-if="publisherDropDownClicked" id="update-book-publisher-dropdown-values" class="publisher-dropdown-container update-book-dropdown-values">
+                                    <div @click="publisher = data" :class="{'update-book-dropdown-select-value-selected' : publisher.id == data.id}" class="publisher-dropdown-container update-book-dropdown-select-value" v-for="data in getPublisherNames" :key="publisher.id"> {{data.name}}</div>
                                 </div>
                             </div>
                         </div>
@@ -32,15 +48,18 @@
                     <div class="update-book-input-row">
                         <div class="update-book-input">
                             <span>Yazar</span>
-                            <div @click="authorDropDownClicked = !authorDropDownClicked" id="update-book-author-dropdown" class="update-book-dropdown-container">
-                                <div :class="{'update-book-dropdown-clicked' : authorDropDownClicked}" class="update-book-dropdown">
-                                    <div id="update-book-author-dropdown-value-container" class="update-book-dropdown-value">
-                                        <div class="update-book-author-dropdown-value" v-for="author in authors">{{ author.name }}</div>
+                            <div id="update-book-author-dropdown" class="author-dropdown-container update-book-dropdown-container">
+                                <div @click="authorDropDownClicked = !authorDropDownClicked" :class="{'update-book-dropdown-clicked' : authorDropDownClicked}" class="author-dropdown-container update-book-dropdown">
+                                    <div id="update-book-author-dropdown-value-container" class="author-dropdown-container update-book-dropdown-value">
+                                        <div class="author-dropdown-container update-book-author-dropdown-value" v-for="author in authors">{{ author.name }}</div>
                                     </div>
                                     <i class="bi bi-chevron-down"></i>
                                 </div>
-                                <div v-if="authorDropDownClicked" id="update-book-author-dropdown-values" class="update-book-dropdown-values">
-                                    <div class="update-book-dropdown-select-value" v-for="author in getAuthorNames" :key="author.id"> {{author.name}}</div>
+                                <div v-if="authorDropDownClicked" id="update-book-author-dropdown-values" class="author-dropdown-container update-book-dropdown-values">
+                                    <div class="author-dropdown-container update-book-dropdown-select-value update-book-author-dropdown-select-values" v-for="author in getAuthorNames" :key="author.id"> 
+                                        <div class="author-dropdown-container update-book-dropdown-select-value-name">{{author.name}}</div>
+                                        <input class="author-dropdown-container update-book-dropdown-select-value-checkbox" type="checkbox">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -48,13 +67,13 @@
                     <div class="update-book-input-row">
                         <div class="update-book-input">
                             <span>Dil</span>
-                            <div @click="languageDropDownClicked = !languageDropDownClicked" id="update-book-language-dropdown" class="update-book-dropdown-container">
-                                <div :class="{'update-book-dropdown-clicked' : languageDropDownClicked}" class="update-book-dropdown">
-                                    <div id="update-book-language-dropdown-value" class="update-book-dropdown-value"> {{ language.name }} </div>
+                            <div @click="languageDropDownClicked = !languageDropDownClicked" id="update-book-language-dropdown" class="language-dropdown-container update-book-dropdown-container">
+                                <div :class="{'update-book-dropdown-clicked' : languageDropDownClicked}" class="language-dropdown-container update-book-dropdown">
+                                    <div id="update-book-language-dropdown-value" class="language-dropdown-container update-book-dropdown-value"> {{ language.name }} </div>
                                     <i class="bi bi-chevron-down"></i>
                                 </div>
-                                <div v-if="languageDropDownClicked" id="update-book-language-dropdown-values" class="update-book-dropdown-values">
-                                    <div :class="{'update-book-dropdown-select-value-selected' : language.id == data.id}" v-for="data in getAllLanguage" :key="data.id" class="update-book-dropdown-select-value">{{ data.name }}</div>
+                                <div v-if="languageDropDownClicked" id="update-book-language-dropdown-values" class="language-dropdown-container update-book-dropdown-values">
+                                    <div @click="language = data" :class="{'update-book-dropdown-select-value-selected' : language.id == data.id}" v-for="data in getAllLanguage" :key="data.id" class="language-dropdown-container update-book-dropdown-select-value">{{ data.name }}</div>
                                 </div>
                             </div>
                         </div>
@@ -74,38 +93,37 @@
                     <div class="update-book-input-row">
                         <div class="update-book-input">
                             <span>Kağıt Tipi</span>
-                            <div @click="paperTypeDropDownClicked = !paperTypeDropDownClicked" id="update-book-paper-type-dropdown" class="update-book-dropdown-container">
-                                <div :class="{'update-book-dropdown-clicked' : paperTypeDropDownClicked}" class="update-book-dropdown">
-                                    <div id="update-book-paper-type-dropdown-value" class="update-book-dropdown-value"> {{ paperType }} </div>
+                            <div @click="paperTypeDropDownClicked = !paperTypeDropDownClicked" id="update-book-paper-type-dropdown" class="paper-type-dropdown-container update-book-dropdown-container">
+                                <div :class="{'update-book-dropdown-clicked' : paperTypeDropDownClicked}" class="paper-type-dropdown-container update-book-dropdown">
+                                    <div id="update-book-paper-type-dropdown-value" class="paper-type-dropdown-container update-book-dropdown-value"> {{ paperType }} </div>
                                     <i class="bi bi-chevron-down"></i>
                                 </div>
-                                <div v-if="paperTypeDropDownClicked" id="update-book-paper-type-dropdown-values" class="update-book-dropdown-values">
-                                    <div v-for="(value,index) in paperTypes" :key="index + 1" :class="{'update-book-dropdown-select-value-selected' : paperType == value}" class="update-book-dropdown-select-value">{{ value }}</div>
-                                    <div :class="{'update-book-dropdown-select-value-selected' : paperType == 'Saman Kağıdı'}" class="update-book-dropdown-select-value">Saman Kağıdı</div>
+                                <div v-if="paperTypeDropDownClicked" id="update-book-paper-type-dropdown-values" class="paper-type-dropdown-container update-book-dropdown-values">
+                                    <div @click="paperType = value" v-for="(value,index) in paperTypes" :key="index + 1" :class="{'update-book-dropdown-select-value-selected' : paperType == value}" class="paper-type-dropdown-container update-book-dropdown-select-value">{{ value }}</div>
                                 </div>
                             </div>
                         </div>
                         <div class="update-book-input">
                             <span>Cilt Tipi</span>
-                            <div @click="skinTypeDropDownClicked = !skinTypeDropDownClicked" id="update-book-skin-type-dropdown" class="update-book-dropdown-container">
-                                <div :class="{'update-book-dropdown-clicked' : skinTypeDropDownClicked}" class="update-book-dropdown">
-                                    <div id="update-book-skin-type-dropdown-value" class="update-book-dropdown-value"> {{ skinType }} </div>
+                            <div @click="skinTypeDropDownClicked = !skinTypeDropDownClicked" id="update-book-skin-type-dropdown" class="skin-type-dropdown-container update-book-dropdown-container">
+                                <div :class="{'update-book-dropdown-clicked' : skinTypeDropDownClicked}" class="skin-type-dropdown-container update-book-dropdown">
+                                    <div id="update-book-skin-type-dropdown-value" class="skin-type-dropdown-container update-book-dropdown-value"> {{ skinType }} </div>
                                     <i class="bi bi-chevron-down"></i>
                                 </div>
-                                <div v-if="skinTypeDropDownClicked" id="update-book-skin-type-dropdown-values" class="update-book-dropdown-values">
-                                    <div v-for="(value,index) in skinTypes" :key="index+1" :class="{'update-book-dropdown-select-value-selected' : skinType == value}" class="update-book-dropdown-select-value">{{ value }}</div>
+                                <div v-if="skinTypeDropDownClicked" id="update-book-skin-type-dropdown-values" class="skin-type-dropdown-container update-book-dropdown-values">
+                                    <div @click="skinType = value" v-for="(value,index) in skinTypes" :key="index+1" :class="{'update-book-dropdown-select-value-selected' : skinType == value}" class="skin-type-dropdown-container update-book-dropdown-select-value">{{ value }}</div>
                                 </div>
                             </div>
                         </div>
                         <div class="update-book-input">
                             <span>Boyut</span>
-                            <div @click="dimensionDropDownClicked = !dimensionDropDownClicked" id="update-book-dimension-dropdown" class="update-book-dropdown-container">
-                                <div :class="{'update-book-dropdown-clicked' : dimensionDropDownClicked}" class="update-book-dropdown">
-                                    <div id="update-book-dimension-dropdown-value" class="update-book-dropdown-value"> {{ dimension }}</div>
+                            <div @click="dimensionDropDownClicked = !dimensionDropDownClicked" id="update-book-dimension-dropdown" class="dimension-dropdown-container update-book-dropdown-container">
+                                <div :class="{'update-book-dropdown-clicked' : dimensionDropDownClicked}" class="dimension-dropdown-container update-book-dropdown">
+                                    <div id="update-book-dimension-dropdown-value" class="dimension-dropdown-container update-book-dropdown-value"> {{ dimension }}</div>
                                     <i class="bi bi-chevron-down"></i>
                                 </div>
-                                <div v-if="dimensionDropDownClicked" id="update-book-dimension-dropdown-values" class="update-book-dropdown-values">
-                                    <div v-for="(value,index) in dimensions" :key="index + 1" :class="{'update-book-dropdown-select-value-selected' : dimension == value}" class="update-book-dropdown-select-value">{{ value }}</div>
+                                <div v-if="dimensionDropDownClicked" id="update-book-dimension-dropdown-values" class="dimension-dropdown-container update-book-dropdown-values">
+                                    <div @click="dimension = value" v-for="(value,index) in dimensions" :key="index + 1" :class="{'update-book-dropdown-select-value-selected' : dimension == value}" class="dimension-dropdown-container update-book-dropdown-select-value">{{ value }}</div>
                                 </div>
                             </div>
                         </div>
@@ -138,10 +156,14 @@
 
 <script>
 import { mapGetters,mapActions } from 'vuex';
+import { Swiper , SwiperSlide  } from 'swiper/vue';
+import { Autoplay } from 'swiper/modules';
+import 'swiper/css';
 
 export default{
     data() {
         return{
+            buttonVisibility : false,
             publisherDropDownClicked : false,
             authorDropDownClicked : false,
             languageDropDownClicked : false,
@@ -163,6 +185,17 @@ export default{
             pageOfNumber : 0,
             stock : 0,
             price : 0,
+        }
+    },
+
+    components:{
+        Swiper,
+        SwiperSlide
+    },
+
+    setup(){
+        return{
+            modules : [Autoplay]
         }
     },
 
@@ -190,125 +223,56 @@ export default{
         },
         hidePublisherDropDown(){
             document.querySelector("#app").addEventListener('click',(e) => {
-                if(e.srcElement.id == "update-book-publisher-dropdown")
+                let classNames = e.srcElement.className.split(" ");
+                if(classNames.findIndex(x => x == "publisher-dropdown-container") > -1)
                     return;
-
-                if(e.srcElement.id == "update-book-publisher-dropdown-value")
-                    return;
-
-                if(e.srcElement.parentElement != null && e.srcElement.parentElement.id == "update-book-publisher-dropdown")
-                    return;
-
-                if(e.srcElement.id == "update-book-publisher-dropdown-values")    
-                    return;
-
-                if(e.srcElement.parentElement == "update-book-publisher-dropdown-values")
-                    return;  
-                
-                this.publisherDropDownClicked = false;
+                else                
+                    this.publisherDropDownClicked = false;
             })
         },
         hideAuthorDropDown(){
             document.querySelector("#app").addEventListener('click',(e) => {
-                if(e.srcElement.id == "update-book-author-dropdown")
+                let classNames = e.srcElement.className.split(" ");
+                if(classNames.findIndex(x => x == "author-dropdown-container") > -1)
                     return;
-
-                if(e.srcElement.id == "update-book-author-dropdown-value-container")
-                    return;
-
-                if(e.srcElement.className =="update-book-author-dropdown-value")
-                    return;
-
-                if(e.srcElement.parentElement != null && e.srcElement.parentElement.id == "update-book-author-dropdown")
-                    return;
-
-                if(e.srcElement.id == "update-book-author-dropdown-values")    
-                    return;
-
-                if(e.srcElement.parentElement == "update-book-author-dropdown-values")
-                    return;  
-                
-                this.authorDropDownClicked = false;
+                else
+                    this.authorDropDownClicked = false;
             })
         },
         hideLanguageDropDown(){
             document.querySelector("#app").addEventListener('click',(e) => {
-                if(e.srcElement.id == "update-book-language-dropdown")
+                let classNames = e.srcElement.className.split(" ");
+                if(classNames.findIndex(x => x == "language-dropdown-container") > -1)
                     return;
-
-                if(e.srcElement.id == "update-book-language-dropdown-value")
-                    return;
-
-                if(e.srcElement.parentElement != null && e.srcElement.parentElement.id == "update-book-language-dropdown")
-                    return;
-
-                if(e.srcElement.id == "update-book-language-dropdown-values")    
-                    return;
-
-                if(e.srcElement.parentElement == "update-book-language-dropdown-values")
-                    return;  
-                
-                this.languageDropDownClicked = false;
+                else
+                    this.languageDropDownClicked = false;
             })
         },
         hidePaperTypeDropDown(){
             document.querySelector("#app").addEventListener('click',(e) => {
-                if(e.srcElement.id == "update-book-paper-type-dropdown")
+                let classNames = e.srcElement.className.split(" ");
+                if(classNames.findIndex(x => x == "paper-type-dropdown-container") > -1)
                     return;
-
-                if(e.srcElement.id == "update-book-paper-type-dropdown-value")
-                    return;
-
-                if(e.srcElement.parentElement != null && e.srcElement.parentElement.id == "update-book-paper-type-dropdown")
-                    return;
-
-                if(e.srcElement.id == "update-book-paper-type-dropdown-values")    
-                    return;
-
-                if(e.srcElement.parentElement == "update-book-paper-type-dropdown-values")
-                    return;  
-                
-                this.paperTypeDropDownClicked = false;
+                else
+                    this.paperTypeDropDownClicked = false;
             })
         },
         hideSkinTypeDropDown(){
             document.querySelector("#app").addEventListener('click',(e) => {
-                if(e.srcElement.id == "update-book-skin-type-dropdown")
+                let classNames = e.srcElement.className.split(" ");
+                if(classNames.findIndex(x => x == "skin-type-dropdown-container") > -1)
                     return;
-
-                if(e.srcElement.id == "update-book-skin-type-dropdown-value")
-                    return;
-
-                if(e.srcElement.parentElement != null && e.srcElement.parentElement.id == "update-book-skin-type-dropdown")
-                    return;
-
-                if(e.srcElement.id == "update-book-skin-type-dropdown-values")    
-                    return;
-
-                if(e.srcElement.parentElement == "update-book-skin-type-dropdown-values")
-                    return;  
-                
-                this.skinTypeDropDownClicked = false;
+                else
+                    this.skinTypeDropDownClicked = false;
             })
         },
         hideDimensionDropDown(){
             document.querySelector("#app").addEventListener('click',(e) => {
-                if(e.srcElement.id == "update-book-dimension-dropdown")
+                let classNames = e.srcElement.className.split(" ");
+                if(classNames.findIndex(x => x == "dimension-dropdown-container") > -1)
                     return;
-
-                if(e.srcElement.id == "update-book-dimension-dropdown-value")
-                    return;
-
-                if(e.srcElement.parentElement != null && e.srcElement.parentElement.id == "update-book-dimension-dropdown")
-                    return;
-
-                if(e.srcElement.id == "update-book-dimension-dropdown-values")    
-                    return;
-
-                if(e.srcElement.parentElement == "update-book-dimension-dropdown-values")
-                    return;  
-                
-                this.dimensionDropDownClicked = false;
+                else
+                    this.dimensionDropDownClicked = false;
             })
         },
         hideDropDown(){
@@ -318,7 +282,12 @@ export default{
             this.hidePaperTypeDropDown();
             this.hideSkinTypeDropDown();
             this.hideDimensionDropDown(); 
-        }
+        },
+        getBookPictures(pictureUrls){
+            if(pictureUrls == null)
+                return require("@/assets/no-image-available.jpg");
+            return pictureUrls;
+        },
     },
 
     watch:{
@@ -337,7 +306,7 @@ export default{
                 this.stock = this.getUpdatedBook.stock ;
                 this.price = this.getUpdatedBook.price ;
             }
-        }
+        },
     },
 
     updated(){
@@ -422,12 +391,75 @@ export default{
     }
 
     #admin-update-book-pictures-slider{
+        position: relative;
+        display: flex;
+        align-items: center;
         width: 44%;
+        max-width: 362px;
         height: 100%;
         border-radius: 7px;
         background-color: #fbfcfc;
         border: 1px solid #d7dcdc;
         margin-right: 15px;
+        padding: 6px;
+    }
+
+    #update-book-picture-wrapper{
+        width: 100% ;
+        height: 100% ;
+    }
+
+    .update-book-picture-slide{
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100% ;
+        height: 100%;
+        background-color: #F4F6F6;
+    }
+
+    .update-book-picture-slide img{
+        width: 100%;
+        height: 100%;
+        object-fit: scale-down;
+    }
+
+    #admin-update-book-pictures-slider i{
+        z-index: 200;
+        opacity: 0;
+        font-size: 19px;
+        height: 37px;
+        width: 37px;
+        border-radius: 50%;
+        color: #fff;
+        background-color: orange;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        cursor: pointer;
+        transition: all 250ms;
+    }
+
+    .update-book-picture-slider-button-visibility{
+        opacity: 1 !important;
+        transition: all 250ms;
+    }
+
+    #admin-update-book-pictures-slider i:hover{
+        background-color: #F5B041;
+    }
+
+    #admin-update-book-pictures-slider i:last-child{
+        padding-left: 3px;
+        right: -10px;   
+    }
+
+    #admin-update-book-pictures-slider i:first-child{
+        padding-right: 3px;
+        left: -10px;
     }
 
     #admin-update-book-values{
@@ -553,6 +585,29 @@ export default{
 
     .update-book-dropdown-values .update-book-dropdown-select-value:last-child{
         margin-bottom: 0px;
+    }
+
+    #update-book-author-dropdown-values{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .update-book-author-dropdown-select-values{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-right: 5px;
+    }
+
+    .update-book-author-dropdown-select-values div{
+        width: 100%;
+    }
+
+    .update-book-author-dropdown-select-values input{
+        height: 16px;
+        width: 16px;
+        cursor: pointer;
     }
 
     #update-book-author-dropdown-values .update-book-dropdown-select-value,
