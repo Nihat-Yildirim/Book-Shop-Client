@@ -13,8 +13,24 @@ const BookService = {
         return result.data;
     },
 
-    async updateBook(updatedBook){
-        const result = await appAxios.put("Books/UpdateBook",updatedBook);
+    async updateBook(params){
+        const result = await appAxios.put("Books/UpdateBook",null,{
+            params:{
+                BookId : params.bookId,
+                PublisherId : params.publisherId,
+                LanguageId : params.languageId,
+                BookName : params.bookName,
+                ISBN : params.ISBN,
+                PaperType : params.paperType,
+                SkinType : params.skinType,
+                Dimension : params.dimension,
+                Description : params.description,
+                ReleaseDate : params.releaseDate,
+                PageOfNumber : params.pageOfNumber,
+                Stock : params.stock,
+                Price : params.price
+            }
+        });
         return result.data;
     },
 

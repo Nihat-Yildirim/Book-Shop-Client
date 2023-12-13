@@ -17,9 +17,13 @@ const BookModule = {
         bookDataForAdmin : [],
         updatedBookId : 0,
         updatedBook : null,
+        updateBookInformationSuccessResult : false,
+        updateBookAuthorsSuccessResult : false,
     },
 
     mutations:{
+        setUpdateBookInformationSuccessResult : (state,successResult) => state.updateBookInformationSuccessResult = successResult,
+        setUpdateBookAuthorsSuccessResult : (state,successResult) => state.updateBookAuthorsSuccessResult = successResult,
         setUpdatedBook : (state,book) => state.updatedBook = book,
         setBookDataForAdmin : (state,books) => state.bookDataForAdmin = books,
         setWordClassics : (state,books) => state.worldClassics = books,
@@ -45,6 +49,8 @@ const BookModule = {
     },
 
     getters :{
+        _getUpdateBookInformationSuccessResult : (state) => state.updateBookInformationSuccessResult,
+        _getUpdateBookAuthorsSuccessResult : (state) => state.updateBookAuthorsSuccessResult,
         _getUpdatedBook : (state) => state.updatedBook,
         _getUpdatedBookId : (state) => state.updatedBookId,
         _getBookDataForAdmin : (state) => state.bookDataForAdmin,
@@ -102,7 +108,7 @@ const BookModule = {
             await BookService.getBooksByCategoryAndAuthorId(params)
             .then(response => context.commit('setRelatedBooks',response.data))
             .catch(error => console.log(error));
-        },
+        }, 
         async getAllBookForAdmin(context,params){
             await BookService.getAllBookForAdmin(params)
             .then(response => context.commit('setBookDataForAdmin',response.data))
@@ -112,6 +118,22 @@ const BookModule = {
             context.commit('setUpdatedBook',null)
             await BookService.getById(id)
             .then(response => context.commit('setUpdatedBook',response.data))
+            .catch(error => console.log(error));
+        },
+        async updateBookInformations(context,params){
+            context.commit('setUpdateBookInformationSuccessResult',false);
+            await BookService.updateBook(params)
+            .then(response => {
+                context.commit('setUpdateBookInformationSuccessResult',response.success);
+                if(response.success)    
+                    context.dispatch('getUpdatedBook',params.bookId)
+            })
+            .catch(error => console.log(error));
+        },
+        async updateBookAuthors(context,params){
+            context.commit('setUpdateBookAuthorsSuccessResult',false);
+            await BookService.updateBookAuthors(params)
+            .then(response => context.commit('setUpdateBookAuthorsSuccessResult',response.success))
             .catch(error => console.log(error));
         }
     }

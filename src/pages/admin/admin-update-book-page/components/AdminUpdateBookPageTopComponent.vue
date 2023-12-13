@@ -28,7 +28,7 @@
                     <div class="update-book-input-row">
                         <div class="update-book-input">
                             <span>Kitap İsmi</span>
-                            <input v-model="bookName" type="text">
+                            <input :class="{'update-information-error-input' : bookNameValid}" v-model="bookName" type="text">
                         </div>
                     </div>
                     <div class="update-book-input-row">
@@ -51,14 +51,14 @@
                             <div id="update-book-author-dropdown" class="author-dropdown-container update-book-dropdown-container">
                                 <div @click="authorDropDownClicked = !authorDropDownClicked" :class="{'update-book-dropdown-clicked' : authorDropDownClicked}" class="author-dropdown-container update-book-dropdown">
                                     <div id="update-book-author-dropdown-value-container" class="author-dropdown-container update-book-dropdown-value">
-                                        <div class="author-dropdown-container update-book-author-dropdown-value" v-for="author in authors">{{ author.name }}</div>
+                                        <div class="author-dropdown-container update-book-author-dropdown-value">{{ getAuthorsName() }}</div>
                                     </div>
                                     <i class="bi bi-chevron-down"></i>
                                 </div>
                                 <div v-if="authorDropDownClicked" id="update-book-author-dropdown-values" class="author-dropdown-container update-book-dropdown-values">
-                                    <div class="author-dropdown-container update-book-dropdown-select-value update-book-author-dropdown-select-values" v-for="author in getAuthorNames" :key="author.id"> 
-                                        <div class="author-dropdown-container update-book-dropdown-select-value-name">{{author.name}}</div>
-                                        <input class="author-dropdown-container update-book-dropdown-select-value-checkbox" type="checkbox">
+                                    <div :class="{'update-book-dropdown-select-value-selected' : authors.findIndex(x => x.id == data.id) > -1 ? true : false}" @click="addAuthor(data)" class="author-dropdown-container update-book-dropdown-select-value update-book-author-dropdown-select-values" v-for="data in getAuthorNames" :key="data.id"> 
+                                        <div class="author-dropdown-container update-book-dropdown-select-value-name">{{data.name}}</div>
+                                        <input class="author-dropdown-container update-book-dropdown-select-value-checkbox" type="checkbox" :checked="authors.findIndex(x => x.id == data.id) > -1 ? true : false">
                                     </div>
                                 </div>
                             </div>
@@ -81,13 +81,13 @@
                     <div class="update-book-input-row">
                         <div class="update-book-input">
                             <span>ISBN</span>
-                            <input v-model="ISBN" type="text">
+                            <input :class="{'update-information-error-input' : ISBNValid}" v-model="ISBN" type="number">
                         </div>
                     </div>
                     <div class="update-book-input-row">
                         <div class="update-book-input">
                             <span>Yayın Tarihi</span>
-                            <input v-model="releaseDate" type="text">
+                            <input :class="{'update-information-error-input' : releaseDateValid}" v-model="releaseDate" type="text">
                         </div>
                     </div>
                     <div class="update-book-input-row">
@@ -131,18 +131,18 @@
                     <div class="update-book-input-row">
                         <div class="update-book-input">
                             <span>Sayfa Sayısı</span>
-                            <input v-model="pageOfNumber" type="text">
+                            <input :class="{'update-information-error-input' : pageOfNumberValid}" v-model="pageOfNumber" type="number">
                         </div>
                         <div class="update-book-input">
                             <span>Stok</span>
-                            <input v-model="stock" type="text">
+                            <input :class="{'update-information-error-input' : stockValid}" v-model="stock" type="number">
                         </div>
                         <div class="update-book-input">
                             <span>Fiyat</span>
-                            <input v-model="price" type="text">
+                            <input :class="{'update-information-error-input' : priceValid}" v-model="price" type="number">
                         </div>
                     </div>
-                    <button>Güncelle</button>
+                    <button :class="{'not-chanhed-update-button' : !updateBookInformationActivate}" @click="updateBookAuthorAndInformation">Güncelle</button>
                 </div>
             </div>
             <div id="admin-update-book-top-content-right">
@@ -182,9 +182,19 @@ export default{
             ISBN : "",
             releaseDate : "",
             bookName : "",
+            bookDescription : "",
             pageOfNumber : 0,
             stock : 0,
             price : 0,
+            bookNameValid : false,
+            ISBNValid : false,
+            releaseDateValid : false,
+            pageOfNumberValid : false,
+            stockValid : false,
+            priceValid : false,
+            bookDescriptionValid : false,
+            updateInformationButtonClicked : false,
+            updateBookInformationActivate : false,
         }
     },
 
@@ -206,6 +216,8 @@ export default{
             getAllLanguage : "LanguageModule/_getAllLanguage",
             getAuthorNames : "AuthorModule/_getAuthorNames",
             getPublisherNames : "PublisherModule/_getPublisherNames",
+            getUpdateBookAuthorsSuccessResult : "BookModule/_getUpdateBookAuthorsSuccessResult",
+            getUpdateBookInformationSuccessResult : "BookModule/_getUpdateBookInformationSuccessResult",
         })
     },
 
@@ -215,6 +227,8 @@ export default{
             getAllLanguageAction : "LanguageModule/getAllLanguage",
             getAllAuthorName : "AuthorModule/getAllAuthorName",
             getAllPublisherName : "PublisherModule/getAllPublisherName",
+            updateBookInformationsAction : "BookModule/updateBookInformations",
+            updateBookAuthorsAction : "BookModule/updateBookAuthors",
         }),
         navigateUpdateBooksPage(){
             this.$router.push({
@@ -288,14 +302,130 @@ export default{
                 return require("@/assets/no-image-available.jpg");
             return pictureUrls;
         },
+        addAuthor(author){
+            let index = this.authors.findIndex(x => x.id == author.id)
+            if(index > -1 && this.authors.length > 1)
+                this.authors.splice(index,1);
+            
+            if(index == -1)
+                this.authors.push(author);
+        },
+        getAuthorsName(){
+            let names = "";
+            for(let i = 0; i<this.authors.length ; i++){
+                if(i == 0)
+                    names += this.authors[i].name;
+                if(i == 1)
+                    names += ","+this.authors[i].name;
+
+                if(i > 1){
+                    names += " ...";
+                    break;
+                }
+            }
+
+            return names;
+        },
+        bookNameValidator(){
+            if(this.bookName == "" || this.bookName == null || this.bookName.length > 50 || this.bookName.length < 2)
+                return true;
+
+            return false;
+        },
+        ISBNValidator(){
+            if(this.ISBN == "" || this.ISBN == null || this.ISBN.length != 13 )
+                return true;
+
+            return false;
+        },
+        releaseDateValidator(){
+            if(this.releaseDate.length > 10 || new Date(this.releaseDate) > new Date())
+                return true;
+
+            return false;
+        },
+        pageOfNumberValidator(){
+            if(this.pageOfNumber == 0 || this.pageOfNumber == null || this.pageOfNumber < 0)
+                return true;
+
+            return false;
+        },
+        stockValidator(){
+            if(this.stock < 0 )
+                return true;
+
+            return false;
+        },
+        priceValidator(){
+            if(this.price == 0 || this.price == null || this.price <0)
+                return true;
+
+            return false;
+        },
+        bookDescriptionValidator(){
+            if(this.bookDescription == "" ||this.bookDescription == null || this.bookDescription.length < 50)
+                return true;
+
+            return false;
+        },
+        handleChangeAuthors(){
+            if(this.getUpdatedBook.authors.length == this.authors.length)
+                return true;
+
+            return false;
+        },
+        updateAuthor(){
+            let isUpdate = this.handleChangeAuthors();
+            if(!isUpdate)
+                return;
+        },
+        updateBookInformations(){
+            this.bookNameValid = this.bookNameValidator();
+            this.ISBNValid = this.ISBNValidator();
+            this.releaseDateValid = this.releaseDateValidator();
+            this.pageOfNumberValid = this.pageOfNumberValidator();
+            this.stockValid = this.stockValidator();
+            this.priceValid = this.priceValidator();
+
+            if(this.bookNameValid || this.ISBNValid || this.releaseDateValid || this.pageOfNumberValid || this.stockValid || this.priceValid)
+                return;
+
+            if(!this.updateInformationButtonClicked && this.updateBookInformationActivate){
+                this.updateInformationButtonClicked = true;
+                this.updateBookInformationsAction({
+                    bookId : this.getUpdatedBookId,
+                    publisherId : this.publisher.id,
+                    languageId : this.language.id,
+                    bookName : this.bookName,
+                    ISBN : this.ISBN,
+                    paperType : this.paperType,
+                    skinType : this.skinType,
+                    dimension : this.dimension,
+                    description : this.bookDescription,
+                    releaseDate : this.releaseDate,
+                    pageOfNumber : this.pageOfNumber,
+                    stock : this.stock,
+                    price : this.price,
+                });
+            }
+        },
+        updateBookAuthorAndInformation(){
+            this.updateAuthor();
+            this.updateBookInformations();
+        }
     },
 
     watch:{
+        getUpdateBookInformationSuccessResult(){
+            this.updateInformationButtonClicked = false;
+            if(this.getUpdateBookInformationSuccessResult)
+                this.$toastr.success("Kitap Bilgileri Başarıyla Güncellendi !");
+        },
         getUpdatedBook(){
             if(this.getUpdatedBook != null){
                 this.bookName = this.getUpdatedBook.bookName ;
                 this.ISBN = this.getUpdatedBook.isbn;
-                this.releaseDate = this.getUpdatedBook.releaseDate ;
+                this.releaseDate  = this.getUpdatedBook.releaseDate;
                 this.publisher = this.getUpdatedBook.publisher;
                 this.language = this.getUpdatedBook.language;
                 this.authors = this.getUpdatedBook.authors;
@@ -305,8 +435,75 @@ export default{
                 this.pageOfNumber = this.getUpdatedBook.pageOfNumber;
                 this.stock = this.getUpdatedBook.stock ;
                 this.price = this.getUpdatedBook.price ;
+                this.bookDescription = this.getUpdatedBook.description;
             }
         },
+        bookName(){
+            if(this.bookName != this.getUpdatedBook.bookName)
+                this.updateBookInformationActivate = true;
+            else
+                this.updateBookInformationActivate = false;
+        },
+        publisherId(){
+            if(this.publisherId != this.getUpdatedBook.publisherId)
+                this.updateBookInformationActivate = true;
+            else
+                this.updateBookInformationActivate = false;
+        },
+        publisher(){
+            if(this.publisher.id != this.getUpdatedBook.publisher.id)
+                this.updateBookInformationActivate = true;
+            else
+                this.updateBookInformationActivate = false;
+        },
+        language(){
+            if(this.language.id != this.getUpdatedBook.language.id)
+                this.updateBookInformationActivate = true;
+            else
+                this.updateBookInformationActivate = false;
+        },
+        ISBN(){
+            if(this.ISBN != this.getUpdatedBook.isbn)
+                this.updateBookInformationActivate = true;
+            else
+                this.updateBookInformationActivate = false;
+        },
+        paperType(){
+            if(this.paperType != this.getUpdatedBook.paperType)
+                this.updateBookInformationActivate = true;
+            else
+                this.updateBookInformationActivate = false;
+        },
+        skinType(){
+            if(this.skinType != this.getUpdatedBook.skinType)
+                this.updateBookInformationActivate = true;
+            else
+                this.updateBookInformationActivate = false;
+        },
+        dimension(){
+            if(this.dimension != this.getUpdatedBook.dimension)
+                this.updateBookInformationActivate = true;
+            else
+                this.updateBookInformationActivate = false;
+        },
+        pageOfNumber(){
+            if(this.pageOfNumber != this.getUpdatedBook.pageOfNumber)
+                this.updateBookInformationActivate = true;
+            else
+                this.updateBookInformationActivate = false;
+        },
+        stock(){
+            if(this.stock != this.getUpdatedBook.stock)
+                this.updateBookInformationActivate = true;
+            else
+                this.updateBookInformationActivate = false;
+        },
+        price(){
+            if(this.price != this.getUpdatedBook.price)
+                this.updateBookInformationActivate = true;
+            else
+                this.updateBookInformationActivate = false;
+        }
     },
 
     updated(){
@@ -377,7 +574,7 @@ export default{
     }
 
     .admin-update-book-chart{
-        height: 190px;
+        height: 195px;
         width: 100%;
         margin-bottom: 15px;
         border-radius: 7px;
@@ -468,6 +665,17 @@ export default{
         flex-direction: column;
     }
 
+    .not-chanhed-update-button{
+        cursor: auto !important;
+        color: #3e3e3e !important;
+        border: 1px solid #BFC9CA !important;
+        background-color: #D5DBDB !important;
+    }
+
+    .not-chanhed-update-button:hover{
+        opacity: 1 !important;
+    }
+
     #admin-update-book-values button{
         margin-top: 39px;
         height: 38px;
@@ -501,6 +709,15 @@ export default{
         display: flex;
         flex-direction: column;
         width: 100%;
+    }
+
+    .update-book-input input[type=number]::-webkit-outer-spin-button,
+    .update-book-input input[type=number]::-webkit-inner-spin-button{
+        -webkit-appearance: none;
+    }
+
+    .update-information-error-input{
+        border: 1px solid #E74C3C !important;
     }
 
     .update-book-input span{
