@@ -9,6 +9,16 @@ const ViewService = {
         });
 
         return result.data;
+    },
+
+    async getSelectedBookViewDatasForDays(bookId){
+        const result = await appAxios.get("Views/GetSelectedBookViewDatasForDays",{
+            params:{
+                BookId : bookId
+            }
+        });
+
+        return result.data;
     }
 }
 

@@ -9,10 +9,12 @@ const CommentModule = {
         selectedBookComments : [],
         selectedCommentRating : null,
         deleteCommentSuccessResult : false,
+        selectedBookCommentDatasForDays : [],
         userComments : [],
     },
 
     mutations:{
+        setSelectedBookCommentDatasForDays : (state,datas) => state.selectedBookCommentDatasForDays = datas,
         setDeleteCommentSuccessResult : (state,successResult) => state.deleteCommentSuccessResult = successResult,
         setSelectedBookCommentCount : (state , count) => state.selectedBookCommentCount = count,
         setSelectedBookUserComment : (state , comment) => state.selectedBookUserComment = comment,
@@ -25,6 +27,7 @@ const CommentModule = {
     },
 
     getters:{
+        _getSelectedBookCommentDatasForDays : (state) => state.selectedBookCommentDatasForDays,
         _getDeleteCommentSuccessResult : (state) => state.deleteCommentSuccessResult,
         _getSelectedBookCommentCount : (state) => state.selectedBookCommentCount,
         _getSelectedBookUserComment : (state) => state.selectedBookUserComment,
@@ -127,6 +130,11 @@ const CommentModule = {
         async getCommentsByUserId(context,params){
             await CommentService.getCommentsByUserId(params)
             .then(response => context.commit('setUserComments',response.data))
+            .catch(error => console.log(error));
+        },
+        async getSelectedBookCommentDatasForDays(context,bookId){
+            await CommentService.getSelectedBookCommentDatasForDays(bookId)
+            .then(response => context.commit('setSelectedBookCommentDatasForDays',response.data))
             .catch(error => console.log(error));
         }
     }

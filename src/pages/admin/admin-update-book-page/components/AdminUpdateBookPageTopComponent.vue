@@ -146,15 +146,32 @@
                 </div>
             </div>
             <div id="admin-update-book-top-content-right">
-                <div class="admin-update-book-chart"></div>
-                <div class="admin-update-book-chart"></div>
-                <div class="admin-update-book-chart"></div>
+                <div class="admin-update-book-chart">
+                    <div class="admin-update-book-chart-name">Chart Name</div>
+                    <div class="admin-update-book-chart-container">
+                        <canvas id="" class="updated-book-chart"></canvas>
+                    </div>
+                </div> 
+                <div class="admin-update-book-chart">
+                    <div class="admin-update-book-chart-name">Chart Name</div>
+                    <div class="admin-update-book-chart-container">
+                        <canvas id="" class="updated-book-chart"></canvas>
+                    </div>
+                </div>
+                <div class="admin-update-book-chart">
+                    <div id="view-comment-chart-title" class="admin-update-book-chart-name"><span>Görüntülenme</span> & <span>Yorum Sayısı</span></div>
+                    <div class="admin-update-book-chart-container">
+                        <canvas id="view-comment-chart" class="updated-book-chart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import { markRaw } from 'vue'
+import { Chart } from 'chart.js/auto';
 import { mapGetters,mapActions } from 'vuex';
 import { Swiper , SwiperSlide  } from 'swiper/vue';
 import { Autoplay } from 'swiper/modules';
@@ -196,6 +213,7 @@ export default{
             updateInformationButtonClicked : false,
             updateBookAuthorsButtonClicked : false,
             updateBookInformationActivate : false,
+            viewCommentChart : null,
         }
     },
 
@@ -219,7 +237,9 @@ export default{
             getPublisherNames : "PublisherModule/_getPublisherNames",
             getUpdateBookAuthorsSuccessResult : "BookModule/_getUpdateBookAuthorsSuccessResult",
             getUpdateBookInformationSuccessResult : "BookModule/_getUpdateBookInformationSuccessResult",
-        })
+            getSelectedBookViewDatasForDays : "ViewModule/_getSelectedBookViewDatasForDays",
+            getSelectedBookCommentDatasForDays : "CommentModule/_getSelectedBookCommentDatasForDays",
+        }),
     },
 
     methods:{
@@ -230,6 +250,8 @@ export default{
             getAllPublisherName : "PublisherModule/getAllPublisherName",
             updateBookInformationsAction : "BookModule/updateBookInformations",
             updateBookAuthorsAction : "BookModule/updateBookAuthors",
+            getSelectedBookViewDatasForDaysAction : "ViewModule/getSelectedBookViewDatasForDays",
+            getSelectedBookCommentDatasForDaysAction : "CommentModule/getSelectedBookCommentDatasForDays",
         }),
         navigateUpdateBooksPage(){
             this.$router.push({
@@ -394,8 +416,7 @@ export default{
             if(!isUpdate)
                 return;
 
-            if(!this.updateBookAuthorsButtonClicked && this.updateBookInformationActivate){
-                this.updateBookAuthorsButtonClicked = true;
+            if(this.updateBookInformationActivate){
                 this.updateBookAuthorsAction({
                     bookId : this.getUpdatedBookId,
                     authorIds : this.authors.map(x => x.id),
@@ -413,10 +434,7 @@ export default{
             if(this.bookNameValid || this.ISBNValid || this.releaseDateValid || this.pageOfNumberValid || this.stockValid || this.priceValid)
                 return;
 
-            const event = new Date(this.releaseDate);
-            const date = event.toLocaleString('tr');
-            if(!this.updateInformationButtonClicked && this.updateBookInformationActivate){
-                this.updateInformationButtonClicked = true;
+            if(this.updateBookInformationActivate){
                 this.updateBookInformationsAction({
                     bookId : this.getUpdatedBookId,
                     publisherId : this.publisher.id,
@@ -427,7 +445,7 @@ export default{
                     skinType : this.skinType,
                     dimension : this.dimension,
                     description : this.bookDescription,
-                    releaseDate : date,
+                    releaseDate : this.releaseDate,
                     pageOfNumber : this.pageOfNumber,
                     stock : this.stock,
                     price : this.price,
@@ -437,17 +455,79 @@ export default{
         updateBookAuthorAndInformation(){
             this.updateAuthor();
             this.updateBookInformations();
+        },
+        createCharts(){
+            let chart = new Chart(document.getElementById("view-comment-chart"),
+            {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: []
+                },
+                options:{
+                    responsive: false,
+                    plugins:{
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            this.viewCommentChart = markRaw(chart);
         }
     },
 
     watch:{
+        getSelectedBookViewDatasForDays(){
+            if(this.getSelectedBookViewDatasForDays != null){
+                let labels = [];
+                let datas  = [];
+                for(let data of this.getSelectedBookViewDatasForDays){
+                    labels.push(data.date);
+                    datas.push(data.viewCount);
+                }
+                this.viewCommentChart.data.labels = labels;
+                this.viewCommentChart.data.datasets.push({
+                    label : "Görüntülenme",
+                    data: datas,
+                    pointRadius: 0,
+                    borderWidth: 2,
+                    fill: true,
+                    borderColor: '#CA6F1E',
+                    backgroundColor: '#EDBB99'
+                });
+
+                this.viewCommentChart.update();
+            }
+        },
+        getSelectedBookCommentDatasForDays(){
+            if(this.getSelectedBookCommentDatasForDays != null){
+                let labels = [];
+                let datas  = [];
+                for(let data of this.getSelectedBookCommentDatasForDays){
+                    labels.push(data.date);
+                    datas.push(data.commentCount);
+                }
+                this.viewCommentChart.data.labels = labels;
+                this.viewCommentChart.data.datasets.push({
+                    label :"Yorum",
+                    data: datas,
+                    pointRadius: 0,
+                    borderWidth: 2,
+                    fill: true,
+                    borderColor: '#C0392B',
+                    backgroundColor: '#EC7063'
+                });
+
+                this.viewCommentChart.update();
+            }
+        },
         getUpdateBookInformationSuccessResult(){
-            this.updateInformationButtonClicked = false;
             if(this.getUpdateBookInformationSuccessResult)
                 this.$toastr.success("Kitap Bilgileri Başarıyla Güncellendi !");
         },
         getUpdateBookAuthorsSuccessResult(){
-            this.updateBookAuthorsButtonClicked = false;
             if(this.getUpdateBookAuthorsSuccessResult)
                 this.$toastr.success("Kitap Yazar Bilgileri Başarıyla Güncellendi !");
         },
@@ -549,6 +629,9 @@ export default{
     },
 
     mounted(){
+        this.createCharts();
+        this.getSelectedBookCommentDatasForDaysAction(this.getUpdatedBookId);
+        this.getSelectedBookViewDatasForDaysAction(this.getUpdatedBookId)
         this.getUpdatedBookAction(this.getUpdatedBookId);
         this.getAllLanguageAction();
         this.getAllAuthorName();
@@ -619,6 +702,33 @@ export default{
         box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
         border: 1px solid #F2F3F4;
         background-color: #F8F9F9;
+        padding: 5px;
+        display : flex;
+        flex-direction: column;
+    }
+
+    .admin-update-book-chart-name{
+        font-size : 16px;
+        color : #e78229;
+        margin-bottom : 5px;
+    }
+
+    .admin-update-book-chart-container{
+        height : 157px;
+        display: flex;
+    }
+
+    .updated-book-chart{
+        height: 100% !important;
+        width: 100%;
+    }
+
+    #view-comment-chart-title span:first-child{
+        color: #CA6F1E;
+    }
+
+    #view-comment-chart-title span:last-child{
+        color: #C0392B;
     }
 
     #admin-update-book-top-content-right .admin-update-book-chart:last-child{

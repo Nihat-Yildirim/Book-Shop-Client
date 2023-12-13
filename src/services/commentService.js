@@ -90,6 +90,16 @@ const CommentService = {
     async getSelectedCommentRating(params){
         var result = await appAxios.get(`Comments/GetSelectedCommentRating?CommentId=${params.commentId}&UserId=${params.userId}`);
         return result.data;
+    },
+
+    async getSelectedBookCommentDatasForDays(bookId){
+        var result = await appAxios.get("Comments/GetSelectedBookCommentDatasForDays",{
+            params:{
+                BookId : bookId
+            }
+        });
+
+        return result.data;
     }
 }
 
