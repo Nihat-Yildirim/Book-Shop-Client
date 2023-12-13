@@ -194,6 +194,7 @@ export default{
             priceValid : false,
             bookDescriptionValid : false,
             updateInformationButtonClicked : false,
+            updateBookAuthorsButtonClicked : false,
             updateBookInformationActivate : false,
         }
     },
@@ -309,6 +310,8 @@ export default{
             
             if(index == -1)
                 this.authors.push(author);
+
+            this.updateBookInformationActivate = this.handleChangeAuthors();
         },
         getAuthorsName(){
             let names = "";
@@ -369,15 +372,35 @@ export default{
             return false;
         },
         handleChangeAuthors(){
-            if(this.getUpdatedBook.authors.length == this.authors.length)
-                return true;
+            if(this.authors.length > this.getUpdatedBook.authors.length)
+                for(let data of this.authors)
+                    if(this.getUpdatedBook.authors.findIndex(author => author.id == data.id) == -1)
+                        return true;
 
+            if(this.authors.length < this.getUpdatedBook.authors.length)
+                for(let data of this.getUpdatedBook.authors)
+                    if(this.authors.findIndex(author => author.id == data.id) == -1)
+                        return true;
+
+            if(this.authors.length == this.getUpdatedBook.authors.length)
+                for(let data of this.getUpdatedBook.authors)
+                    if(this.authors.findIndex(author => author.id == data.id) == -1)
+                        return true;
+            
             return false;
         },
         updateAuthor(){
             let isUpdate = this.handleChangeAuthors();
             if(!isUpdate)
                 return;
+
+            if(!this.updateBookAuthorsButtonClicked && this.updateBookInformationActivate){
+                this.updateBookAuthorsButtonClicked = true;
+                this.updateBookAuthorsAction({
+                    bookId : this.getUpdatedBookId,
+                    authorIds : this.authors.map(x => x.id),
+                })
+            }   
         },
         updateBookInformations(){
             this.bookNameValid = this.bookNameValidator();
@@ -390,6 +413,8 @@ export default{
             if(this.bookNameValid || this.ISBNValid || this.releaseDateValid || this.pageOfNumberValid || this.stockValid || this.priceValid)
                 return;
 
+            const event = new Date(this.releaseDate);
+            const date = event.toLocaleString('tr');
             if(!this.updateInformationButtonClicked && this.updateBookInformationActivate){
                 this.updateInformationButtonClicked = true;
                 this.updateBookInformationsAction({
@@ -402,7 +427,7 @@ export default{
                     skinType : this.skinType,
                     dimension : this.dimension,
                     description : this.bookDescription,
-                    releaseDate : this.releaseDate,
+                    releaseDate : date,
                     pageOfNumber : this.pageOfNumber,
                     stock : this.stock,
                     price : this.price,
@@ -421,6 +446,11 @@ export default{
             if(this.getUpdateBookInformationSuccessResult)
                 this.$toastr.success("Kitap Bilgileri Başarıyla Güncellendi !");
         },
+        getUpdateBookAuthorsSuccessResult(){
+            this.updateBookAuthorsButtonClicked = false;
+            if(this.getUpdateBookAuthorsSuccessResult)
+                this.$toastr.success("Kitap Yazar Bilgileri Başarıyla Güncellendi !");
+        },
         getUpdatedBook(){
             if(this.getUpdatedBook != null){
                 this.bookName = this.getUpdatedBook.bookName ;
@@ -428,7 +458,9 @@ export default{
                 this.releaseDate  = this.getUpdatedBook.releaseDate;
                 this.publisher = this.getUpdatedBook.publisher;
                 this.language = this.getUpdatedBook.language;
-                this.authors = this.getUpdatedBook.authors;
+                this.authors = [];
+                for(let data of this.getUpdatedBook.authors)
+                    this.authors.push(data)
                 this.paperType = this.getUpdatedBook.paperType ;
                 this.skinType = this.getUpdatedBook.skinType ;
                 this.dimension = this.getUpdatedBook.dimension ;
@@ -503,7 +535,13 @@ export default{
                 this.updateBookInformationActivate = true;
             else
                 this.updateBookInformationActivate = false;
-        }
+        },
+        releaseDate(){
+            if(this.releaseDate != this.getUpdatedBook.releaseDate)
+                this.updateBookInformationActivate = true;
+            else
+                this.updateBookInformationActivate = false;
+        },
     },
 
     updated(){

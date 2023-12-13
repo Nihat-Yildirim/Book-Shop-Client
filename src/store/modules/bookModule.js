@@ -133,7 +133,11 @@ const BookModule = {
         async updateBookAuthors(context,params){
             context.commit('setUpdateBookAuthorsSuccessResult',false);
             await BookService.updateBookAuthors(params)
-            .then(response => context.commit('setUpdateBookAuthorsSuccessResult',response.success))
+            .then(response => {
+                context.commit('setUpdateBookAuthorsSuccessResult',response.success);
+                if(response.success)    
+                    context.dispatch('getUpdatedBook',params.bookId)
+            })
             .catch(error => console.log(error));
         }
     }
