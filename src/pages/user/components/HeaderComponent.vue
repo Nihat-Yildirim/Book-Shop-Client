@@ -7,7 +7,7 @@
                 <i :class="{'search-icon-selected' : searchContainerClicked}" id="search-icon" class="bi bi-search search-container-element"></i>
             </div>
             <div class="search-container-element" v-if="searchContainerClicked" id="search-view-container">
-                <div v-if="getSearchedBooks.length != 0" class="results-container search-container-element"  id="search-result-books">
+                <div v-if="searchedBookDatas.length != 0" class="results-container search-container-element"  id="search-result-books">
                     <div class="results-container search-container-element">
                         <div :class="{'clicked-header' : bookSearchContainerClick}" @click="bookSearchContainerClick = !bookSearchContainerClick" class="search-results-container-header search-container-element">
                             <span class="search-results-container-header-title search-container-element">Kitaplar</span>
@@ -15,11 +15,11 @@
                             <i v-show="bookSearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon search-container-element"></i>
                         </div>
                         <ul class="search-container-element" v-if="bookSearchContainerClick == false">
-                            <li @click="navigateBookDetailPage(book)" v-for="book in getSearchedBooks" class="search-container-element search-result">{{ book.name }}</li>
+                            <li @click="navigateBookDetailPage(book)" v-for="book in searchedBookDatas" class="search-container-element search-result">{{ book.name }}</li>
                         </ul>
                     </div>
                 </div>
-                <div v-if="searchedAuthors.length != 0" class="results-container search-container-element" id="search-result-authors">
+                <div v-if="searchedAuthorDatas.length != 0" class="results-container search-container-element" id="search-result-authors">
                     <div class="results-container search-container-element">
                         <div :class="{'clicked-header' : authorSearchContainerClick}" @click="authorSearchContainerClick = !authorSearchContainerClick" class="search-results-container-header search-container-element">
                             <span class="search-results-container-header-title search-container-element">Yazarlar</span>
@@ -27,23 +27,11 @@
                             <i v-show="authorSearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon search-container-element"></i>
                         </div>
                         <ul class="search-container-element" v-if="authorSearchContainerClick == false">
-                            <li @click="navigateAuthorDetailPage(searchedAuthor)" v-for="searchedAuthor in searchedAuthors" class="search-result search-container-element">{{ searchedAuthor.name }}</li>
+                            <li @click="navigateAuthorDetailPage(searchedAuthor)" v-for="searchedAuthor in searchedAuthorDatas" class="search-result search-container-element">{{ searchedAuthor.name }}</li>
                         </ul>
                     </div>
                 </div>
-                <div v-if="searchedCategories.length != 0" class="results-container search-container-element" id="search-result-categories">
-                    <div class="results-container search-container-element">
-                        <div :class="{'clicked-header' : categorySearchContainerClick}" @click="categorySearchContainerClick = !categorySearchContainerClick" class="search-results-container-header search-container-element">
-                            <span class="search-results-container-header-title search-container-element">Kategoriler</span>
-                            <i v-show="categorySearchContainerClick"  class="bi bi-chevron-up search-results-container-header-icon search-container-element"></i>
-                            <i v-show="categorySearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon search-container-element"></i>
-                        </div>
-                        <ul class="search-container-element" v-if="categorySearchContainerClick == false">
-                            <li v-for="searchedCategory in searchedCategories" class="search-result search-container-element">{{ searchedCategory.categoryName }}</li>
-                        </ul>
-                    </div>
-                </div>
-                <div v-if="searchedPublishers.length != 0" class="results-container search-container-element" id="search-result-publishers">
+                <div v-if="searchedPublisherDatas.length != 0" class="results-container search-container-element" id="search-result-publishers">
                     <div class="results-container search-container-element">
                         <div :class="{'clicked-header' : publisherSearchContainerClick}" @click="publisherSearchContainerClick = !publisherSearchContainerClick" class="search-container-element search-results-container-header">
                             <span class="search-results-container-header-title search-container-element">Yayıncılar</span>
@@ -51,7 +39,7 @@
                             <i v-show="publisherSearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon search-container-element"></i>
                         </div>
                         <ul v-if="publisherSearchContainerClick == false">
-                            <li @click="navigatePublisherDetailPage(searchedPublisher)" v-for="searchedPublisher in searchedPublishers" class="search-result search-container-element">{{ searchedPublisher.name }}</li>
+                            <li @click="navigatePublisherDetailPage(searchedPublisher)" v-for="searchedPublisher in searchedPublisherDatas" class="search-result search-container-element">{{ searchedPublisher.name }}</li>
                         </ul>
                     </div>
                 </div>
@@ -171,7 +159,6 @@ export default{
         return{
             bookSearchContainerClick : false,
             authorSearchContainerClick : false,
-            categorySearchContainerClick : false,
             publisherSearchContainerClick : false,
             cartIconHover : false,
             cardViewDisplay : false,
@@ -182,9 +169,9 @@ export default{
             userProfilePopupLeftLocation : 0,
             userProfilePopupDisplay : false,
             searchContainerClicked : false,
-            searchedCategories : [],
-            searchedPublishers : [],
-            searchedAuthors : [],
+            searchedPublisherDatas : [],
+            searchedAuthorDatas : [],
+            searchedBookDatas : [],
             basketItemsQuantity : 0,
             searchedPattern : "",
         }
@@ -196,23 +183,34 @@ export default{
             getUserProfileGetter : "AuthModule/_getUserProfile",
             getSearchedBooks : "BookModule/_getSearchBooks",
             getAllAuthor :"AuthorModule/_getAll",
-            getAllCategory : "CategoryModule/_getAll",
-            getAllPublisher : "PublisherModule/_getAll",
             getBasketItems : "BasketModule/_getSelectedBasketItems",
             getBasketId: "BasketModule/_getSelectedBasketId",
-            getSelectedBook : "BookModule/_getSelectedBook"
+            getSelectedBook : "BookModule/_getSelectedBook",
+            getRecommendBooks : "BookModule/_getRecommendBooks",
+            getSearchedAuthors : "AuthorModule/_getSearchedAuthors",
+            getRecommendAuthors : "AuthorModule/_getRecommendAuthors",
+            getSearchedPublisher : "PublisherModule/_getSearchedPublisher",
+            getRecommendPublisher : "PublisherModule/_getRecommendPublisher",
         })
     },
     
     methods:{
         ...mapActions({
             getUserProfile : "AuthModule/getUserProfile",
-            getBookByNamePattern : "BookModule/getBooksByPattern",
             getSelectedUserBasket : "BasketModule/getSelectedUserBasket",
             addBasket : "BasketModule/addBasket",
             deleteBasketItemAction : "BasketModule/deleteBasketItem",
             updateBasketItem : "BasketModule/updateBasketItem",
             getBookById : "BasketModule/getBookById",
+            addBookSearchData : "BookSearchDataModule/add",
+            addAuthorSearchData : "AuthorSearchDataModule/add",
+            addPublisherSearchData : "PublisherSearchDataModule/add",
+            getBookByNamePattern : "BookModule/getBooksByPattern",
+            getPublisherByPatternAction : "PublisherModule/getPublisherByPattern",
+            getAuthorByPatternAction : "AuthorModule/getAuthorByPattern",
+            getRecommendBooksForSearchAction : "BookModule/getRecommendBooksForSearch",
+            getRecommendAuthorsForSearchAction :"AuthorModule/getRecommendAuthorsForSearch",
+            getRecommendPublishersForSearchAction : "PublisherModule/getRecommendBooksForSearch",
         }),
         ...mapMutations({
             clearUserAccountAuthDatas : "AuthModule/clearUserAccountDatas",
@@ -264,56 +262,10 @@ export default{
                     this.searchContainerClicked = false;
             })
         },
-        searchCategory(regex){
-            this.searchedCategories = [];
-            this.getAllCategory.forEach(category => {
-                if(category.categoryName.match(regex)){
-                    this.searchedCategories.push(category);
-                }
-            });
-        },
-        searchPublisher(regex){
-            this.searchedPublishers = [];
-            this.getAllPublisher.forEach(publisher => {
-                if(publisher.name.match(regex)){
-                    this.searchedPublishers.push(publisher);
-                }
-            });
-        },
-        searchAuthor(regex){
-            this.searchedAuthors = [];
-            this.getAllAuthor.forEach(author => {
-                if(author.name.match(regex)){
-                    this.searchedAuthors.push(author);
-                }
-            });
-        },
-        searchBook(pattern){
-            this.getBookByNamePattern({
-                page : 0,
-                size : 10,
-                pattern
-            });
-        },
-        search(pattern){
-            console.log(pattern)
-            if(pattern != ""){
-                var regex = new RegExp('^' + pattern, 'i');
-                this.searchAuthor(regex);
-                this.searchCategory(regex);
-                this.searchPublisher(regex);
-                this.searchBook(pattern);
-            }
-
-            if(pattern == ""){
-                this.searchedCategories = [];
-                this.searchedPublishers = [];
-                this.searchedAuthors = [];
-                this.searchBook(pattern);
-            }
-        },
         navigateBookDetailPage(book){
             this.$store.state.BookModule.selectedBookId = book.id;
+            this.searchContainerClicked = false;
+            this.addBookSearchData(book.id);
             this.$router.push({
                 name : "BookDetailPage",
                 params : {
@@ -359,6 +311,7 @@ export default{
         },
         navigatePublisherDetailPage(publisher){
             this.$store.state.PublisherModule.selectedPublisherId = publisher.id;
+            this.addPublisherSearchData(publisher.id);
             this.$router.push({
                 name : "PublisherDetailPage",
                 params : {
@@ -366,8 +319,14 @@ export default{
                 }
             });    
         },
+        getRecommendSearchDatas(){
+            this.getRecommendBooksForSearchAction();
+            this.getRecommendAuthorsForSearchAction();
+            this.getRecommendPublishersForSearchAction();
+        },
         navigateAuthorDetailPage(author){
             this.$store.state.AuthorModule.selectedAuthorId = author.id;
+            this.addAuthorSearchData(author.id);
             this.$router.push({
                 name : "AuthorDetailPage",
                 params : {
@@ -401,8 +360,15 @@ export default{
             if(newValue != oldValue && newValue != 0 && newValue != null)
                 this.getUserProfile(this.getUserId);
         },
-        searchedPattern(newValue,oldValue){
-            this.search(newValue);
+        searchedPattern(){
+            if(this.searchedPattern != ""){
+                this.getBookByNamePattern({page : 0,size : 10,pattern : this.searchedPattern});
+                this.getAuthorByPatternAction(this.searchedPattern);
+                this.getPublisherByPatternAction(this.searchedPattern);
+            }
+
+            if(this.searchedPattern == "")
+                this.getRecommendSearchDatas();
         },
         getUserProfileGetter(){
             if(this.getUserId != 0 && this.getUserId != null)
@@ -414,11 +380,34 @@ export default{
                 this.basketItemsQuantity += basketItem.quantity;
             });
         },
-        getBookPictureUrl(pictureUrl){
-            if(pictureUrl==null)
-                return require("@/assets/no-image-available.jpg");
-            return pictureUrl;
+        getSearchedBooks(){
+            if(this.getSearchedBooks)
+                this.searchedBookDatas = this.getSearchedBooks;
         },
+        getRecommendBooks(){
+            if(this.getRecommendBooks)
+                this.searchedBookDatas = this.getRecommendBooks;
+        },
+        getSearchedAuthors(){
+            if(this.getSearchedAuthors)
+                this.searchedAuthorDatas = this.getSearchedAuthors;
+        },
+        getRecommendAuthors(){
+            if(this.getRecommendAuthors)    
+                this.searchedAuthorDatas = this.getRecommendAuthors;
+        },
+        getSearchedPublisher(){
+            if(this.getRecommendPublisher)
+                this.searchedPublisherDatas = this.getRecommendPublisher;
+        },
+        getRecommendPublisher(){
+            if(this.getRecommendPublisher)
+                this.searchedPublisherDatas = this.getRecommendPublisher;
+        },
+        searchContainerClicked(){
+            if(this.searchContainerClicked)
+                this.getRecommendSearchDatas();
+        }
     },
 
     updated(){
@@ -443,7 +432,7 @@ export default{
         background-color: #FBFCFC;
         border-bottom: 1px solid #EAEDED;
         width: 100%;
-        z-index: 20;
+        z-index: 200;
     }
 
     #header-container .app-name{
@@ -523,10 +512,11 @@ export default{
         border-top-style: none;
         width: 100%;
         top: 45px;
-        min-height: 50px;
-        max-height:400px ;
+        min-height: 0px;
+        max-height: 410px;
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
         transition: all 250ms;
+        overflow-y: auto;
     }
 
     .results-container{

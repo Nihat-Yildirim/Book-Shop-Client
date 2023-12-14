@@ -68,6 +68,11 @@ const AuthorService = {
     async getAllAuthorName(){
         var result = await appAxios.get('Authors/GetAllAuthorName');
         return result.data;
+    },
+
+    async getRecommendAuthorsForSearch(){
+        var result = await appAxios.get('Authors/GetRecommendAuthorsForSearch');
+        return result.data
     }
 }
 

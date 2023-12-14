@@ -179,6 +179,11 @@ const BookService = {
         });
 
         return result.data;
+    },
+
+    async getRecommendBooksForSearch(){
+        const result = await appAxios.get("Books/GetRecommendBooksForSearch");
+        return result.data;
     }
 }
 

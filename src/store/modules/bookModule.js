@@ -19,9 +19,11 @@ const BookModule = {
         updatedBook : null,
         updateBookInformationSuccessResult : false,
         updateBookAuthorsSuccessResult : false,
+        recommendBooks : [],
     },
 
     mutations:{
+        setRecommendBooks : (state,recommendBooks) => state.recommendBooks = recommendBooks,
         setUpdateBookInformationSuccessResult : (state,successResult) => state.updateBookInformationSuccessResult = successResult,
         setUpdateBookAuthorsSuccessResult : (state,successResult) => state.updateBookAuthorsSuccessResult = successResult,
         setUpdatedBook : (state,book) => state.updatedBook = book,
@@ -49,6 +51,7 @@ const BookModule = {
     },
 
     getters :{
+        _getRecommendBooks : (state) => state.recommendBooks,
         _getUpdateBookInformationSuccessResult : (state) => state.updateBookInformationSuccessResult,
         _getUpdateBookAuthorsSuccessResult : (state) => state.updateBookAuthorsSuccessResult,
         _getUpdatedBook : (state) => state.updatedBook,
@@ -138,6 +141,11 @@ const BookModule = {
                 if(response.success)    
                     context.dispatch('getUpdatedBook',params.bookId)
             })
+            .catch(error => console.log(error));
+        },
+        async getRecommendBooksForSearch(context){
+            await BookService.getRecommendBooksForSearch()
+            .then(response => context.commit('setRecommendBooks',response.data) )
             .catch(error => console.log(error));
         }
     }

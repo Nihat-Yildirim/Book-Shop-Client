@@ -48,6 +48,11 @@ const PublisherService = {
     async getAllPublisherName(){
         var result = await appAxios.get("Publishers/GetAllPublisherName");
         return result.data;
+    },
+
+    async getRecommendBooksForSearch(){
+        var result = await appAxios.get("Publishers/GetRecommendBooksForSearch");
+        return result.data;
     }
 }
 
