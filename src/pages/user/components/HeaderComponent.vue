@@ -1,9 +1,61 @@
 <template>
     <div id="header-container">
         <h1 @click="$router.push('/')" class="app-name">Book Shop</h1>
-        <div :class="{'search-container-selected' : searchContainerClicked}" ref="searchContainerRef" @click="searchContainerClickedMethod" id="search-container">
-            <input v-model="searchedPattern" :class="{'search-input-selected' : searchContainerClicked}" type="text" class="search-input" placeholder="Ara ..">
-            <i :class="{'search-icon-selected' : searchContainerClicked}" id="search-icon" class="bi bi-search"></i>
+        <div id="search-container" class="search-container-element">
+            <div class="search-container-element" :class="{'search-container-selected' : searchContainerClicked}" @click="searchContainerClicked = true" id="search-input-container">
+                <input v-model="searchedPattern" :class="{'search-input-selected' : searchContainerClicked}" type="text" class="search-input search-container-element" placeholder="Ara ..">
+                <i :class="{'search-icon-selected' : searchContainerClicked}" id="search-icon" class="bi bi-search search-container-element"></i>
+            </div>
+            <div class="search-container-element" v-if="searchContainerClicked" id="search-view-container">
+                <div v-if="getSearchedBooks.length != 0" class="results-container search-container-element"  id="search-result-books">
+                    <div class="results-container search-container-element">
+                        <div :class="{'clicked-header' : bookSearchContainerClick}" @click="bookSearchContainerClick = !bookSearchContainerClick" class="search-results-container-header search-container-element">
+                            <span class="search-results-container-header-title search-container-element">Kitaplar</span>
+                            <i v-show="bookSearchContainerClick"  class="bi bi-chevron-up search-results-container-header-icon search-container-element"></i>
+                            <i v-show="bookSearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon search-container-element"></i>
+                        </div>
+                        <ul class="search-container-element" v-if="bookSearchContainerClick == false">
+                            <li @click="navigateBookDetailPage(book)" v-for="book in getSearchedBooks" class="search-container-element search-result">{{ book.name }}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div v-if="searchedAuthors.length != 0" class="results-container search-container-element" id="search-result-authors">
+                    <div class="results-container search-container-element">
+                        <div :class="{'clicked-header' : authorSearchContainerClick}" @click="authorSearchContainerClick = !authorSearchContainerClick" class="search-results-container-header search-container-element">
+                            <span class="search-results-container-header-title search-container-element">Yazarlar</span>
+                            <i v-show="authorSearchContainerClick"  class="bi bi-chevron-up search-results-container-header-icon search-container-element"></i>
+                            <i v-show="authorSearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon search-container-element"></i>
+                        </div>
+                        <ul class="search-container-element" v-if="authorSearchContainerClick == false">
+                            <li @click="navigateAuthorDetailPage(searchedAuthor)" v-for="searchedAuthor in searchedAuthors" class="search-result search-container-element">{{ searchedAuthor.name }}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div v-if="searchedCategories.length != 0" class="results-container search-container-element" id="search-result-categories">
+                    <div class="results-container search-container-element">
+                        <div :class="{'clicked-header' : categorySearchContainerClick}" @click="categorySearchContainerClick = !categorySearchContainerClick" class="search-results-container-header search-container-element">
+                            <span class="search-results-container-header-title search-container-element">Kategoriler</span>
+                            <i v-show="categorySearchContainerClick"  class="bi bi-chevron-up search-results-container-header-icon search-container-element"></i>
+                            <i v-show="categorySearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon search-container-element"></i>
+                        </div>
+                        <ul class="search-container-element" v-if="categorySearchContainerClick == false">
+                            <li v-for="searchedCategory in searchedCategories" class="search-result search-container-element">{{ searchedCategory.categoryName }}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div v-if="searchedPublishers.length != 0" class="results-container search-container-element" id="search-result-publishers">
+                    <div class="results-container search-container-element">
+                        <div :class="{'clicked-header' : publisherSearchContainerClick}" @click="publisherSearchContainerClick = !publisherSearchContainerClick" class="search-container-element search-results-container-header">
+                            <span class="search-results-container-header-title search-container-element">Yayıncılar</span>
+                            <i v-show="publisherSearchContainerClick"  class="bi bi-chevron-up search-results-container-header-icon search-container-element"></i>
+                            <i v-show="publisherSearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon search-container-element"></i>
+                        </div>
+                        <ul v-if="publisherSearchContainerClick == false">
+                            <li @click="navigatePublisherDetailPage(searchedPublisher)" v-for="searchedPublisher in searchedPublishers" class="search-result search-container-element">{{ searchedPublisher.name }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="auths-login-user-profile-container">
             <div @click="navigateBasketDetailPage" ref="cartContainerRef" id="cart-container" @mouseenter="cartViewDisplayAndHover(true)" @mouseleave="cartViewDisplayAndHover(false)">
@@ -40,56 +92,6 @@
                 </div>
             </li>
         </ul>
-    </div>
-    <div v-if="searchContainerClicked" id="search-view-popup" :style="{left : searchContainerLocationLeft+'px',width : searchContainerWidth+'px'}">
-        <div v-if="getSearchedBooks.length != 0" class="results-container"  id="search-result-books">
-            <div class="results-container">
-                <div :class="{'clicked-header' : bookSearchContainerClick}" @click="bookSearchContainerClick = !bookSearchContainerClick" class="search-results-container-header">
-                    <span class="search-results-container-header-title">Kitaplar</span>
-                    <i v-show="bookSearchContainerClick"  class="bi bi-chevron-up search-results-container-header-icon"></i>
-                    <i v-show="bookSearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon"></i>
-                </div>
-                <ul v-if="bookSearchContainerClick == false">
-                    <li @click="navigateBookDetailPage(book)" v-for="book in getSearchedBooks" class="search-result">{{ book.name }}</li>
-                </ul>
-            </div>
-        </div>
-        <div v-if="searchedAuthors.length != 0" class="results-container" id="search-result-authors">
-            <div class="results-container">
-                <div :class="{'clicked-header' : authorSearchContainerClick}" @click="authorSearchContainerClick = !authorSearchContainerClick" class="search-results-container-header">
-                    <span class="search-results-container-header-title">Yazarlar</span>
-                    <i v-show="authorSearchContainerClick"  class="bi bi-chevron-up search-results-container-header-icon"></i>
-                    <i v-show="authorSearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon"></i>
-                </div>
-                <ul v-if="authorSearchContainerClick == false">
-                    <li @click="navigateAuthorDetailPage(searchedAuthor)" v-for="searchedAuthor in searchedAuthors" class="search-result">{{ searchedAuthor.name }}</li>
-                </ul>
-            </div>
-        </div>
-        <div v-if="searchedCategories.length != 0" class="results-container" id="search-result-categories">
-            <div class="results-container">
-                <div :class="{'clicked-header' : categorySearchContainerClick}" @click="categorySearchContainerClick = !categorySearchContainerClick" class="search-results-container-header">
-                    <span class="search-results-container-header-title">Kategoriler</span>
-                    <i v-show="categorySearchContainerClick"  class="bi bi-chevron-up search-results-container-header-icon"></i>
-                    <i v-show="categorySearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon"></i>
-                </div>
-                <ul v-if="categorySearchContainerClick == false">
-                    <li v-for="searchedCategory in searchedCategories" class="search-result">{{ searchedCategory.categoryName }}</li>
-                </ul>
-            </div>
-        </div>
-        <div v-if="searchedPublishers.length != 0" class="results-container" id="search-result-publishers">
-            <div class="results-container">
-                <div :class="{'clicked-header' : publisherSearchContainerClick}" @click="publisherSearchContainerClick = !publisherSearchContainerClick" class="search-results-container-header">
-                    <span class="search-results-container-header-title">Yayıncılar</span>
-                    <i v-show="publisherSearchContainerClick"  class="bi bi-chevron-up search-results-container-header-icon"></i>
-                    <i v-show="publisherSearchContainerClick == false" class="bi bi-chevron-down search-results-container-header-icon"></i>
-                </div>
-                <ul v-if="publisherSearchContainerClick == false">
-                    <li @click="navigatePublisherDetailPage(searchedPublisher)" v-for="searchedPublisher in searchedPublishers" class="search-result">{{ searchedPublisher.name }}</li>
-                </ul>
-            </div>
-        </div>
     </div>
     <div @mousemove="cartViewDisplayAndHover(true)" @mouseleave="cartViewDisplayAndHover(false)" v-if="cardViewDisplay == true && getBasketItems && getBasketItems.length> 0" id="basket-view-popup" :style="{left : cartLocationLeft- 400 + 'px'}">
         <div :style="{right : 40 + 'px'}" class="triangle"></div>
@@ -179,8 +181,6 @@ export default{
             cartLocationLeft : 0,
             userProfilePopupLeftLocation : 0,
             userProfilePopupDisplay : false,
-            searchContainerLocationLeft : 0,
-            searchContainerWidth : 0,
             searchContainerClicked : false,
             searchedCategories : [],
             searchedPublishers : [],
@@ -240,11 +240,6 @@ export default{
             this.userProfilePopupLeftLocation = this.$refs.userProfileContainerRef.getBoundingClientRect().left;
             this.userProfilePopupDisplay = hover;
         },
-        searchContainerClickedMethod(){
-            this.searchContainerClicked = true
-            this.searchContainerLocationLeft = this.$refs.searchContainerRef.getBoundingClientRect().left;
-            this.searchContainerWidth = this.$refs.searchContainerRef.offsetWidth;
-        },
         navigateTo(pageName){
             this.$router.push({
                 name : pageName,
@@ -261,22 +256,13 @@ export default{
             return pictureUrl;
         },
         ignoreSearchPopUpElement(){
-            document.querySelector("#app").addEventListener("click",(e) =>{
-            if(e.srcElement.id == "search-view-popup")
-                return;
-            if(e.srcElement.parentElement != null && e.srcElement.parentElement.id == "search-container")
-                return;
-            if(e.srcElement.className == "search-result")
-                return;
-            if(e.srcElement.parentElement != null && e.srcElement.parentElement.className == "results-container")
-                return;
-            if(e.srcElement.className == "search-results-container-header-title")
-                return;
-            if(e.srcElement.classList[2] == "search-results-container-header-icon")
-                return;
-
-            this.searchContainerClicked = false;
-        })
+            document.querySelector("#app").addEventListener('click',(e) => {
+                let classNames = e.srcElement.className.split(" ");
+                if(classNames.findIndex(x => x == "search-container-element") > -1)
+                    return;
+                else
+                    this.searchContainerClicked = false;
+            })
         },
         searchCategory(regex){
             this.searchedCategories = [];
@@ -310,6 +296,7 @@ export default{
             });
         },
         search(pattern){
+            console.log(pattern)
             if(pattern != ""){
                 var regex = new RegExp('^' + pattern, 'i');
                 this.searchAuthor(regex);
@@ -436,7 +423,6 @@ export default{
 
     updated(){
         this.ignoreSearchPopUpElement();
-        this.searchContainerWidth = this.$refs.searchContainerRef.offsetWidth;
     },
 
     mounted(){
@@ -457,6 +443,7 @@ export default{
         background-color: #FBFCFC;
         border-bottom: 1px solid #EAEDED;
         width: 100%;
+        z-index: 20;
     }
 
     #header-container .app-name{
@@ -469,70 +456,77 @@ export default{
 
     /* search */
     #search-container{
+        position: relative;
         display: flex;
+        flex-direction: column;
         width: 40%;
+        height: auto;
     }
 
-    .search-input-selected{
-        border-bottom-left-radius: 0px !important;
+    #search-input-container{
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 45px;
+        border: 2px solid orange;
+        border-radius: 5px;
+        transition: all 250ms;
     }
 
-    .search-icon-selected{
-        border-bottom-right-radius: 0px !important;
+    #search-input-container input{
+        padding-left: 5px;
+        border-top-left-radius:3px ;
+        border-bottom-left-radius:3px ;
+        font-size: 19px;
+        outline: none;
+        border: none;
+        background-color: #f0f3f4;
+        width: 92%;
+        height: 100%;
+        transition: all 250ms;
+    }
+
+    #search-input-container i{
+        font-size: 30px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 9%;
+        height: 100%;
+        background-color: orange;
     }
 
     .search-container-selected{
+        border-bottom-left-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+        background-color: green !important;
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
         transition: all 250ms;
     }
 
-    #search-container .search-input{
-        background-color: #F0F3F4;
-        border-radius: 5px 0 0px 5px;
-        border-style: none;
-        font-size: 18px;
-        height: 45px;
-        padding-left: 8px;
-        outline: none;
-        width: 90%;
-        border-top: 2px solid orange;
-        border-left: 2px solid orange;
-        border-bottom: 2px solid orange ;
-        transition: all 250ms;
+    .search-container-selected input{
+        border-bottom-left-radius: 0px !important;
     }
 
-    .clicked-header{
-        border-bottom: 1.5px solid #EAEDED;
-    }
-
-    #search-container #search-icon{
-        padding-top: 2px;
-        text-align: center;
-        font-weight: 700;
-        font-size: 30px;
-        color: #fff;
-        width: 10%;
-        background-color: orange;
-        border-radius: 0 5px 5px 0 ;
-        cursor: pointer;
-        transition: all 250ms;
-    }
-
-    #search-view-popup{
-        padding: 10px 20px 5px 20px ;
-        z-index: 200;
-        position: absolute;
-        background-color: #F8F9F9;
-        top: 63px;
-        height: auto;
-        min-height: 100px;
-        max-height: 550px;
-        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-        border-radius: 0 0 5px 5px;
-        border: 2px solid orange;
+    #search-view-container{
+        padding: 5px;
         display: flex;
         flex-direction: column;
-        overflow-y: auto;
+        z-index: 1050;
+        opacity: 1;
+        position: absolute;
+        background-color: #f8f9f9;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border:2px solid orange;
+        border-top-style: none;
+        width: 100%;
+        top: 45px;
+        min-height: 50px;
+        max-height:400px ;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        transition: all 250ms;
     }
 
     .results-container{
@@ -556,7 +550,7 @@ export default{
     }
 
     .search-results-container-header:hover span{
-        border-bottom: 2px solid orange;
+        border-bottom: 1px solid orange;
     }
 
     .search-result{
@@ -574,7 +568,6 @@ export default{
         background-color: #EAEDED;
         border-radius: 5px;
     }
-
     /* search end */
 
     /* User Profile Start */
