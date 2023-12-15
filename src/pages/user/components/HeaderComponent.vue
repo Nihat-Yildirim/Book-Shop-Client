@@ -46,12 +46,53 @@
             </div>
         </div>
         <div id="auths-login-user-profile-container">
-            <div @click="navigateBasketDetailPage" ref="cartContainerRef" id="cart-container" @mouseenter="cartViewDisplayAndHover(true)" @mouseleave="cartViewDisplayAndHover(false)">
-                <div :class="{iconhover : cartIconHover}" id="cart-icon">
-                    <div><span v-if="basketItemsQuantity>0" id="cart-count">{{ basketItemsQuantity }}</span></div>
-                    <i class="bi bi-cart3 icon"></i>
+            <div id="cart-container">
+                <div @click="navigateBasketDetailPage" ref="cartContainerRef" id="cart-header" @mouseenter="cartViewHover = true" @mouseleave="cartViewHover = false">
+                    <div :class="{iconhover : cartViewHover}" id="cart-icon">
+                        <div><span v-if="basketItemsQuantity>0" id="cart-count">{{ basketItemsQuantity }}</span></div>
+                        <i class="bi bi-cart3 icon"></i>
+                    </div>
+                    <span :class="{iconhover : cartViewHover}">Sepetim</span>
                 </div>
-                <span :class="{iconhover : cartIconHover}">Sepetim</span>
+                <div v-if="cartViewHover && getBasketItems.length > 0" @mousemove="cartViewHover = true" @mouseleave="cartViewHover = false"  id="basket-view-popup">
+                    <div :style="{right : 40 + 'px'}" class="triangle"></div>
+                    <div id="basket-view-popup-content">
+                        <div id="basket-view-popup-title">Sepetim</div>
+                        <div id="basket-view-popup-basket-items">
+                            <ul>
+                                <li v-for="basketItem in getBasketItems" :key="basketItem.basketItemId">
+                                    <div class="basket-view-popup-basket-item">
+                                        <img :src="getBookPictureUrl(basketItem.bookPictureUrl)" alt="">
+                                        <div class="basket-item-explantation">
+                                            <div class="basket-item-titles">
+                                                <span class="basket-item-name">{{ basketItem.bookName }}</span>
+                                                <span class="basket-item-publisher-name">{{ basketItem.publisher.name }}</span>
+                                            </div>
+                                            <div class="basket-item-quantity-and-price">
+                                                <div class="basket-item-quantity">
+                                                    <span @click="decreaseBasketItemQuantity(basketItem)" class="basket-item-decrease">-</span>
+                                                    <span class="basket-item-quantity">{{ basketItem.quantity }}</span>
+                                                    <span @click="increaseBasketItemQuantity(basketItem)" class="basket-item-increase">+</span>
+                                                    <i @click="deleteBasketItem(basketItem)" class="bi bi-trash basket-item-delete"></i>
+                                                </div>
+                                                <div class="basket-item-price">
+                                                    {{ basketItem.price * basketItem.quantity }} TL 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>                   
+                            </ul>
+                        </div>
+                        <div id="basket-view-popup-result">
+                            <div id="basket-view-popup-result-total-price">
+                                <span>Toplam Tutar</span>
+                                <span>{{ totalPrice() }} TL</span>
+                            </div>
+                            <button @click="navigateBasketDetailPage" id="navigate-basket">Sepete Git</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="bracket"></div>
             <div v-if="getUserProfileGetter == null" @click="navigateTo('LoginPage')" ref="authContainerRef" id="auths-container" @mouseenter="authsDisplayAndHover(true)" @mouseleave="authsDisplayAndHover(false)">
@@ -80,45 +121,6 @@
                 </div>
             </li>
         </ul>
-    </div>
-    <div @mousemove="cartViewDisplayAndHover(true)" @mouseleave="cartViewDisplayAndHover(false)" v-if="cardViewDisplay == true && getBasketItems && getBasketItems.length> 0" id="basket-view-popup" :style="{left : cartLocationLeft- 400 + 'px'}">
-        <div :style="{right : 40 + 'px'}" class="triangle"></div>
-        <div id="basket-view-popup-content">
-            <div id="basket-view-popup-title">Sepetim</div>
-            <div id="basket-view-popup-basket-items">
-                <ul>
-                    <li v-for="basketItem in getBasketItems" :key="basketItem.basketItemId">
-                        <div class="basket-view-popup-basket-item">
-                            <img :src="getBookPictureUrl(basketItem.bookPictureUrl)" alt="">
-                            <div class="basket-item-explantation">
-                                <div class="basket-item-titles">
-                                    <span class="basket-item-name">{{ basketItem.bookName }}</span>
-                                    <span class="basket-item-publisher-name">{{ basketItem.publisher.name }}</span>
-                                </div>
-                                <div class="basket-item-quantity-and-price">
-                                    <div class="basket-item-quantity">
-                                        <span @click="decreaseBasketItemQuantity(basketItem)" class="basket-item-decrease">-</span>
-                                        <span class="basket-item-quantity">{{ basketItem.quantity }}</span>
-                                        <span @click="increaseBasketItemQuantity(basketItem)" class="basket-item-increase">+</span>
-                                        <i @click="deleteBasketItem(basketItem)" class="bi bi-trash basket-item-delete"></i>
-                                    </div>
-                                    <div class="basket-item-price">
-                                        {{ basketItem.price * basketItem.quantity }} TL 
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>                    
-                </ul>
-            </div>
-            <div id="basket-view-popup-result">
-                <div id="basket-view-popup-result-total-price">
-                    <span>Toplam Tutar</span>
-                    <span>{{ totalPrice() }} TL</span>
-                </div>
-                <button @click="navigateBasketDetailPage" id="navigate-basket">Sepete Git</button>
-            </div>
-        </div>
     </div>
     <div v-if="userProfilePopupDisplay" :style="{left : userProfilePopupLeftLocation - 85+ 'px'}" @mousemove="userProfileDisplayAndHover(true)" @mouseleave="userProfileDisplayAndHover(false)" id="user-profile-popup">
         <div :style="{right : 28 + 'px'}" class="triangle"></div>
@@ -160,12 +162,10 @@ export default{
             bookSearchContainerClick : false,
             authorSearchContainerClick : false,
             publisherSearchContainerClick : false,
-            cartIconHover : false,
-            cardViewDisplay : false,
+            cartViewHover : false,
             authIconHover : false,
             authsDisplay : false,
             authLocationLeft : 0,
-            cartLocationLeft : 0,
             userProfilePopupLeftLocation : 0,
             userProfilePopupDisplay : false,
             searchContainerClicked : false,
@@ -201,7 +201,6 @@ export default{
             addBasket : "BasketModule/addBasket",
             deleteBasketItemAction : "BasketModule/deleteBasketItem",
             updateBasketItem : "BasketModule/updateBasketItem",
-            getBookById : "BasketModule/getBookById",
             addBookSearchData : "BookSearchDataModule/add",
             addAuthorSearchData : "AuthorSearchDataModule/add",
             addPublisherSearchData : "PublisherSearchDataModule/add",
@@ -223,16 +222,6 @@ export default{
             this.authLocationLeft=  this.$refs.authContainerRef.getBoundingClientRect().left;
             this.authIconHover = hover;
             this.authsDisplay = hover;
-        },
-        cartViewDisplayAndHover(hover){
-            this.cartLocationLeft = this.$refs.cartContainerRef.getBoundingClientRect().left;
-            this.cartIconHover = hover;
-            this.cardViewDisplay = hover;
-
-            if(this.getUserProfileGetter != null && this.getUserId != 0 && this.getUserId != null)
-                if(this.getUserProfileGetter.basketId == 0)
-                    this.addBasket(this.getUserId);
-
         },
         userProfileDisplayAndHover(hover){
             this.userProfilePopupLeftLocation = this.$refs.userProfileContainerRef.getBoundingClientRect().left;
@@ -300,7 +289,6 @@ export default{
                 });
         },
         increaseBasketItemQuantity(basketItem){
-            this.getBookById(basketItem.bookId);
             if(basketItem.quantity + 1 != this.getSelectedBook.stock)
                 this.updateBasketItem({
                     userId : this.getUserId,
@@ -407,6 +395,11 @@ export default{
         searchContainerClicked(){
             if(this.searchContainerClicked)
                 this.getRecommendSearchDatas();
+        },
+        cartViewHover(){
+            if(this.cartViewHover && this.getUserProfileGetter != null && this.getUserId != 0 && this.getUserId != null)
+                if(this.getUserProfileGetter.basketId == 0)
+                    this.addBasket(this.getUserId);
         }
     },
 
@@ -657,11 +650,17 @@ export default{
 
     /* basket start*/
     #cart-container{
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #cart-header{
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100%;
+        height: 55px;
     }
 
     #cart-icon{
@@ -681,12 +680,12 @@ export default{
         font-size: 5px;
     }
 
-    #cart-container #cart-icon .icon{
+    #cart-header #cart-icon .icon{
         transition: all 500ms;
         font-size: 35px;
     }
 
-    #cart-container span{
+    #cart-header span{
         user-select: none;
         margin-left: 3px;
         font-size: 15px;
@@ -699,14 +698,15 @@ export default{
     }
     
     #basket-view-popup{
+        top: 55px;
+        right: 1px;
+        position: absolute;
         padding: 10px;
         border: 0.1rem solid #F8F9F9;
-        top: 75px;
         width: 500px;
         min-height: 150px;
         z-index: 200;
         border-radius: 5px;
-        position: absolute;
         background-color: #fefefe;
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     }
@@ -794,12 +794,18 @@ export default{
 
     .basket-item-decrease,
     .basket-item-increase{
+        user-select: none;
         width: 20px;
         height: 20px;
         text-align: center;
         border-radius: 3px;
         background-color: #E5E7E9;
         font-size: 15px;
+    }
+
+    .basket-item-decrease:hover,
+    .basket-item-increase:hover{
+        color: orange;
     }
 
     .basket-item-increase{
