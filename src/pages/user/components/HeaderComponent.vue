@@ -95,54 +95,58 @@
                 </div>
             </div>
             <div class="bracket"></div>
-            <div v-if="getUserProfileGetter == null" @click="navigateTo('LoginPage')" ref="authContainerRef" id="auths-container" @mouseenter="authsDisplayAndHover(true)" @mouseleave="authsDisplayAndHover(false)">
-                <i :class="{iconhover : authIconHover}" class="bi bi-person"></i>
-                <span :class="{iconhover : authIconHover}">Giriş Yap</span>
-            </div>
-            <div @click="navigateTo('UserInformationPage')" v-else ref="userProfileContainerRef" @mousemove="userProfileDisplayAndHover(true)" @mouseleave="userProfileDisplayAndHover(false)" id="user-profile-container">
-                <img id="user-profile-avatar" :src="getUserPictureUrl(getUserProfileGetter.pictureUrl)" :alt="getUserProfileGetter.firstName + ' Picture'">
-                <div>{{ getUserProfileGetter.firstName }}</div>
-            </div>
-        </div>
-    </div>
-    <div @mousemove="authsDisplayAndHover(true)" @mouseleave="authsDisplayAndHover(false)" :style="{left : authLocationLeft - 40 + 'px' }" v-if="authsDisplay" id="auths">
-        <div :style="{left : 75 + 'px' }" class="triangle"></div>
-        <ul>
-            <li>
-                <div @click="navigateTo('LoginPage')" class="auths-button" id="login">
-                    <i class="bi bi-person-fill"></i>
-                    <span>Giriş</span>
+            <div v-if="getUserProfileGetter == null" id="auths-container">
+                <div @click="navigateTo('LoginPage')" id="auths-header" @mouseenter="authViewHover = true" @mouseleave="authViewHover = false">
+                    <i :class="{iconhover : authIconHover}" class="bi bi-person"></i>
+                    <span :class="{iconhover : authIconHover}">Giriş Yap</span>
                 </div>
-            </li>
-            <li>
-                <div @click="navigateTo('RegisterPage')" class="auths-button" id="login">
-                    <i class="bi bi-person-fill-add"></i>
-                    <span>Kaydol</span>
+                <div @mousemove="authViewHover = true" @mouseleave="authViewHover = false" v-if="authViewHover" id="auths">
+                    <div :style="{left : 75 + 'px' }" class="triangle"></div>
+                    <ul>
+                        <li>
+                            <div @click="navigateTo('LoginPage')" class="auths-button" id="login">
+                                <i class="bi bi-person-fill"></i>
+                                <span>Giriş</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div @click="navigateTo('RegisterPage')" class="auths-button" id="login">
+                                <i class="bi bi-person-fill-add"></i>
+                                <span>Kaydol</span>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
-            </li>
-        </ul>
-    </div>
-    <div v-if="userProfilePopupDisplay" :style="{left : userProfilePopupLeftLocation - 85+ 'px'}" @mousemove="userProfileDisplayAndHover(true)" @mouseleave="userProfileDisplayAndHover(false)" id="user-profile-popup">
-        <div :style="{right : 28 + 'px'}" class="triangle"></div>
-        <div @click="navigateTo('UserInformationPage')" id="user-information" class="user-profile-button">
-            <i class="bi bi-person"></i>
-            <span>Kullanıcı Bilgilerim</span>
-        </div>
-        <div @click="navigateTo('UserOrderPage')" class="user-profile-button">
-            <i class="bi bi-box2"></i>
-            <span>Siparişlerim</span>
-        </div>
-        <div @click="navigateTo('UserMessagePage')" class="user-profile-button">
-            <i class="bi bi-envelope"></i>
-            <span>Mesajlarım</span>
-        </div>
-        <div @click="navigateTo('UserCommentPage')" class="user-profile-button">
-            <i class="bi bi-chat-dots"></i>
-            <span>Değerlendirmelerim</span>
-        </div>
-        <div @click="exitAccount" class="user-profile-button">
-            <i class="bi bi-box-arrow-right"></i>
-            <span>Çıkış Yap</span>
+            </div>
+            <div v-if="getUserProfileGetter != null" id="user-profile-container">
+                <div @click="navigateTo('UserInformationPage')" @mousemove="userProfileHover = true" @mouseleave="userProfileHover = false" id="user-profile-header">
+                    <img id="user-profile-avatar" :src="getUserPictureUrl(getUserProfileGetter.pictureUrl)" :alt="getUserProfileGetter.firstName + ' Picture'">
+                    <div>{{ getUserProfileGetter.firstName }}</div>
+                </div>
+                <div v-if="userProfileHover && getUserProfileGetter != null" @mousemove="userProfileHover = true" @mouseleave="userProfileHover = false" id="user-profile-popup">
+                    <div :style="{right : 28 + 'px'}" class="triangle"></div>
+                    <div @click="navigateTo('UserInformationPage')" id="user-information" class="user-profile-button">
+                        <i class="bi bi-person"></i>
+                        <span>Kullanıcı Bilgilerim</span>
+                    </div>
+                    <div @click="navigateTo('UserOrderPage')" class="user-profile-button">
+                        <i class="bi bi-box2"></i>
+                        <span>Siparişlerim</span>
+                    </div>
+                    <div @click="navigateTo('UserMessagePage')" class="user-profile-button">
+                        <i class="bi bi-envelope"></i>
+                        <span>Mesajlarım</span>
+                    </div>
+                    <div @click="navigateTo('UserCommentPage')" class="user-profile-button">
+                        <i class="bi bi-chat-dots"></i>
+                        <span>Değerlendirmelerim</span>
+                    </div>
+                    <div @click="exitAccount" class="user-profile-button">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Çıkış Yap</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <CategoriesComponent/>
@@ -163,11 +167,8 @@ export default{
             authorSearchContainerClick : false,
             publisherSearchContainerClick : false,
             cartViewHover : false,
-            authIconHover : false,
-            authsDisplay : false,
-            authLocationLeft : 0,
-            userProfilePopupLeftLocation : 0,
-            userProfilePopupDisplay : false,
+            authViewHover : false,
+            userProfileHover : false,
             searchContainerClicked : false,
             searchedPublisherDatas : [],
             searchedAuthorDatas : [],
@@ -218,15 +219,6 @@ export default{
             clearUserAccountBookDatas : "BookModule/clearUserAccountDatas",
             clearUserAccountCommentDatas : "CommentModule/clearUserAccountDatas",
         }),
-        authsDisplayAndHover(hover){
-            this.authLocationLeft=  this.$refs.authContainerRef.getBoundingClientRect().left;
-            this.authIconHover = hover;
-            this.authsDisplay = hover;
-        },
-        userProfileDisplayAndHover(hover){
-            this.userProfilePopupLeftLocation = this.$refs.userProfileContainerRef.getBoundingClientRect().left;
-            this.userProfilePopupDisplay = hover;
-        },
         navigateTo(pageName){
             this.$router.push({
                 name : pageName,
@@ -289,7 +281,7 @@ export default{
                 });
         },
         increaseBasketItemQuantity(basketItem){
-            if(basketItem.quantity + 1 != this.getSelectedBook.stock)
+            if(basketItem.quantity + 1 != this.getSelectedBook.stock && basketItem.quantity != 10)
                 this.updateBasketItem({
                     userId : this.getUserId,
                     basketId : this.getBasketId,
@@ -554,16 +546,16 @@ export default{
     /* search end */
 
     /* User Profile Start */
-    #user-profile-container{
+    #user-profile-header{
         display: flex;
-        height: 100%;
-        width: 40%;
+        height: 70px;
+        width: 100%;
         justify-content:space-between ;
         align-items: center;
         cursor: pointer;
     }
 
-    #user-profile-container div{
+    #user-profile-header div{
         display: block;
         user-select: none;
         color: orange;
@@ -584,6 +576,7 @@ export default{
         flex-direction: column;
         position: absolute;
         top: 75px;
+        right: 140px;
         width: 205px;
         height: 220px;
         background-color: #fefefe;
@@ -698,7 +691,7 @@ export default{
     }
     
     #basket-view-popup{
-        top: 55px;
+        top: 60px;
         right: 1px;
         position: absolute;
         padding: 10px;
@@ -864,26 +857,32 @@ export default{
     /* basket end */
 
     #auths-container{
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    #auths-header{
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100%;
+        height: 50px;
     }
 
-    #auths-container span{
+    #auths-header span{
         display: inline-block;
         width: 80px;
     }
 
-    #auths-container i{
+    #auths-header i{
         display: flex;
         justify-content: center;
         align-items: center;
         text-align: center;
     }
 
-    #auths-container i{
+    #auths-header i{
         height: 100%;
         transition: all 500ms;
         font-size: 35px;
@@ -896,7 +895,8 @@ export default{
         padding: 20px;
         position: absolute;
         border-radius: 5px;
-        top: 75px;
+        top: 55px;
+        right: -45px;
         height: 125px;
         width: 200px;
         background-color: #fefefe;

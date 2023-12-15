@@ -626,6 +626,7 @@ export default{
     }
 
     .user-address-content{
+        overflow-y: auto;
         height: 190px;
         padding: 10px;
     }
