@@ -1,6 +1,6 @@
 <template>
     <div id="admin-update-book-page-middle-container">
-        <div v-if="getUpdatedBook" id="update-book-catefory-container">
+        <div v-if="getUpdatedBook" id="update-book-category-container">
             <div id="update-book-category-header">
                 <div id="update-book-category-header-left">
                     Kategoriler
@@ -29,6 +29,16 @@
                 </div>
             </div>
         </div>
+
+        <div v-if="getUpdatedBook" id="update-book-description-container">
+            <div id="update-book-description-header">
+                <div>Açıklama</div>
+                <button @click="updateBookDescription" :class="{'button-visible' : updatedBookDescription != getUpdatedBook.description}">Güncelle</button>
+            </div>
+            <div id="update-book-description-content">
+                <textarea id="updated-book-decription-input" v-model="updatedBookDescription" spellcheck="false"></textarea>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -39,6 +49,7 @@ export default{
     data(){
         return{
             addCategoryDropDownClicked : false,
+            updatedBookDescription : "",
             searchCategoryPattern : "",
             bookCategories : [],
         }
@@ -46,6 +57,7 @@ export default{
     
     computed : {
         ...mapGetters({
+            getUpdateBookDescriptionSuccessResult : "BookModule/_getUpdateBookDescriptionSuccessResult",
             getUpdateBookCategoriesSuccessResult : "BookModule/_getUpdateBookCategoriesSuccessResult",
             getUpdatedBookId : "BookModule/_getUpdatedBookId",
             getUpdatedBook : "BookModule/_getUpdatedBook",
@@ -59,6 +71,7 @@ export default{
             getUpdatedBookAction : "BookModule/getUpdatedBook",
             updateBookCategories : "BookModule/updateBookCategories",
             getAllCategory : "CategoryModule/getAll",
+            updateBookDescriptionAction : "BookModule/updateBookDescription",
         }),
 
         hideCategoryContainer(){
@@ -103,6 +116,13 @@ export default{
                 });
             }
         },
+
+        updateBookDescription(){
+            this.updateBookDescriptionAction({
+                bookId: this.getUpdatedBook.id,
+                description : this.updatedBookDescription
+            });
+        }
     },
 
     watch : {
@@ -138,6 +158,14 @@ export default{
             
             if(this.searchCategoryPattern == null || this.searchCategoryPattern == "")
                 this.bookCategories = this.categories
+        },
+        getUpdatedBook(){
+            if(this.getUpdatedBook)
+                this.updatedBookDescription = this.getUpdatedBook.description;
+        },
+        getUpdateBookDescriptionSuccessResult(){
+            if(this.getUpdateBookDescriptionSuccessResult)
+                this.$toastr.success("Kitap Açıklaması Başarıyla Güncellendi !");    
         }
     },
 
@@ -151,7 +179,7 @@ export default{
 }
 </script>
 
-<style>
+<style scoped>
     #admin-update-book-page-middle-container{
         display: flex;
         flex-direction: column;
@@ -164,9 +192,10 @@ export default{
         margin-bottom: 15px;
     }
 
-    #update-book-catefory-container{
+    #update-book-category-container{
         display: flex;
         flex-direction: column;
+        margin-bottom: 15px;
     }
 
     #update-book-category-header{
@@ -325,5 +354,52 @@ export default{
 
     .book-category i:hover{
         color: #E74C3C;
+    }
+
+    #update-book-description-header{
+        font-size: 18px;
+        color: #f4a72d;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2px;
+    }
+
+    #update-book-description-header button{
+        color: #fff;
+        background-color: #F5B041;
+        border: 1px solid #E67E22;
+        cursor: pointer;
+        border-radius: 3px;
+        padding-left: 5px;
+        padding-right: 5px;
+        visibility: hidden;
+    }
+
+    .button-visible{
+        visibility: visible !important;
+    }
+
+    #update-book-description-header button:hover{
+        opacity: 0.8;
+    }
+
+    #update-book-description-content{
+        display: flex;
+        width: 100%;
+        border: 1px solid #fdb736;
+        border-radius: 5px;
+        height: auto;
+    }
+
+    #update-book-description-content textarea{
+        font-size: 15px;
+        padding-left: 2px;
+        outline: none;
+        width: 100%;
+        height: 200px;
+        border: none;
+        border-radius: 5px;
+        resize: initial;
+        overflow-y: auto;
     }
 </style>

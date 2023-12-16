@@ -24,13 +24,23 @@ const BookService = {
                 PaperType : params.paperType,
                 SkinType : params.skinType,
                 Dimension : params.dimension,
-                Description : params.description,
                 ReleaseDate : params.releaseDate,
                 PageOfNumber : params.pageOfNumber,
                 Stock : params.stock,
                 Price : params.price
             }
         });
+        return result.data;
+    },
+
+    async updateBookDescription(params){
+        const result = await appAxios.put("Books/UpdateBookDescription",null,{
+            params:{
+                BookId : params.bookId,
+                Description : params.description
+            }
+        });
+
         return result.data;
     },
 

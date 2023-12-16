@@ -20,10 +20,12 @@ const BookModule = {
         updateBookInformationSuccessResult : false,
         updateBookAuthorsSuccessResult : false,
         recommendBooks : [],
-        updateBookCategoriesSuccessResult : false
+        updateBookCategoriesSuccessResult : false,
+        updateBookDescriptionSuccessResult : false,
     },
 
     mutations:{
+        setUpdateBookDescriptionSuccessResult : (state,successResult) => state.updateBookDescriptionSuccessResult = successResult,
         setUpdateBookCategoriesSuccessResult : (state,successResult) => state.updateBookCategoriesSuccessResult = successResult,
         setRecommendBooks : (state,recommendBooks) => state.recommendBooks = recommendBooks,
         setUpdateBookInformationSuccessResult : (state,successResult) => state.updateBookInformationSuccessResult = successResult,
@@ -53,6 +55,7 @@ const BookModule = {
     },
 
     getters :{
+        _getUpdateBookDescriptionSuccessResult : (state) => state.updateBookDescriptionSuccessResult,
         _getUpdateBookCategoriesSuccessResult : (state) => state.updateBookCategoriesSuccessResult,
         _getRecommendBooks : (state) => state.recommendBooks,
         _getUpdateBookInformationSuccessResult : (state) => state.updateBookInformationSuccessResult,
@@ -155,6 +158,17 @@ const BookModule = {
             context.commit('setUpdateBookCategoriesSuccessResult',false);
             await BookService.updateBookCategories(params)
             .then(response => context.commit('setUpdateBookCategoriesSuccessResult',response.success))
+            .catch(error => console.log(error));
+        },
+        async updateBookDescription(context,params){
+            context.commit('setUpdateBookDescriptionSuccessResult',false);
+            await BookService.updateBookDescription(params)
+            .then(response => {
+                if(response.success){
+                    context.commit('setUpdateBookDescriptionSuccessResult',response.success);
+                    context.dispatch('getUpdatedBook',params.bookId)
+                }
+            })
             .catch(error => console.log(error));
         }
     }

@@ -444,7 +444,6 @@ export default{
                     paperType : this.paperType,
                     skinType : this.skinType,
                     dimension : this.dimension,
-                    description : this.bookDescription,
                     releaseDate : this.releaseDate,
                     pageOfNumber : this.pageOfNumber,
                     stock : this.stock,
