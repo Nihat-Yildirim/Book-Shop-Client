@@ -45,8 +45,13 @@ const BookService = {
         return result.data;
     },
 
-    async updateBookCategories(updatedBookCategories){
-        const result = await appAxios.put("Books/UpdateBookCategories",updatedBookCategories);
+    async updateBookCategories(params){
+        const result = await appAxios.put("Books/UpdateBookCategories",null,{
+            params: {
+                BookId:  params.bookId,
+                CategoryIds : params.categoryIds
+            }
+        });
         return result.data;
     },
 

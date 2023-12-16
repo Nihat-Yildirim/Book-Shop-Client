@@ -28,6 +28,7 @@ const store = createStore({
             "AuthModule",
             "BasketModule",
             "PublisherModule",
+            "CategoryModule",
             "CommentModule",
             "ProvinceModule",
             "DistrictModule",

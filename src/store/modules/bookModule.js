@@ -20,9 +20,11 @@ const BookModule = {
         updateBookInformationSuccessResult : false,
         updateBookAuthorsSuccessResult : false,
         recommendBooks : [],
+        updateBookCategoriesSuccessResult : false
     },
 
     mutations:{
+        setUpdateBookCategoriesSuccessResult : (state,successResult) => state.updateBookCategoriesSuccessResult = successResult,
         setRecommendBooks : (state,recommendBooks) => state.recommendBooks = recommendBooks,
         setUpdateBookInformationSuccessResult : (state,successResult) => state.updateBookInformationSuccessResult = successResult,
         setUpdateBookAuthorsSuccessResult : (state,successResult) => state.updateBookAuthorsSuccessResult = successResult,
@@ -51,6 +53,7 @@ const BookModule = {
     },
 
     getters :{
+        _getUpdateBookCategoriesSuccessResult : (state) => state.updateBookCategoriesSuccessResult,
         _getRecommendBooks : (state) => state.recommendBooks,
         _getUpdateBookInformationSuccessResult : (state) => state.updateBookInformationSuccessResult,
         _getUpdateBookAuthorsSuccessResult : (state) => state.updateBookAuthorsSuccessResult,
@@ -146,6 +149,12 @@ const BookModule = {
         async getRecommendBooksForSearch(context){
             await BookService.getRecommendBooksForSearch()
             .then(response => context.commit('setRecommendBooks',response.data) )
+            .catch(error => console.log(error));
+        },
+        async updateBookCategories(context,params){
+            context.commit('setUpdateBookCategoriesSuccessResult',false);
+            await BookService.updateBookCategories(params)
+            .then(response => context.commit('setUpdateBookCategoriesSuccessResult',response.success))
             .catch(error => console.log(error));
         }
     }
