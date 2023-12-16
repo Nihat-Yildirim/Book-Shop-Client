@@ -4,6 +4,7 @@ const CommentModule = {
     namespaced : true,
 
     state :{
+        commentsForAdmin : [],
         selectedBookCommentCount : 0,
         selectedBookUserComment : null,
         selectedBookComments : [],
@@ -14,6 +15,7 @@ const CommentModule = {
     },
 
     mutations:{
+        setCommentsForAdmin : (state,datas) => state.commentsForAdmin = datas,
         setSelectedBookCommentDatasForDays : (state,datas) => state.selectedBookCommentDatasForDays = datas,
         setDeleteCommentSuccessResult : (state,successResult) => state.deleteCommentSuccessResult = successResult,
         setSelectedBookCommentCount : (state , count) => state.selectedBookCommentCount = count,
@@ -27,6 +29,7 @@ const CommentModule = {
     },
 
     getters:{
+        _getCommentsForAdmin : (state) => state.commentsForAdmin,
         _getSelectedBookCommentDatasForDays : (state) => state.selectedBookCommentDatasForDays,
         _getDeleteCommentSuccessResult : (state) => state.deleteCommentSuccessResult,
         _getSelectedBookCommentCount : (state) => state.selectedBookCommentCount,
@@ -135,6 +138,11 @@ const CommentModule = {
         async getSelectedBookCommentDatasForDays(context,bookId){
             await CommentService.getSelectedBookCommentDatasForDays(bookId)
             .then(response => context.commit('setSelectedBookCommentDatasForDays',response.data))
+            .catch(error => console.log(error));
+        },
+        async getCommentsByBookIdForAdmin(context,params){
+            await CommentService.getCommentsByBookIdForAdmin(params)
+            .then(response => context.commit('setCommentsForAdmin',response.data))
             .catch(error => console.log(error));
         }
     }

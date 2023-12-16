@@ -100,6 +100,18 @@ const CommentService = {
         });
 
         return result.data;
+    },
+
+    async getCommentsByBookIdForAdmin(params){
+        var result = await appAxios.get("Comments/GetCommentsByBookIdForAdmin",{
+            params:{
+                BookId : params.bookId,
+                Page : params.page,
+                Size : params.size
+            }
+        });
+
+        return result.data;
     }
 }
 
