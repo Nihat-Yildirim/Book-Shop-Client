@@ -13,6 +13,10 @@
                     <button @click="addBasketItem(bookData)" class="book-card-button">Sepete Ekle</button>
                 </div>
             </div>
+            <div class="favorite-conteiner favorite-conteiner-element">
+                <i @click="addFavoriteBook(bookData.id)" v-if="getFavoriteBooks.findIndex(x => x.bookId == bookData.id) == -1" class="bi bi-heart favorite-conteiner-element"></i>
+                <i @click="deleteFavoriteBook(bookData.id)" v-else class="bi bi-heart-fill favorite-conteiner-element"></i>
+            </div>
         </div>
     </div>  
 </template>
@@ -27,11 +31,16 @@ export default{
         return{
             addBasketItemMethodRun: false,
             updateBasketItemMethodRun: false,
+            addFavoriteBookMethodRun : false,
+            deleteFavoriteBookMethodRun : false,
         }
     },
 
     computed:{
         ...mapGetters({
+            getAddFavoriteBookSuccesResult : "FavoriteBookModule/_getAddFavoriteBookSuccesResult",
+            getDeleteFavoriteBookSuccessResult : "FavoriteBookModule/_getDeleteFavoriteBookSuccessResult",
+            getFavoriteBooks : "FavoriteBookModule/_getFavoriteBooks",
             getUpdateBasketItemSuccessResult: "BasketModule/_getUpdateBasketItemSuccessResult",
             getAddedBasketItemSuccessResult : "BasketModule/_getAddedBasketItemSuccessResult",
             getSelectedBasketItems: "BasketModule/_getSelectedBasketItems",
@@ -45,6 +54,8 @@ export default{
             addBasketItemAction : "BasketModule/addBasketItem",
             getSelectedUserBasket : "BasketModule/getSelectedUserBasket",
             updateBasketItemAction : "BasketModule/updateBasketItem",
+            addFavoriteBookAction : "FavoriteBookModule/addFavoriteBook",
+            deleteFavoriteBookAction : "FavoriteBookModule/deleteFavoriteBook"
         }),
         getBookPictureUrl(bookPictures){
             if(bookPictures == null)
@@ -53,10 +64,11 @@ export default{
             return bookPictures.find(x => x.showOrder == 1).pictureUrl;
         },
         navigateBookDetail(event,bookData){
-            if(event.srcElement.className == "book-card-button")
+            let classNames = event.srcElement.className.split(" ");
+            if(classNames.findIndex(x =>x == "book-card-button") > -1)
                 return;
 
-            if(event.srcElement.className == "favorite-container" || event.srcElement.className == "bi bi-heart")
+            if(classNames.findIndex(x =>x == "favorite-conteiner-element") > -1)
                 return;
 
             this.$router.push({
@@ -92,9 +104,44 @@ export default{
                 });
             }
         },
+        addFavoriteBook(bookId){
+            if(this.getUserId != 0 && this.getUserId != null){
+                if(this.getFavoriteBooks.findIndex(x => x.bookId == bookId) == -1){
+                    this.addFavoriteBookMethodRun = true;
+                    this.addFavoriteBookAction({
+                        userId : this.getUserId,
+                        bookId : bookId    
+                    })
+                }
+            }
+        },
+        deleteFavoriteBook(bookId){
+            if(this.getUserId != 0 && this.getUserId != null){
+                let value = this.getFavoriteBooks.find(x => x.bookId == bookId);
+                if(value != null){
+                    this.deleteFavoriteBookMethodRun = true;
+                    this.deleteFavoriteBookAction({
+                        favoriteBookId : value.id,
+                        userId : this.getUserId
+                    })
+                }
+            }
+        }
     },
 
     watch:{
+        getAddFavoriteBookSuccesResult(){
+            if(this.getAddFavoriteBookSuccesResult && this.addFavoriteBookMethodRun){
+                this.addFavoriteBookMethodRun = false;
+                this.$toastr.success("Ürün Favorilere Eklendi !");
+            }
+        },
+        getDeleteFavoriteBookSuccessResult(){
+            if(this.getDeleteFavoriteBookSuccessResult && this.deleteFavoriteBookMethodRun){
+                this.deleteFavoriteBookMethodRun = false;
+                this.$toastr.info("Ürün Favorilerden Silindi !");
+            }
+        },
         getAddedBasketItemSuccessResult(){
             if(this.getAddedBasketItemSuccessResult&& this.addBasketItemMethodRun){
                 this.addBasketItemMethodRun = false;
@@ -111,7 +158,7 @@ export default{
 }
 </script>
 
-<style>
+<style scoped>
     .book-card{
         cursor: pointer;
         background-color: #F8F9F9;
@@ -128,6 +175,7 @@ export default{
     }
 
     .book-card-content{
+        position: relative;
         width: 100%;
         height: 100%;
         padding: 15px 10px 8px 10px;
@@ -218,5 +266,39 @@ export default{
         display: block;
         font-size: 18px;
         transition: all 500ms;
+    }
+
+    .favorite-conteiner{
+        display: flex ;
+        align-items: center;
+        justify-content: center;
+        height: 35px;
+        width: 35px;
+        top: 3px;
+        right: 3px;
+        position: absolute;
+        border-radius: 50%;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+        border: 1px solid #F4F6F6;
+        z-index: 150;
+    }
+
+    .favorite-conteiner i{
+        padding-top: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        font-size: 18px;
+    }
+
+    .favorite-conteiner i:hover{
+        color: orange;
+    }
+
+    .favorite-conteiner .bi-heart-fill{
+        color: orange;
     }
 </style>

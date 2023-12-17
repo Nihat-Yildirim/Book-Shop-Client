@@ -1,5 +1,5 @@
 <template>
-    <div id="admin-update-book-page-bottom-container">
+    <div v-if="getCommentsForAdmin.commentsCount > 0" id="admin-update-book-page-bottom-container">
         <div id="updated-book-comment-table-container">
             <div id="updated-book-comment-table-header">
                 <div style="width: 220px;" class="updated-book-comment-header-column" id="updated-book-comment-table-user-name">Kullanıcı İsmi</div>

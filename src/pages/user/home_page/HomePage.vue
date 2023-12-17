@@ -73,6 +73,7 @@ export default {
             getWorldClassics : "BookModule/getWorldClassics",
             getBooksByCommentCount : "BookModule/getBooksByCommentCount",
             getBooksByBasketCount : "BookModule/getBooksByBasketCount",
+            getFavoriteBooks : "FavoriteBookModule/getFavoriteBooks",
         })
     },
 
@@ -92,11 +93,13 @@ export default {
             page : 0,
             size : 30
         });
+        if(this.getUserId != 0 && this.getUserId != null)
+            this.getFavoriteBooks(this.getUserId);
     }
 }
 </script>
 
-<style>
+<style scoped>
     #home-page-container{
         height: 100%;
         width: 100%;

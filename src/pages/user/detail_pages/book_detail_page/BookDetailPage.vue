@@ -95,6 +95,10 @@
                     </div>
                 </div>
             </div>
+            <div id="favorite-button">
+                <i @click="addFavoriteBook(selectedBook.id)" v-if="getFavoriteBooks.findIndex(x => x.bookId == selectedBook.id) == -1" class="bi bi-heart"></i>
+                <i @click="deleteFavoriteBook(selectedBook.id)" v-else class="bi bi-heart-fill"></i>
+            </div>
         </div>
         <div  id="book-detail-bottom">
             <div id="book-detail-bottom-left">
@@ -192,12 +196,16 @@
                             pauseOnMouseEnter : true
                         }" id="related-book-card-wrapper">
                             <SwiperSlide v-for="relatedBook in getRelatedBooks" :key="relatedBook.id">
-                                <div @click="navigateBookDetail(relatedBook)" class="related-book-card">
+                                <div @click="navigateBookDetail($event,relatedBook)" class="related-book-card">
                                     <div class="related-book-img-container">
                                         <img :src="getRelatedBookPicture(relatedBook.pictureUrls)" alt="">
                                     </div>
                                     <div class="related-book-name">{{ relatedBook.bookName }}</div>
                                     <div class="related-book-price">{{ relatedBook.price }} TL</div>
+                                    <div class="favorite-button-for-wrapper favorite-button-for-wrapper-element">
+                                        <i @click="addFavoriteBook(relatedBook.id)" v-if="getFavoriteBooks.findIndex(x => x.bookId == relatedBook.id) == -1" class="bi bi-heart favorite-button-for-wrapper-element"></i>
+                                        <i @click="deleteFavoriteBook(relatedBook.id)" v-else class="bi bi-heart-fill favorite-button-for-wrapper-element"></i>
+                                    </div>
                                 </div>
                             </SwiperSlide>
                         </Swiper>
@@ -259,6 +267,9 @@ export default{
 
     computed:{
         ...mapGetters({
+            getAddFavoriteBookSuccesResult : "FavoriteBookModule/_getAddFavoriteBookSuccesResult",
+            getDeleteFavoriteBookSuccessResult : "FavoriteBookModule/_getDeleteFavoriteBookSuccessResult",
+            getFavoriteBooks : "FavoriteBookModule/_getFavoriteBooks",
             selectedBook : "BookModule/_getSelectedBook",
             selectedBookCommentCount : "CommentModule/_getSelectedBookCommentCount",
             selectedBookBasketCount : "BasketModule/_getSelectedBookBasketCount",
@@ -297,13 +308,20 @@ export default{
             getRelatedBooksAction : "BookModule/getRelatedBooks",
             updateBasketItemAction : "BasketModule/updateBasketItem",
             addViewAction : "ViewModule/addView",
+            addFavoriteBookAction : "FavoriteBookModule/addFavoriteBook",
+            deleteFavoriteBookAction : "FavoriteBookModule/deleteFavoriteBook",
+            getFavoriteBooksAction : "FavoriteBookModule/getFavoriteBooks",
         }),
         ...mapMutations({
             addVisitedBook : "BookModule/addVisitedBook",
             deleteLastVisitedBook : "BookModule/deleteLastVisitedBook",
             updateVisitedBookViewsCount : "BookModule/updateVisitedBookViewsCount",
         }),
-        navigateBookDetail(bookData){
+        navigateBookDetail(event,bookData){
+            let classNames = event.srcElement.className.split(" ");
+            if(classNames.findIndex(x =>x == "favorite-button-for-wrapper-element") > -1)
+                return;
+
             this.$router.push({
                 name : "BookDetailPage",
                 params : {
@@ -345,11 +363,15 @@ export default{
             this.getOrderCountByBookId(this.selectedBookId);
             this.addViewAction({bookId : this.selectedBookId});
             
-            if(this.getUserId != 0 && this.getUserId != null)
+            if(this.getUserId != 0 && this.getUserId != null){
                 if(this.selectedBookId != null)
                     this.getSelectedBookUserComment({
                             bookId : this.selectedBookId,
                             userId : this.getUserId});
+                
+                this.getFavoriteBooksAction(this.getUserId);
+            }
+
                             
             this.getSelectedBookCommentsAction({
                 page : 0,
@@ -482,10 +504,37 @@ export default{
 
             if(selectedVisitedBook != null)
                 this.updateVisitedBookViewsCount(selectedVisitedBook.visitedBook.id);
+        },
+        addFavoriteBook(bookId){
+            if(this.getUserId != 0 && this.getUserId != null){
+                if(this.getFavoriteBooks.findIndex(x => x.bookId == bookId) == -1)
+                    this.addFavoriteBookAction({
+                        userId : this.getUserId,
+                        bookId : bookId    
+                    })
+            }
+        },
+        deleteFavoriteBook(bookId){
+            if(this.getUserId != 0 && this.getUserId != null){
+                let value = this.getFavoriteBooks.find(x => x.bookId == bookId);
+                if(value != null)
+                   this.deleteFavoriteBookAction({
+                        favoriteBookId : value.id,
+                        userId : this.getUserId
+                    })
+            }
         }
     },
 
     watch:{
+        getAddFavoriteBookSuccesResult(){
+            if(this.getAddFavoriteBookSuccesResult)
+                this.$toastr.success("Ürün Favorilere Eklendi !");
+        },
+        getDeleteFavoriteBookSuccessResult(){
+            if(this.getDeleteFavoriteBookSuccessResult)
+                this.$toastr.info("Ürün Favorilerden Silindi !");
+        },
         getAddedBasketItemSuccessResult(){
             if(this.getAddedBasketItemSuccessResult && this.addBasketItemMethod){
                 this.$toastr.success("Ürün Sepete Eklendi !");
@@ -543,7 +592,7 @@ export default{
 }
 </script>
 
-<style>
+<style scoped>
     #book-detail-page-container{
         height: 100%;
         width: 100%;
@@ -552,6 +601,7 @@ export default{
     }
 
     #book-detail-top{
+        position: relative;
         width: 100%;
         min-height: 650px;
         background-color: #f8f9f9;
@@ -1274,6 +1324,7 @@ export default{
     }
 
     .related-book-card{
+        position: relative;
         user-select: none;
         padding: 10px 7px 7px 7px;
         cursor: pointer;
@@ -1349,5 +1400,76 @@ export default{
         padding-left: 3px;
         right: -14px;
     }
+
+    .favorite-button-for-wrapper{
+        cursor: pointer;
+        top: 5px;
+        right : 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        background-color: #EAEDED;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+        border: 1.8px solid #E5E7E9;
+    }
+
+    .favorite-button-for-wrapper i{
+        color: #17202A;
+        padding-top: 2px;
+        font-size: 17px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .favorite-button-for-wrapper i:hover{
+        color: orange;
+    }
+
+    .favorite-button-for-wrapper .bi-heart-fill{
+        color: orange;
+    }
     /*Related Book Slider End*/
+
+
+    /*favorite button start*/
+    #favorite-button{
+        cursor: pointer;
+        right: 15px;
+        position: absolute;
+        display: flex ;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background-color: #eaeded;
+        border : 2px solid #e0e4e4;
+    }
+
+    #favorite-button i{
+        padding-top: 2px;
+        font-size: 21px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    #favorite-button i:hover{
+        color: orange;
+    }
+
+    #favorite-button .bi-heart-fill{
+        color: orange;
+    }
+    /*favorite button end */
 </style>

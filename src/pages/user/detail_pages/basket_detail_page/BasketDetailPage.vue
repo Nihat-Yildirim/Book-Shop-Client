@@ -46,10 +46,14 @@
                             disableOnInteraction:false,
                             pauseOnMouseEnter : true
                         }" id="visited-book-card-wrapper">
-                            <SwiperSlide @click="navigateBookDetail(visitedBook.visitedBook)" v-for="visitedBook in getVisitedBooks" :key="visitedBook.id">
-                                <div id="visited-book-wrapper-card">
+                            <SwiperSlide @click="navigateBookDetail($event,visitedBook.visitedBook)" v-for="visitedBook in getVisitedBooks" :key="visitedBook.id">
+                                <div class="visited-book-wrapper-card">
                                     <img :src="getVisitedBookPictureUrl(visitedBook.visitedBook.pictureUrls)">
                                     <div>{{ visitedBook.visitedBook.bookName }}</div>
+                                    <div class="favorite-button favorite-button-element"> 
+                                        <i @click="addFavoriteBook(visitedBook.visitedBook.id)" v-if="getFavoriteBooks.findIndex(x => x.bookId == visitedBook.visitedBook.id) == -1" class="bi bi-heart favorite-button-element"></i>
+                                        <i @click="deleteFavoriteBook(visitedBook.visitedBook.id)" v-else class="bi bi-heart-fill favorite-button-element"></i>
+                                    </div>
                                 </div>
                             </SwiperSlide>
                         </Swiper>
@@ -107,6 +111,9 @@ export default{
 
     computed:{
         ...mapGetters({
+            getAddFavoriteBookSuccesResult : "FavoriteBookModule/_getAddFavoriteBookSuccesResult",
+            getDeleteFavoriteBookSuccessResult : "FavoriteBookModule/_getDeleteFavoriteBookSuccessResult",
+            getFavoriteBooks : "FavoriteBookModule/_getFavoriteBooks",
             getDeleteBasketItemSuccessResult : "BasketModule/_getDeleteBasketItemSuccessResult",
             getUpdateBasketItemSelectedValueSuccessResult: "BasketModule/_getUpdateBasketItemSelectedValueSuccessResult",
             getUpdateBasketItemSuccessResult : "BasketModule/_getUpdateBasketItemSuccessResult",
@@ -124,6 +131,9 @@ export default{
             deleteBasketItemAction : "BasketModule/deleteBasketItem",
             updateBasketItem : "BasketModule/updateBasketItem",
             getAuthorById : "AuthorModule/getById",
+            addFavoriteBookAction : "FavoriteBookModule/addFavoriteBook",
+            deleteFavoriteBookAction : "FavoriteBookModule/deleteFavoriteBook",
+            getFavoriteBooksAction : "FavoriteBookModule/getFavoriteBooks",
         }),
         nextSlide(){
             this.sliderWrapper.slideNext();
@@ -142,7 +152,11 @@ export default{
             
             return bookPictures.find(x => x.showOrder == 1).pictureUrl;
         },
-        navigateBookDetail(bookData){
+        navigateBookDetail(event,bookData){
+            let classNames = event.srcElement.className.split(" ");
+            if(classNames.findIndex(x => x == "favorite-button-element") > -1)
+                return;
+
             this.$router.push({
                 name : "BookDetailPage",
                 params : {
@@ -250,10 +264,37 @@ export default{
                 this.totalPrice += basketItem.price * basketItem.quantity;
                 this.selectedBasketItemQuantity += basketItem.quantity;
             });
+        },
+        addFavoriteBook(bookId){
+            if(this.getUserId != 0 && this.getUserId != null){
+                if(this.getFavoriteBooks.findIndex(x => x.bookId == bookId) == -1)
+                    this.addFavoriteBookAction({
+                        userId : this.getUserId,
+                        bookId : bookId    
+                    })
+            }
+        },
+        deleteFavoriteBook(bookId){
+            if(this.getUserId != 0 && this.getUserId != null){
+                let value = this.getFavoriteBooks.find(x => x.bookId == bookId);
+                if(value != null)
+                   this.deleteFavoriteBookAction({
+                        favoriteBookId : value.id,
+                        userId : this.getUserId
+                    })
+            }
         }
     },
 
     watch:{
+        getAddFavoriteBookSuccesResult(){
+            if(this.getAddFavoriteBookSuccesResult)
+                this.$toastr.success("Ürün Favorilere Eklendi !");
+        },
+        getDeleteFavoriteBookSuccessResult(){
+            if(this.getDeleteFavoriteBookSuccessResult)
+                this.$toastr.info("Ürün Favorilerden Silindi !");
+        },
         getUpdateBasketItemSelectedValueSuccessResult(){
             if(this.getUpdateBasketItemSelectedValueSuccessResult){
                 if(!this.updateBasketItemSelectedValues){
@@ -576,7 +617,8 @@ export default{
         padding-right: 5px;
     }
 
-    #visited-book-wrapper-card{
+    .visited-book-wrapper-card{
+        position: relative ;
         padding-top: 10px;
         display: flex;
         flex-direction: column;
@@ -591,20 +633,20 @@ export default{
         transition: 250ms all;
     }
 
-    #visited-book-wrapper-card img{
+    .visited-book-wrapper-card img{
         width: 157px;
         height: 180px;
         margin-bottom: 10px;
         object-fit: scale-down;
     }
 
-    #visited-book-wrapper-card div{
+    .visited-book-wrapper-card div{
         width: 170px;
         font-size: 14px;
         text-align: center;
     }
 
-    #visited-book-wrapper-card:hover{
+    .visited-book-wrapper-card:hover{
         color: orange;
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
         transition: 250ms all;
@@ -674,5 +716,34 @@ export default{
     #basket-confirm-button:hover{
         opacity: 0.9;
         transition: all 250ms;
+    }
+
+    .favorite-button{
+        top: 3px;
+        right: 3px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        border-radius: 50%;
+        height: 35px !important;
+        width: 35px !important;
+        background-color: #F8F9F9;
+        border: 1px solid #F2F3F4;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .favorite-button i{
+        color: black;
+        padding-top: 1px;
+        font-size: 17px;
+    }
+
+    .favorite-button i:hover{
+        color: orange;
+    }
+
+    .favorite-button .bi-heart-fill{
+        color: orange;
     }
 </style>

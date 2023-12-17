@@ -9,7 +9,7 @@
                 <div id="visited-books-container-title">Önceden Gezdiklerim</div>
                 <div id="visited-books-content">
                     <div id="visited-books-values">
-                        <div @click="navigateBookDetail(visitedBook.visitedBook)" v-for="visitedBook in viewsVisitedBook" class="visited-book-card" :key="visitedBook.visitedBook.id">
+                        <div @click="navigateBookDetail($event,visitedBook.visitedBook)" v-for="visitedBook in viewsVisitedBook" class="visited-book-card" :key="visitedBook.visitedBook.id">
                             <div class="visited-book-card-content">
                                 <div class="visited-book-card-top-content">
                                     <img :src="getBookPictureUrl(visitedBook.visitedBook.pictureUrls)" alt="">
@@ -17,6 +17,10 @@
                                 <div class="visited-book-card-bottom-content">
                                     <div class="visited-book-name">{{ visitedBook.visitedBook.bookName }}</div>
                                     <div class="visited-book-price">{{ visitedBook.visitedBook.price }} TL</div>
+                                </div>
+                                <div class="favorite-button favorite-button-element">
+                                    <i @click="addFavoriteBook(visitedBook.visitedBook.id)" v-if="getFavoriteBooks.findIndex(x => x.bookId == visitedBook.visitedBook.id) == -1" class="bi bi-heart favorite-button-element"></i>
+                                    <i @click="deleteFavoriteBook(visitedBook.visitedBook.id)" v-else class="bi bi-heart-fill favorite-button-element"></i>
                                 </div>
                             </div>
                         </div>
@@ -38,7 +42,7 @@
 <script>
 import HeaderComponent from '@/pages/user/components/HeaderComponent';
 import UserAccountHeader from '@/pages/user/account_pages/components/UserAccountHeader';
-import { mapGetters } from 'vuex';
+import { mapGetters,mapActions } from 'vuex';
 
 export default{
     data(){
@@ -58,11 +62,20 @@ export default{
 
     computed:{
         ...mapGetters({
+            getAddFavoriteBookSuccesResult : "FavoriteBookModule/_getAddFavoriteBookSuccesResult",
+            getDeleteFavoriteBookSuccessResult : "FavoriteBookModule/_getDeleteFavoriteBookSuccessResult",
+            getFavoriteBooks : "FavoriteBookModule/_getFavoriteBooks",
             getVisitedBooks : "BookModule/_getVisitedBooks",
+            getUserId : "AuthModule/_getUserId",
         })
     },
 
     methods:{
+        ...mapActions({
+            addFavoriteBookAction : "FavoriteBookModule/addFavoriteBook",
+            deleteFavoriteBookAction : "FavoriteBookModule/deleteFavoriteBook",
+            getFavoriteBooksAction : "FavoriteBookModule/getFavoriteBooks",
+        }),
         getBookPictureUrl(bookPictures){
             if(bookPictures == null)
                 return require("@/assets/no-image-available.jpg");
@@ -91,6 +104,11 @@ export default{
             this.lastVisitedBookIndex = this.getVisitedBooks.indexOf(this.viewsVisitedBook[this.viewsVisitedBook.length - 1]);
         },
         navigateBookDetail(bookData){
+            let classNames = event.srcElement.className.split(" ");
+
+            if(classNames.findIndex(x => x == "favorite-button-element") > -1)
+                return;
+
             this.$router.push({
                 name : "BookDetailPage",
                 params : {
@@ -99,6 +117,36 @@ export default{
             });
             this.$store.state.BookModule.selectedBookId = bookData.id;
         },
+        addFavoriteBook(bookId){
+            if(this.getUserId != 0 && this.getUserId != null){
+                if(this.getFavoriteBooks.findIndex(x => x.bookId == bookId) == -1)
+                    this.addFavoriteBookAction({
+                        userId : this.getUserId,
+                        bookId : bookId    
+                    })
+            }
+        },
+        deleteFavoriteBook(bookId){
+            if(this.getUserId != 0 && this.getUserId != null){
+                let value = this.getFavoriteBooks.find(x => x.bookId == bookId);
+                if(value != null)
+                    this.deleteFavoriteBookAction({
+                        favoriteBookId : value.id,
+                        userId : this.getUserId
+                    })
+            }
+        }
+    },
+
+    watch:{
+        getAddFavoriteBookSuccesResult(){
+            if(this.getAddFavoriteBookSuccesResult)
+                this.$toastr.success("Ürün Favorilere Eklendi !");
+        },
+        getDeleteFavoriteBookSuccessResult(){
+            if(this.getDeleteFavoriteBookSuccessResult)
+                this.$toastr.info("Ürün Favorilerden Silindi !");
+        },
     },
 
     mounted(){
@@ -106,11 +154,13 @@ export default{
         this.viewsVisitedBook = this.getVisitedBooks.slice(0,8);
         this.lastVisitedBookIndex = this.viewsVisitedBook.length - 1;
         this.visitedBookPage = 1;
+        if(this.getUserId != null && this.getUserId != 0)
+            this.getFavoriteBooksAction(this.getUserId)
     }
 }
 </script>
 
-<style>
+<style scoped>
     #user-visited-book-page-container{
         width: 100%;
         min-width: 1510px;
@@ -221,6 +271,7 @@ export default{
     }
 
     .visited-book-card-content{
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -258,5 +309,33 @@ export default{
 
     .visited-book-card-bottom-content div{
         text-align: center;
-    }   
+    }  
+    
+    .favorite-button{
+        top: -12px;
+        right: -5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background-color: #F8F9F9;
+        border: 1px solid #F2F3F4;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .favorite-button i{
+        padding-top: 1px;
+        font-size: 17px;
+    }
+
+    .favorite-button i:hover{
+        color: orange;
+    }
+
+    .favorite-button .bi-heart-fill{
+        color: orange;
+    }
 </style>

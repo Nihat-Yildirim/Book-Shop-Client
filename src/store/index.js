@@ -18,6 +18,7 @@ import LanguageModule from "./modules/languageModule";
 import BookSearchDataModule from "./modules/bookSearchDataModule";
 import AuthorSearchDataModule from "./modules/authorSearchDataModule";
 import PublisherSearchDataModule from "./modules/publisherSearchDataModule";
+import FavoriteBookModule from "./modules/favoriteBookModule";
 
 const store = createStore({
     plugins : [createPersistedState({
@@ -38,7 +39,8 @@ const store = createStore({
             "LanguageModule",
             "BookSearchDataModule",
             "AuthorSearchDataModule",
-            "PublisherSearchDataModule"
+            "PublisherSearchDataModule",
+            "FavoriteBookModule"
         ],
         overwrites : true
     })],
@@ -61,7 +63,8 @@ const store = createStore({
         LanguageModule,
         BookSearchDataModule,
         AuthorSearchDataModule,
-        PublisherSearchDataModule
+        PublisherSearchDataModule,
+        FavoriteBookModule
     }
 });
 

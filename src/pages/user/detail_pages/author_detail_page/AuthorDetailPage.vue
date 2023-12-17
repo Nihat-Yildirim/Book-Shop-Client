@@ -28,6 +28,10 @@
                                 <button @click="addBasketItem(book)" class="author-book-card-button">Sepete Ekle</button>
                             </div>
                         </div>
+                        <div class="favorite-button favorite-button-element">
+                            <i @click="addFavoriteBook(book.id)" v-if="getFavoriteBooks.findIndex(x => x.bookId == book.id) == -1" class="bi bi-heart favorite-button-element"></i>
+                            <i @click="deleteFavoriteBook(book.id)" v-else class="bi bi-heart-fill favorite-button-element"></i>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -54,6 +58,9 @@ export default {
 
     computed:{
         ...mapGetters({
+            getAddFavoriteBookSuccesResult : "FavoriteBookModule/_getAddFavoriteBookSuccesResult",
+            getDeleteFavoriteBookSuccessResult : "FavoriteBookModule/_getDeleteFavoriteBookSuccessResult",
+            getFavoriteBooks : "FavoriteBookModule/_getFavoriteBooks",
             getUpdateBasketItemSuccessResult: "BasketModule/_getUpdateBasketItemSuccessResult",
             getAddedBasketItemSuccessResult : "BasketModule/_getAddedBasketItemSuccessResult",
             getSelectedBasketItems: "BasketModule/_getSelectedBasketItems",
@@ -71,6 +78,9 @@ export default {
             getBooksByAuthorId : "BookModule/getBooksByAuthorId",
             addBasketItemAction : "BasketModule/addBasketItem",
             updateBasketItemAction : "BasketModule/updateBasketItem",
+            addFavoriteBookAction : "FavoriteBookModule/addFavoriteBook",
+            deleteFavoriteBookAction : "FavoriteBookModule/deleteFavoriteBook",
+            getFavoriteBooksAction : "FavoriteBookModule/getFavoriteBooks",
         }),
         getPictureUrl(url){
             if(url == "")
@@ -87,7 +97,12 @@ export default {
                 this.authorDetialChangeHeight = !this.authorDetialChangeHeight;
         },
         navigateBookDetail(event,bookData){
+            let classNames = event.srcElement.className.split(" ");
+
             if(event.srcElement.className == "author-book-card-button")
+                return;
+
+            if(classNames.findIndex(x => x == "favorite-button-element") > -1)
                 return;
 
             this.$router.push({
@@ -120,10 +135,37 @@ export default {
                     quantity : selectedBasketItem.quantity + 1,
                 });
             }
+        },
+        addFavoriteBook(bookId){
+            if(this.getUserId != 0 && this.getUserId != null){
+                if(this.getFavoriteBooks.findIndex(x => x.bookId == bookId) == -1)
+                    this.addFavoriteBookAction({
+                        userId : this.getUserId,
+                        bookId : bookId    
+                    })
+            }
+        },
+        deleteFavoriteBook(bookId){
+            if(this.getUserId != 0 && this.getUserId != null){
+                let value = this.getFavoriteBooks.find(x => x.bookId == bookId);
+                if(value != null)
+                    this.deleteFavoriteBookAction({
+                        favoriteBookId : value.id,
+                        userId : this.getUserId
+                    })
+            }
         }
     },
 
     watch:{
+        getAddFavoriteBookSuccesResult(){
+            if(this.getAddFavoriteBookSuccesResult)
+                this.$toastr.success("Ürün Favorilere Eklendi !");
+        },
+        getDeleteFavoriteBookSuccessResult(){
+            if(this.getDeleteFavoriteBookSuccessResult)
+                this.$toastr.info("Ürün Favorilerden Silindi !");
+        },
         getAddedBasketItemSuccessResult(){
             if(this.getAddedBasketItemSuccessResult){
                 this.$toastr.success("Ürün Sepete Eklendi !");
@@ -143,6 +185,8 @@ export default {
             page : 0,
             size : 50
         });
+        if(this.getUserId != null && this.getUserId != 0)
+            this.getFavoriteBooksAction(this.getUserId)
     },
 
     unmounted(){
@@ -289,6 +333,7 @@ export default {
     }
 
     .author-book-card-content{
+        position: relative;
         width: 100%;
         height: 100%;
         padding: 15px 10px 8px 10px;
@@ -379,5 +424,33 @@ export default {
         display: block;
         font-size: 17px;
         transition: all 500ms;
+    }
+
+    .favorite-button{
+        top: 3px;
+        right:3px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background-color: #F8F9F9;
+        border: 1px solid #F2F3F4;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .favorite-button i{
+        padding-top: 1px;
+        font-size: 17px;
+    }
+
+    .favorite-button i:hover{
+        color: orange;
+    }
+
+    .favorite-button .bi-heart-fill{
+        color: orange;
     }
 </style>
