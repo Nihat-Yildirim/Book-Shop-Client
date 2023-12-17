@@ -137,6 +137,10 @@
                         <i class="bi bi-envelope"></i>
                         <span>Mesajlarım</span>
                     </div>
+                    <div @click="navigateTo('UserFavoriteBookPage')" class="user-profile-button">
+                        <i class="bi bi-heart"></i>
+                        <span>Favorilerim</span>
+                    </div>
                     <div @click="navigateTo('UserCommentPage')" class="user-profile-button">
                         <i class="bi bi-chat-dots"></i>
                         <span>Değerlendirmelerim</span>
@@ -578,7 +582,7 @@ export default{
         top: 75px;
         right: 140px;
         width: 205px;
-        height: 220px;
+        height: 250px;
         background-color: #fefefe;
         border: 0.1rem solid #F8F9F9;
         border-radius: 5px;

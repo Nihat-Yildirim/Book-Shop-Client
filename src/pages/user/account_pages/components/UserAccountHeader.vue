@@ -15,6 +15,10 @@
                 <i class="bi bi-pin-map"></i>
                 <div>Adreslerim</div>
             </div>
+            <div @click="navigateTo('UserFavoriteBookPage')" :class="{'header-component-button-select' : userFavoriteBookButtonSelect}" class="header-component-button">
+                <i class="bi bi-heart"></i>
+                <div>Favorilerim</div>
+            </div>
         </div>
         <div class="user-account-header-component" id="user-order">
             <div class="header-component-title">
@@ -71,6 +75,10 @@ export default{
             default : false,
         },
         userVisitedButtonSelect:{
+            type : Boolean,
+            default : false,
+        },
+        userFavoriteBookButtonSelect:{
             type : Boolean,
             default : false,
         }
@@ -162,5 +170,9 @@ export default{
         padding-left: 10px;
         font-size: 20px;
         color: orange;
+    }
+
+    .bi-heart{
+        margin-top: 2.5px;
     }
 </style>

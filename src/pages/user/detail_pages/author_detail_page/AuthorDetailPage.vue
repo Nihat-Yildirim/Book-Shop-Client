@@ -442,6 +442,12 @@ export default {
     }
 
     .favorite-button i{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
         padding-top: 1px;
         font-size: 17px;
     }

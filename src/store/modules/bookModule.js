@@ -4,6 +4,7 @@ const BookModule = {
     namespaced : true,
 
     state:{
+        favoriteBooks : [],
         worldClassics : [],
         selectedBook : null,
         selectedBookId : 0,
@@ -25,6 +26,7 @@ const BookModule = {
     },
 
     mutations:{
+        setFavoriteBooks : (state,favoriteBooks) => state.favoriteBooks = favoriteBooks,
         setUpdateBookDescriptionSuccessResult : (state,successResult) => state.updateBookDescriptionSuccessResult = successResult,
         setUpdateBookCategoriesSuccessResult : (state,successResult) => state.updateBookCategoriesSuccessResult = successResult,
         setRecommendBooks : (state,recommendBooks) => state.recommendBooks = recommendBooks,
@@ -55,6 +57,7 @@ const BookModule = {
     },
 
     getters :{
+        _getFavoriteBooks : (state) => state.favoriteBooks, 
         _getUpdateBookDescriptionSuccessResult : (state) => state.updateBookDescriptionSuccessResult,
         _getUpdateBookCategoriesSuccessResult : (state) => state.updateBookCategoriesSuccessResult,
         _getRecommendBooks : (state) => state.recommendBooks,
@@ -169,6 +172,11 @@ const BookModule = {
                     context.dispatch('getUpdatedBook',params.bookId)
                 }
             })
+            .catch(error => console.log(error));
+        },
+        async getFavoriteBooks(context,params){
+            await BookService.getFavoriteBooksByUserId(params)
+            .then(response => context.commit('setFavoriteBooks',response.data))
             .catch(error => console.log(error));
         }
     }

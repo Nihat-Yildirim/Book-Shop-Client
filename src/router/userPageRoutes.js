@@ -50,6 +50,11 @@ const userPageRoutes = [
         component : () => import("@/pages/user/account_pages/user_visited_book_page/UserVisitedBookPage")
     },
     {
+        name : "UserFavoriteBookPage",
+        path : "/hesabim/favori-kitaplarim",
+        component : () => import("@/pages/user/account_pages/user_favorite_book_page/UserFavoriteBookPage")
+    },
+    {
         name : "BasketDetailPage",
         path : "/sepetim",
         component : () => import("@/pages/user/detail_pages/basket_detail_page/BasketDetailPage")

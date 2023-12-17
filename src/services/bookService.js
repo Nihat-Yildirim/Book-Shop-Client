@@ -199,6 +199,18 @@ const BookService = {
     async getRecommendBooksForSearch(){
         const result = await appAxios.get("Books/GetRecommendBooksForSearch");
         return result.data;
+    },
+
+    async getFavoriteBooksByUserId(params){
+        const result = await appAxios.get("Books/GetFavoriteBooksByUserId",{
+            params:{
+                UserId : params.userId,
+                Page : params.page,
+                Size : params.size
+            }
+        });
+
+        return result.data;
     }
 }
 

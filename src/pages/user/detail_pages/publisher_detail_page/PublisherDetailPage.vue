@@ -383,8 +383,13 @@ export default{
     }
 
     .favorite-button i{
-        padding-top: 1px;
         font-size: 17px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
     }
 
     .favorite-button i:hover{
