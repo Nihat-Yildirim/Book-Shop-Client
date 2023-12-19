@@ -693,6 +693,7 @@ export default{
         padding-top: 95px;
         display: flex;
         justify-content: center;
+        z-index: 250;
     }
 
     #add-update-address-container{
@@ -916,6 +917,7 @@ export default{
         display: flex;
         justify-content: center;
         padding-top: 230px;
+        z-index: 250;
     }
 
     #delete-address-container{
