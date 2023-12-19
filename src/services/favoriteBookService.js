@@ -20,6 +20,11 @@ const FavoriteBookService = {
     async getUserFavoriteBooks(userId){
         const result = await appAxios.get(`FavoriteBooks/GetUserFavoriteBooks?UserId=${userId}`);
         return result.data;
+    },
+
+    async getSelectedBookFavoriteDatasForDays(bookId){
+        const result = await appAxios.get(`FavoriteBooks/GetSelectedBookFavoriteDatasForDays?BookId=${bookId}`);
+        return result.data;
     }
 }
 

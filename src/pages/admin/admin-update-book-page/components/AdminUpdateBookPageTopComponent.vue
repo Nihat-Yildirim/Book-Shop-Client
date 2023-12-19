@@ -153,9 +153,9 @@
                     </div>
                 </div> 
                 <div class="admin-update-book-chart">
-                    <div class="admin-update-book-chart-name">Chart Name</div>
+                    <div id="search-favorite-chart-title" class="admin-update-book-chart-name"><span>Favoriye Eklenme</span> & <span>Aranma Sayısı</span></div>
                     <div class="admin-update-book-chart-container">
-                        <canvas id="" class="updated-book-chart"></canvas>
+                        <canvas id="search-favorite-chart" class="updated-book-chart"></canvas>
                     </div>
                 </div>
                 <div class="admin-update-book-chart">
@@ -214,6 +214,7 @@ export default{
             updateBookAuthorsButtonClicked : false,
             updateBookInformationActivate : false,
             viewCommentChart : null,
+            favoriteSearchChart : null,
         }
     },
 
@@ -239,6 +240,8 @@ export default{
             getUpdateBookInformationSuccessResult : "BookModule/_getUpdateBookInformationSuccessResult",
             getSelectedBookViewDatasForDays : "ViewModule/_getSelectedBookViewDatasForDays",
             getSelectedBookCommentDatasForDays : "CommentModule/_getSelectedBookCommentDatasForDays",
+            getSelectedBookFavoriteDatasForDays : "FavoriteBookModule/_getSelectedBookFavoriteDatasForDays",
+            getSelectedBookSearchDatasForDays : "BookSearchDataModule/_getSelectedBookSearchDatasForDays",
         }),
     },
 
@@ -252,6 +255,8 @@ export default{
             updateBookAuthorsAction : "BookModule/updateBookAuthors",
             getSelectedBookViewDatasForDaysAction : "ViewModule/getSelectedBookViewDatasForDays",
             getSelectedBookCommentDatasForDaysAction : "CommentModule/getSelectedBookCommentDatasForDays",
+            getSelectedBookFavoriteDatasForDaysAction : "FavoriteBookModule/getSelectedBookFavoriteDatasForDays",
+            getSelectedBookSearchDatasForDaysAction : "BookSearchDataModule/getSelectedBookSearchDatasForDays",
         }),
         navigateUpdateBooksPage(){
             this.$router.push({
@@ -455,7 +460,7 @@ export default{
             this.updateAuthor();
             this.updateBookInformations();
         },
-        createCharts(){
+        createViewCommentChart(){
             let chart = new Chart(document.getElementById("view-comment-chart"),
             {
                 type: 'bar',
@@ -474,10 +479,78 @@ export default{
             });
 
             this.viewCommentChart = markRaw(chart);
+        },
+        createFavoriteSearchChart(){
+            let chart = new Chart(document.getElementById("search-favorite-chart"),
+            {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: []
+                },
+                options:{
+                    responsive: false,
+                    plugins:{
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            this.favoriteSearchChart = markRaw(chart);
+        },
+        createCharts(){ 
+            this.createViewCommentChart();
+            this.createFavoriteSearchChart();
         }
     },
 
     watch:{
+        getSelectedBookSearchDatasForDays(){
+            if(this.getSelectedBookSearchDatasForDays){
+                let labels = [];
+                let datas  = [];
+                for(let data of this.getSelectedBookSearchDatasForDays){
+                    labels.push(data.date);
+                    datas.push(data.searchCount);
+                }
+                this.favoriteSearchChart.data.labels = labels;
+                this.favoriteSearchChart.data.datasets.push({
+                    label : "Aranma Sayısı",
+                    data: datas,
+                    pointRadius: 0,
+                    borderWidth: 2,
+                    fill: true,
+                    borderColor: '#C0392B',
+                    backgroundColor: '#EC7063'
+                });
+
+                this.favoriteSearchChart.update();
+            }
+        },
+        getSelectedBookFavoriteDatasForDays(){
+            if(this.getSelectedBookFavoriteDatasForDays != null){
+                let labels = [];
+                let datas  = [];
+                for(let data of this.getSelectedBookFavoriteDatasForDays){
+                    labels.push(data.date);
+                    datas.push(data.favoriteBookCount);
+                }
+                this.favoriteSearchChart.data.labels = labels;
+                this.favoriteSearchChart.data.datasets.push({
+                    label : "Favoriye Eklenme Sayısı",
+                    data: datas,
+                    pointRadius: 0,
+                    borderWidth: 2,
+                    fill: true,
+                    borderColor: '#CA6F1E',
+                    backgroundColor: '#EDBB99'
+                });
+
+                this.favoriteSearchChart.update();
+            }
+        },
         getSelectedBookViewDatasForDays(){
             if(this.getSelectedBookViewDatasForDays != null){
                 let labels = [];
@@ -488,7 +561,7 @@ export default{
                 }
                 this.viewCommentChart.data.labels = labels;
                 this.viewCommentChart.data.datasets.push({
-                    label : "Görüntülenme",
+                    label : "Görüntülenme Sayısı",
                     data: datas,
                     pointRadius: 0,
                     borderWidth: 2,
@@ -510,7 +583,7 @@ export default{
                 }
                 this.viewCommentChart.data.labels = labels;
                 this.viewCommentChart.data.datasets.push({
-                    label :"Yorum",
+                    label :"Yorum Sayısı",
                     data: datas,
                     pointRadius: 0,
                     borderWidth: 2,
@@ -629,7 +702,9 @@ export default{
 
     mounted(){
         this.createCharts();
+        this.getSelectedBookFavoriteDatasForDaysAction(this.getUpdatedBookId);
         this.getSelectedBookCommentDatasForDaysAction(this.getUpdatedBookId);
+        this.getSelectedBookSearchDatasForDaysAction(this.getUpdatedBookId);
         this.getSelectedBookViewDatasForDaysAction(this.getUpdatedBookId)
         this.getUpdatedBookAction(this.getUpdatedBookId);
         this.getAllLanguageAction();
@@ -722,10 +797,12 @@ export default{
         width: 100%;
     }
 
+    #search-favorite-chart-title span:first-child,
     #view-comment-chart-title span:first-child{
         color: #CA6F1E;
     }
 
+    #search-favorite-chart-title span:last-child,
     #view-comment-chart-title span:last-child{
         color: #C0392B;
     }

@@ -7,15 +7,18 @@ const FavoriteBookModule = {
         favoriteBooks : [],
         addFavoriteBookSuccesResult : false,
         deleteFavoriteBookSuccessResult : false,
+        selectedBookFavoriteDatasForDays : [],
     },
 
     getters : {
         _getFavoriteBooks : (state) => state.favoriteBooks,
         _getAddFavoriteBookSuccesResult : (state) => state.addFavoriteBookSuccesResult,
         _getDeleteFavoriteBookSuccessResult : (state) => state.deleteFavoriteBookSuccessResult,
+        _getSelectedBookFavoriteDatasForDays : (state) => state.selectedBookFavoriteDatasForDays,
     },
 
     mutations : {
+        setSelectedBookFavoriteDatasForDays : (state,selectedBookFavoriteDatasForDays) => state.selectedBookFavoriteDatasForDays = selectedBookFavoriteDatasForDays,
         setAddFavoriteBookSuccesResult : (state,successResult) => state.addFavoriteBookSuccesResult = successResult,
         setDeleteFavoriteBookSuccessResult : (state,successResult) => state.deleteFavoriteBookSuccessResult = successResult,
         setFavoriteBooks : (state,favoriteBooks) => state.favoriteBooks = favoriteBooks,
@@ -58,6 +61,12 @@ const FavoriteBookModule = {
                 if(!context.favoriteBooks)
                     context.dispatch('getFavoriteBooks',params.userId);
             })
+            .catch(error => console.log(error));
+        },
+        async getSelectedBookFavoriteDatasForDays(context,bookId){
+            context.commit('setSelectedBookFavoriteDatasForDays',null);
+            await FavoriteBookService.getSelectedBookFavoriteDatasForDays(bookId)
+            .then(response => context.commit('setSelectedBookFavoriteDatasForDays',response.data))
             .catch(error => console.log(error));
         }
     }
