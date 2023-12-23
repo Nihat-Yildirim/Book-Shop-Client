@@ -1,5 +1,5 @@
 # Book-Shop-Client
-Bu proje Book-Shop-API projesinin client projesidir, admin ve curtomer olmak üzere iki faklı çalışma mekanizması vardır.
+Bu proje Book-Shop-API projesinin client projesidir, admin ve curtomer olmak üzere iki faklı çalışma mekanizması vardır. Bunlar Admin ve Customer page'tir.
 
 ## Customer
 ### Home Page
